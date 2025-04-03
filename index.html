@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Bénin Pi Market - Splash Screen</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function(){
+      // Redirection vers la page d'accueil après 3 secondes
+      setTimeout(function(){
+        window.location.href = "https://carte-a-code-qr-pinetwork.crowdfunding-africa.org/SHOP"; // Remplacez par l'URL de destination souhaitée
+      }, 3000);
+    });
+  </script>
+</head>
+<body class="bg-gradient-to-r from-blue-600 to-green-500 flex items-center justify-center h-screen">
+  <div class="text-center">
+    <!-- Logo du site (remplacer "logo.png" par le chemin de votre logo) -->
+    <img src="https://carte-a-code-qr-pinetwork.crowdfunding-africa.org/SHOP/images/icone.png" alt="Bénin Pi Market Logo" class="mx-auto w-24 h-24 mb-4">
+    <h1 class="text-white text-4xl font-bold mb-2">Bénin Pi Market</h1>
+    <p class="text-white text-lg mb-6">Le meilleur marché en ligne du Bénin</p>
+    <!-- Spinner de chargement -->
+    <div class="spinner mx-auto"></div>
+  </div>
+</body>
+  </html>
