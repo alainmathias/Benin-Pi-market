@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Vendeur - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            500: '#1a73e8',
+                            600: '#1557b0',
+                        },
+                        secondary: {
+                            500: '#ff6b00',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12">
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="index.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Accueil</a>
+                <a href="produits.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Produits</a>
+                <a href="categories.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Catégories</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="relative group">
+                    <div class="flex items-center gap-3 cursor-pointer">
+                        <span id="userName" class="font-medium text-gray-700">Vendeur</span>
+                        <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
+                    </div>
+                    <div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <div class="py-2">
+                            <a href="dashboard-vendeur.html" class="block px-4 py-2 hover:bg-gray-50 text-primary-500 font-medium">
+                                <i class="fas fa-tachometer-alt w-5"></i> Dashboard
+                            </a>
+                            <a href="mon-profil.html" class="block px-4 py-2 hover:bg-gray-50 transition">
+                                <i class="fas fa-user w-5"></i> Profil
+                            </a>
+                            <a href="mes-produits.html" class="block px-4 py-2 hover:bg-gray-50 transition">
+                                <i class="fas fa-box w-5"></i> Mes produits
+                            </a>
+                            <hr class="my-2">
+                            <a href="#" onclick="deconnexion()" class="block px-4 py-2 hover:bg-gray-50 text-red-500 transition">
+                                <i class="fas fa-sign-out-alt w-5"></i> Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-dark">
+                    <i class="fas fa-tachometer-alt text-primary-500"></i> Dashboard Vendeur
+                </h1>
+                <p class="text-gray-500 mt-1">Bienvenue sur votre espace de gestion</p>
+            </div>
+            <a href="ajouter-produit.html" class="btn-primary mt-4 md:mt-0">
+                <i class="fas fa-plus mr-2"></i> Ajouter un produit
+            </a>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- Statistiques -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="card p-6 text-center">
+                <div class="text-3xl font-bold text-primary-500" id="totalProduits">0</div>
+                <div class="text-gray-600 mt-1">Total produits</div>
+                <i class="fas fa-boxes text-4xl text-gray-200 absolute right-4 bottom-4 opacity-50"></i>
+            </div>
+            <div class="card p-6 text-center relative">
+                <div class="text-3xl font-bold text-yellow-500" id="produitsEnAttente">0</div>
+                <div class="text-gray-600 mt-1">En attente</div>
+                <i class="fas fa-clock text-4xl text-gray-200 absolute right-4 bottom-4 opacity-50"></i>
+            </div>
+            <div class="card p-6 text-center relative">
+                <div class="text-3xl font-bold text-green-500" id="produitsPublies">0</div>
+                <div class="text-gray-600 mt-1">Publiés</div>
+                <i class="fas fa-check-circle text-4xl text-gray-200 absolute right-4 bottom-4 opacity-50"></i>
+            </div>
+            <div class="card p-6 text-center relative">
+                <div class="text-3xl font-bold text-purple-500" id="totalVues">0</div>
+                <div class="text-gray-600 mt-1">Total vues</div>
+                <i class="fas fa-eye text-4xl text-gray-200 absolute right-4 bottom-4 opacity-50"></i>
+            </div>
+        </div>
+
+        <!-- Actions rapides -->
+        <div class="flex flex-wrap gap-4 mb-8">
+            <a href="ajouter-produit.html" class="btn-secondary">
+                <i class="fas fa-plus mr-2"></i> Nouveau produit
+            </a>
+            <a href="mes-produits.html" class="btn-outline">
+                <i class="fas fa-list mr-2"></i> Tous mes produits
+            </a>
+            <a href="mon-profil.html" class="btn-outline">
+                <i class="fas fa-user-edit mr-2"></i> Modifier mon profil
+            </a>
+        </div>
+
+        <!-- Derniers produits -->
+        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-dark">
+                    <i class="fas fa-history text-primary-500 mr-2"></i> Vos derniers produits
+                </h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Produit</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 hidden md:table-cell">Catégorie</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Prix</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 hidden sm:table-cell">Statut</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600 hidden lg:table-cell">Vues</th>
+                            <th class="px-6 py-3 text-left text-sm font-semibold text-gray-600">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="produitsList">
+                        <tr>
+                            <td colspan="6" class="text-center py-12 text-gray-500">
+                                <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>
+                                Chargement...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { auth, onAuthStateChanged, db } from './js/firebase-config.js';
+        import { getProduitsByVendeur } from './js/produits.js';
+        import { deconnexion, getCurrentUserData } from './js/auth.js';
+        import { formatPrix, formatDate, showAlert } from './js/utils.js';
+
+        window.deconnexion = deconnexion;
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = 'connexion.html';
+                return;
+            }
+            
+            currentUser = user;
+            const userData = await getCurrentUserData();
+            
+            if (!userData) {
+                showAlert('Erreur chargement des données.', 'danger');
+                return;
+            }
+            
+            if (userData.role === 'admin') {
+                window.location.href = 'dashboard-admin.html';
+                return;
+            }
+            
+            document.getElementById('userName').textContent = `${userData.prenom} ${userData.nom}`;
+            await chargerProduits();
+        });
+
+        async function chargerProduits() {
+            try {
+                const produits = await getProduitsByVendeur(currentUser.uid);
+                
+                const total = produits.length;
+                const enAttente = produits.filter(p => p.statut === 'en_attente' || p.statut === 'en_moderation').length;
+                const publies = produits.filter(p => p.statut === 'publie').length;
+                const vues = produits.reduce((sum, p) => sum + (p.vues || 0), 0);
+                
+                document.getElementById('totalProduits').textContent = total;
+                document.getElementById('produitsEnAttente').textContent = enAttente;
+                document.getElementById('produitsPublies').textContent = publies;
+                document.getElementById('totalVues').textContent = vues;
+                
+                const tbody = document.getElementById('produitsList');
+                
+                if (produits.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="text-center py-12">
+                                <i class="fas fa-box-open text-6xl text-gray-300 block mb-4"></i>
+                                <p class="text-gray-500 mb-4">Vous n'avez pas encore publié de produits.</p>
+                                <a href="ajouter-produit.html" class="btn-primary inline-block">
+                                    <i class="fas fa-plus mr-2"></i> Publier votre premier produit
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                tbody.innerHTML = produits.slice(0, 5).map(produit => `
+                    <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                                    ${produit.images && produit.images[0] 
+                                        ? `<img src="${produit.images[0]}" class="w-full h-full object-cover">` 
+                                        : `<i class="fas fa-image text-gray-300"></i>`
+                                    }
+                                </div>
+                                <span class="font-medium text-dark">${produit.titre}</span>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 hidden md:table-cell">${produit.categorie}</td>
+                        <td class="px-6 py-4 font-semibold text-secondary-500">${formatPrix(produit.prix)}</td>
+                        <td class="px-6 py-4 hidden sm:table-cell">
+                            <span class="${produit.statut === 'publie' ? 'badge-success' : 
+                                          produit.statut === 'en_attente' ? 'badge-warning' : 
+                                          'badge-danger'}">
+                                ${produit.statut === 'publie' ? '✅ Publié' : 
+                                  produit.statut === 'en_attente' ? '⏳ En attente' : 
+                                  '❌ Refusé'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 hidden lg:table-cell text-gray-600">${produit.vues || 0}</td>
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <a href="modifier-produit.html?id=${produit.id}" 
+                                   class="text-primary-500 hover:text-primary-600 transition">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button onclick="supprimerProduit('${produit.id}')" 
+                                        class="text-red-500 hover:text-red-600 transition">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+                
+                if (produits.length > 5) {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td colspan="6" class="px-6 py-4 text-center">
+                                <a href="mes-produits.html" class="text-primary-500 font-semibold hover:underline">
+                                    Voir tous vos produits (${produits.length})
+                                </a>
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAlert('Erreur lors du chargement des produits.', 'danger');
+            }
+        }
+
+        window.supprimerProduit = async function(id) {
+            if (!confirm('Voulez-vous vraiment supprimer ce produit ?')) return;
+            
+            try {
+                const { supprimerProduit } = await import('./js/produits.js');
+                const result = await supprimerProduit(id);
+                
+                if (result.success) {
+                    showAlert('Produit supprimé avec succès.', 'success');
+                    await chargerProduits();
+                } else {
+                    showAlert(result.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Erreur lors de la suppression.', 'danger');
+            }
+        };
+    </script>
+</body>
+</html>
