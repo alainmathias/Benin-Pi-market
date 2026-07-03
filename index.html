@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bénin Pi Market - Annonces Bénin</title>
+    
+    <!-- ========== TAILWIND CSS (CDN) ========== -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ========== POLICE ET ICÔNES ========== -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- ========== STYLES PERSONNALISÉS ========== -->
     <link rel="stylesheet" href="css/style.css">
+    
+    <!-- ========== CONFIGURATION TAILWIND ========== -->
     <script>
         tailwind.config = {
             theme: {
@@ -18,17 +26,38 @@
                             200: '#a4c2f4',
                             300: '#77a9eb',
                             400: '#4a8fe3',
-                            500: '#1a73e8',
+                            500: '#1a73e8',  // Bleu principal
                             600: '#1557b0',
                             700: '#104080',
                             800: '#0a2a50',
                             900: '#051428',
                         },
                         secondary: {
-                            500: '#ff6b00',
+                            50: '#fff2e6',
+                            100: '#ffe6cc',
+                            200: '#ffcc99',
+                            300: '#ffb366',
+                            400: '#ff9933',
+                            500: '#ff6b00',  // Orange principal
                             600: '#cc5500',
-                        }
-                    }
+                            700: '#994000',
+                            800: '#662a00',
+                            900: '#331500',
+                        },
+                        dark: '#1a1a2e',
+                        light: '#f8f9fa',
+                    },
+                    fontFamily: {
+                        'sans': ['Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        'xl': '12px',
+                        '2xl': '16px',
+                    },
+                    boxShadow: {
+                        'card': '0 4px 20px rgba(0,0,0,0.1)',
+                        'card-hover': '0 8px 30px rgba(0,0,0,0.15)',
+                    },
                 }
             }
         }
@@ -36,12 +65,12 @@
 </head>
 <body class="bg-gray-50 font-sans antialiased">
 
-    <!-- HEADER -->
+    <!-- ========== HEADER ========== -->
     <header class="bg-white shadow-md sticky top-0 z-50">
-        <nav class="container-custom py-4 flex justify-between items-center">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <!-- Logo -->
             <div class="flex items-center gap-3">
-                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12">
+                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12 w-auto" onerror="this.style.display='none'">
                 <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
             </div>
 
@@ -62,8 +91,12 @@
                 
                 <!-- Non connecté -->
                 <div id="authButtons" class="flex items-center gap-3">
-                    <a href="connexion.html" class="btn-outline text-sm px-4 py-2">Connexion</a>
-                    <a href="inscription.html" class="btn-primary text-sm px-4 py-2">Inscription</a>
+                    <a href="connexion.html" class="border-2 border-primary-500 text-primary-500 px-4 py-2 rounded-xl font-semibold hover:bg-primary-500 hover:text-white transition">
+                        Connexion
+                    </a>
+                    <a href="inscription.html" class="bg-primary-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg">
+                        Inscription
+                    </a>
                 </div>
 
                 <!-- Connecté -->
@@ -100,8 +133,8 @@
         </nav>
 
         <!-- Menu mobile -->
-        <div id="mobileMenu" class="mobile-menu">
-            <div class="mobile-menu-content">
+        <div id="mobileMenu" class="fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden hidden">
+            <div class="bg-white w-80 h-full p-6 shadow-2xl transform transition-transform duration-300 -translate-x-full">
                 <div class="flex justify-between items-center mb-8">
                     <span class="text-xl font-bold text-primary-500">Menu</span>
                     <button id="closeMobileMenu" class="text-2xl text-gray-600">
@@ -116,19 +149,21 @@
                     <a href="contact.html" class="block text-gray-700 hover:text-primary-500 font-medium">Contact</a>
                     <hr>
                     <a href="connexion.html" class="block text-primary-500 font-medium">Connexion</a>
-                    <a href="inscription.html" class="block btn-primary text-center">Inscription</a>
+                    <a href="inscription.html" class="block bg-primary-500 text-white text-center px-4 py-2 rounded-xl font-semibold">Inscription</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- HERO BANNER -->
+    <!-- ========== BANNIÈRE HERO ========== -->
     <section class="relative bg-gradient-to-r from-primary-500 to-primary-700 text-white py-20 md:py-28 overflow-hidden">
+        <!-- Décoration -->
         <div class="absolute inset-0 opacity-10">
             <div class="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
             <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/3 translate-y-1/3"></div>
         </div>
-        <div class="container-custom relative z-10 text-center">
+        
+        <div class="max-w-7xl mx-auto px-4 relative z-10 text-center">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
                 Bienvenue sur <span class="text-secondary-500">Bénin Pi Market</span>
             </h1>
@@ -139,7 +174,7 @@
             <!-- Barre de recherche -->
             <div class="max-w-2xl mx-auto flex flex-col sm:flex-row bg-white rounded-full shadow-xl overflow-hidden">
                 <input type="text" id="searchInput" 
-                       placeholder="Que recherchez-vous ?" 
+                       placeholder="Que recherchez-vous ? (produit, catégorie, ville...)" 
                        class="flex-1 px-6 py-4 outline-none text-gray-800">
                 <button onclick="rechercher()" 
                         class="bg-secondary-500 hover:bg-secondary-600 text-white px-8 py-4 font-semibold transition flex items-center justify-center gap-2">
@@ -171,16 +206,17 @@
         </div>
     </section>
 
-    <!-- PRODUITS RÉCENTS -->
+    <!-- ========== PRODUITS RÉCENTS ========== -->
     <section class="py-16">
-        <div class="container-custom">
+        <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
-                <h2 class="section-title">Produits récents</h2>
+                <h2 class="text-2xl md:text-3xl font-bold text-dark">Produits récents</h2>
                 <a href="produits.html" class="text-primary-500 hover:text-primary-600 font-semibold flex items-center gap-2 transition">
                     Voir tout <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
             <div id="recentProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Chargé dynamiquement -->
                 <div class="col-span-full text-center py-12 text-gray-500">
                     <i class="fas fa-spinner fa-spin text-3xl"></i>
                     <p class="mt-2">Chargement des produits...</p>
@@ -189,34 +225,37 @@
         </div>
     </section>
 
-    <!-- CATÉGORIES POPULAIRES -->
+    <!-- ========== CATÉGORIES POPULAIRES ========== -->
     <section class="py-16 bg-white">
-        <div class="container-custom">
-            <h2 class="section-title text-center">Catégories populaires</h2>
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-dark text-center mb-8">Catégories populaires</h2>
             <div id="categoriesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                 <!-- Chargé dynamiquement -->
             </div>
         </div>
     </section>
 
-    <!-- COMMENT ÇA MARCHE -->
+    <!-- ========== COMMENT ÇA MARCHE ========== -->
     <section class="py-16 bg-gray-50">
-        <div class="container-custom">
-            <h2 class="section-title text-center">Comment ça marche ?</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-                <div class="card p-8 text-center relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-2xl md:text-3xl font-bold text-dark text-center mb-8">Comment ça marche ?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Étape 1 -->
+                <div class="bg-white rounded-2xl shadow-card hover:shadow-card-hover p-8 text-center transition relative">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">1</div>
                     <i class="fas fa-user-plus text-5xl text-primary-500 mt-4 mb-4"></i>
                     <h3 class="text-xl font-bold mb-2">Créez un compte</h3>
                     <p class="text-gray-600">Inscrivez-vous et attendez la validation de l'administrateur</p>
                 </div>
-                <div class="card p-8 text-center relative">
+                <!-- Étape 2 -->
+                <div class="bg-white rounded-2xl shadow-card hover:shadow-card-hover p-8 text-center transition relative">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">2</div>
                     <i class="fas fa-upload text-5xl text-primary-500 mt-4 mb-4"></i>
                     <h3 class="text-xl font-bold mb-2">Publiez vos produits</h3>
                     <p class="text-gray-600">Ajoutez photos, prix et description de vos produits</p>
                 </div>
-                <div class="card p-8 text-center relative">
+                <!-- Étape 3 -->
+                <div class="bg-white rounded-2xl shadow-card hover:shadow-card-hover p-8 text-center transition relative">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">3</div>
                     <i class="fab fa-whatsapp text-5xl text-green-500 mt-4 mb-4"></i>
                     <h3 class="text-xl font-bold mb-2">Recevez des contacts</h3>
@@ -226,9 +265,9 @@
         </div>
     </section>
 
-    <!-- FOOTER -->
+    <!-- ========== FOOTER ========== -->
     <footer class="bg-dark text-white py-12">
-        <div class="container-custom">
+        <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 <div>
                     <h3 class="text-xl font-bold mb-4">Bénin Pi Market</h3>
@@ -276,11 +315,14 @@
         </div>
     </footer>
 
+    <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
+        // Importer les configurations
         import { auth, onAuthStateChanged, db, collection, getDocs, query, where, orderBy, limit, doc, getDoc } from './js/firebase-config.js';
         import { deconnexion } from './js/auth.js';
         import { afficherProduits, afficherCategories } from './js/utils.js';
 
+        // Exposer la fonction de déconnexion
         window.deconnexion = deconnexion;
 
         // Gestion du menu mobile
@@ -288,13 +330,23 @@
         const closeMobile = document.getElementById('closeMobileMenu');
         const mobileMenu = document.getElementById('mobileMenu');
 
-        mobileToggle?.addEventListener('click', () => {
-            mobileMenu.classList.toggle('active');
-        });
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    document.querySelector('.mobile-menu-content')?.classList.remove('-translate-x-full');
+                }, 10);
+            });
+        }
 
-        closeMobile?.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-        });
+        if (closeMobile) {
+            closeMobile.addEventListener('click', () => {
+                document.querySelector('.mobile-menu-content')?.classList.add('-translate-x-full');
+                setTimeout(() => {
+                    mobileMenu.classList.add('hidden');
+                }, 300);
+            });
+        }
 
         // Vérifier l'authentification
         onAuthStateChanged(auth, (user) => {
@@ -303,19 +355,18 @@
             const userName = document.getElementById('userName');
 
             if (user) {
-                authButtons.style.display = 'none';
-                userMenu.classList.remove('hidden');
+                if (authButtons) authButtons.style.display = 'none';
+                if (userMenu) userMenu.classList.remove('hidden');
                 
-                // Récupérer les données utilisateur
                 getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        userName.textContent = `${userData.prenom} ${userData.nom}`;
+                        if (userName) userName.textContent = `${userData.prenom} ${userData.nom}`;
                     }
-                });
+                }).catch(() => {});
             } else {
-                authButtons.style.display = 'flex';
-                userMenu.classList.add('hidden');
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userMenu) userMenu.classList.add('hidden');
             }
         });
 
@@ -357,9 +408,9 @@
 
         // Fonction de recherche
         window.rechercher = function() {
-            const searchTerm = document.getElementById('searchInput').value;
-            if (searchTerm.trim()) {
-                window.location.href = `produits.html?search=${encodeURIComponent(searchTerm)}`;
+            const searchTerm = document.getElementById('searchInput')?.value;
+            if (searchTerm && searchTerm.trim()) {
+                window.location.href = `produits.html?search=${encodeURIComponent(searchTerm.trim())}`;
             }
         };
 
