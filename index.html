@@ -1,46 +1,371 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta property="og:title" content="BENIN PI-MARKET">
-    <meta property="og:description" content="Une plate-forme locale d'achat et de vente des produits en avec crypto pi.">
-    <meta property="og:image" content="https://carte-a-code-qr-pinetwork.crowdfunding-africa.org/SHOP/images/home.png">
-    <meta property="og:url" content="https://carte-a-code-qr-pinetwork.crowdfunding-africa.org/SHOP/images/home.png">
-    <meta property="og:type" content="website">
-    
-  <title>Bénin Pi Market - Splash Screen</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-    }
-  </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function(){
-      // Redirection vers la page d'accueil après 3 secondes
-      setTimeout(function(){
-        window.location.href = "https://carte-a-code-qr-pinetwork.crowdfunding-africa.org/SHOP"; // Remplacez par l'URL de destination souhaitée
-      }, 3000);
-    });
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bénin Pi Market - Annonces Bénin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#e8f0fe',
+                            100: '#d2e3fc',
+                            200: '#a4c2f4',
+                            300: '#77a9eb',
+                            400: '#4a8fe3',
+                            500: '#1a73e8',
+                            600: '#1557b0',
+                            700: '#104080',
+                            800: '#0a2a50',
+                            900: '#051428',
+                        },
+                        secondary: {
+                            500: '#ff6b00',
+                            600: '#cc5500',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gradient-to-r from-blue-600 to-green-500 flex items-center justify-center h-screen">
-  <div class="text-center">
-    <!-- Logo du site (remplacer "logo.png" par le chemin de votre logo) -->
-    <img src="https://carte-a-code-qr-pinetwork.crowdfunding-africa.org/SHOP/images/icone.png" alt="Bénin Pi Market Logo" class="mx-auto w-24 h-24 mb-4">
-    <h1 class="text-white text-4xl font-bold mb-2">Bénin Pi Market</h1>
-    <p class="text-white text-lg mb-6">Le meilleur marché en ligne du Bénin</p>
-    <!-- Spinner de chargement -->
-    <div class="spinner mx-auto"></div>
-  </div>
+<body class="bg-gray-50 font-sans antialiased">
+
+    <!-- HEADER -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container-custom py-4 flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center gap-3">
+                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12">
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </div>
+
+            <!-- Navigation Desktop -->
+            <div class="hidden md:flex items-center gap-8">
+                <a href="index.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Accueil</a>
+                <a href="produits.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Produits</a>
+                <a href="categories.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Catégories</a>
+                <a href="a-propos.html" class="text-gray-700 hover:text-primary-500 font-medium transition">À propos</a>
+                <a href="contact.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Contact</a>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-4">
+                <a href="recherche.html" class="text-gray-600 hover:text-primary-500 transition">
+                    <i class="fas fa-search text-xl"></i>
+                </a>
+                
+                <!-- Non connecté -->
+                <div id="authButtons" class="flex items-center gap-3">
+                    <a href="connexion.html" class="btn-outline text-sm px-4 py-2">Connexion</a>
+                    <a href="inscription.html" class="btn-primary text-sm px-4 py-2">Inscription</a>
+                </div>
+
+                <!-- Connecté -->
+                <div id="userMenu" class="hidden relative group">
+                    <div class="flex items-center gap-3 cursor-pointer">
+                        <img src="" alt="Photo" id="userAvatar" class="w-10 h-10 rounded-full border-2 border-primary-500 object-cover">
+                        <span id="userName" class="font-medium text-gray-700"></span>
+                        <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
+                    </div>
+                    <div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
+                        <div class="py-2">
+                            <a href="dashboard-vendeur.html" class="block px-4 py-2 hover:bg-gray-50 transition">
+                                <i class="fas fa-tachometer-alt w-5 text-primary-500"></i> Dashboard
+                            </a>
+                            <a href="mon-profil.html" class="block px-4 py-2 hover:bg-gray-50 transition">
+                                <i class="fas fa-user w-5 text-primary-500"></i> Profil
+                            </a>
+                            <a href="mes-produits.html" class="block px-4 py-2 hover:bg-gray-50 transition">
+                                <i class="fas fa-box w-5 text-primary-500"></i> Mes produits
+                            </a>
+                            <hr class="my-2">
+                            <a href="#" onclick="deconnexion()" class="block px-4 py-2 hover:bg-gray-50 text-red-500 transition">
+                                <i class="fas fa-sign-out-alt w-5"></i> Déconnexion
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Menu mobile toggle -->
+                <button id="mobileMenuToggle" class="md:hidden text-2xl text-gray-700">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Menu mobile -->
+        <div id="mobileMenu" class="mobile-menu">
+            <div class="mobile-menu-content">
+                <div class="flex justify-between items-center mb-8">
+                    <span class="text-xl font-bold text-primary-500">Menu</span>
+                    <button id="closeMobileMenu" class="text-2xl text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="space-y-4">
+                    <a href="index.html" class="block text-gray-700 hover:text-primary-500 font-medium">Accueil</a>
+                    <a href="produits.html" class="block text-gray-700 hover:text-primary-500 font-medium">Produits</a>
+                    <a href="categories.html" class="block text-gray-700 hover:text-primary-500 font-medium">Catégories</a>
+                    <a href="a-propos.html" class="block text-gray-700 hover:text-primary-500 font-medium">À propos</a>
+                    <a href="contact.html" class="block text-gray-700 hover:text-primary-500 font-medium">Contact</a>
+                    <hr>
+                    <a href="connexion.html" class="block text-primary-500 font-medium">Connexion</a>
+                    <a href="inscription.html" class="block btn-primary text-center">Inscription</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO BANNER -->
+    <section class="relative bg-gradient-to-r from-primary-500 to-primary-700 text-white py-20 md:py-28 overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/3 translate-y-1/3"></div>
+        </div>
+        <div class="container-custom relative z-10 text-center">
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+                Bienvenue sur <span class="text-secondary-500">Bénin Pi Market</span>
+            </h1>
+            <p class="text-xl md:text-2xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                La plateforme de mise en relation entre professionnels et clients au Bénin
+            </p>
+            
+            <!-- Barre de recherche -->
+            <div class="max-w-2xl mx-auto flex flex-col sm:flex-row bg-white rounded-full shadow-xl overflow-hidden">
+                <input type="text" id="searchInput" 
+                       placeholder="Que recherchez-vous ?" 
+                       class="flex-1 px-6 py-4 outline-none text-gray-800">
+                <button onclick="rechercher()" 
+                        class="bg-secondary-500 hover:bg-secondary-600 text-white px-8 py-4 font-semibold transition flex items-center justify-center gap-2">
+                    <i class="fas fa-search"></i> Rechercher
+                </button>
+            </div>
+
+            <!-- Catégories rapides -->
+            <div class="flex flex-wrap gap-3 justify-center mt-8">
+                <a href="produits.html?categorie=Artisanat" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
+                    🪵 Artisanat
+                </a>
+                <a href="produits.html?categorie=Agriculture" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
+                    🌾 Agriculture
+                </a>
+                <a href="produits.html?categorie=Mode" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
+                    👗 Mode
+                </a>
+                <a href="produits.html?categorie=Électronique" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
+                    📱 Électronique
+                </a>
+                <a href="produits.html?categorie=Immobilier" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
+                    🏠 Immobilier
+                </a>
+                <a href="produits.html?categorie=Services" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
+                    🛠️ Services
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRODUITS RÉCENTS -->
+    <section class="py-16">
+        <div class="container-custom">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="section-title">Produits récents</h2>
+                <a href="produits.html" class="text-primary-500 hover:text-primary-600 font-semibold flex items-center gap-2 transition">
+                    Voir tout <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            <div id="recentProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="col-span-full text-center py-12 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-3xl"></i>
+                    <p class="mt-2">Chargement des produits...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CATÉGORIES POPULAIRES -->
+    <section class="py-16 bg-white">
+        <div class="container-custom">
+            <h2 class="section-title text-center">Catégories populaires</h2>
+            <div id="categoriesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                <!-- Chargé dynamiquement -->
+            </div>
+        </div>
+    </section>
+
+    <!-- COMMENT ÇA MARCHE -->
+    <section class="py-16 bg-gray-50">
+        <div class="container-custom">
+            <h2 class="section-title text-center">Comment ça marche ?</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                <div class="card p-8 text-center relative">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">1</div>
+                    <i class="fas fa-user-plus text-5xl text-primary-500 mt-4 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Créez un compte</h3>
+                    <p class="text-gray-600">Inscrivez-vous et attendez la validation de l'administrateur</p>
+                </div>
+                <div class="card p-8 text-center relative">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">2</div>
+                    <i class="fas fa-upload text-5xl text-primary-500 mt-4 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Publiez vos produits</h3>
+                    <p class="text-gray-600">Ajoutez photos, prix et description de vos produits</p>
+                </div>
+                <div class="card p-8 text-center relative">
+                    <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">3</div>
+                    <i class="fab fa-whatsapp text-5xl text-green-500 mt-4 mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">Recevez des contacts</h3>
+                    <p class="text-gray-600">Les clients vous contactent directement via WhatsApp</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container-custom">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Bénin Pi Market</h3>
+                    <p class="text-gray-400">La plateforme de mise en relation entre professionnels et clients au Bénin.</p>
+                    <div class="flex gap-4 mt-4">
+                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-facebook"></i>
+                        </a>
+                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Liens rapides</h4>
+                    <div class="space-y-2">
+                        <a href="produits.html" class="block text-gray-400 hover:text-white transition">Produits</a>
+                        <a href="categories.html" class="block text-gray-400 hover:text-white transition">Catégories</a>
+                        <a href="a-propos.html" class="block text-gray-400 hover:text-white transition">À propos</a>
+                        <a href="contact.html" class="block text-gray-400 hover:text-white transition">Contact</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Légal</h4>
+                    <div class="space-y-2">
+                        <a href="conditions.html" class="block text-gray-400 hover:text-white transition">Conditions d'utilisation</a>
+                        <a href="politique.html" class="block text-gray-400 hover:text-white transition">Politique de confidentialité</a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4">Contact</h4>
+                    <div class="space-y-2 text-gray-400">
+                        <p><i class="fas fa-phone w-5 text-primary-500"></i> +229 97 12 34 56</p>
+                        <p><i class="fas fa-envelope w-5 text-primary-500"></i> contact@beninpimarket.com</p>
+                        <p><i class="fas fa-map-marker-alt w-5 text-primary-500"></i> Cotonou, Bénin</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500">
+                <p>&copy; 2026 Bénin Pi Market. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth, onAuthStateChanged, db, collection, getDocs, query, where, orderBy, limit, doc, getDoc } from './js/firebase-config.js';
+        import { deconnexion } from './js/auth.js';
+        import { afficherProduits, afficherCategories } from './js/utils.js';
+
+        window.deconnexion = deconnexion;
+
+        // Gestion du menu mobile
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        const closeMobile = document.getElementById('closeMobileMenu');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileToggle?.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
+
+        closeMobile?.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+        });
+
+        // Vérifier l'authentification
+        onAuthStateChanged(auth, (user) => {
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.getElementById('userMenu');
+            const userName = document.getElementById('userName');
+
+            if (user) {
+                authButtons.style.display = 'none';
+                userMenu.classList.remove('hidden');
+                
+                // Récupérer les données utilisateur
+                getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        userName.textContent = `${userData.prenom} ${userData.nom}`;
+                    }
+                });
+            } else {
+                authButtons.style.display = 'flex';
+                userMenu.classList.add('hidden');
+            }
+        });
+
+        // Charger les produits récents
+        async function chargerProduitsRecents() {
+            try {
+                const q = query(
+                    collection(db, 'produits'),
+                    where('statut', '==', 'publie'),
+                    orderBy('datePublication', 'desc'),
+                    limit(8)
+                );
+                const querySnapshot = await getDocs(q);
+                const produits = [];
+                querySnapshot.forEach((doc) => {
+                    produits.push({ id: doc.id, ...doc.data() });
+                });
+                afficherProduits(produits, 'recentProducts');
+            } catch (error) {
+                console.error('Erreur chargement produits:', error);
+                document.getElementById('recentProducts').innerHTML = 
+                    '<div class="col-span-full text-center py-12 text-red-500">Impossible de charger les produits</div>';
+            }
+        }
+
+        // Charger les catégories
+        async function chargerCategories() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'categories'));
+                const categories = [];
+                querySnapshot.forEach((doc) => {
+                    categories.push({ id: doc.id, ...doc.data() });
+                });
+                afficherCategories(categories, 'categoriesGrid');
+            } catch (error) {
+                console.error('Erreur chargement catégories:', error);
+            }
+        }
+
+        // Fonction de recherche
+        window.rechercher = function() {
+            const searchTerm = document.getElementById('searchInput').value;
+            if (searchTerm.trim()) {
+                window.location.href = `produits.html?search=${encodeURIComponent(searchTerm)}`;
+            }
+        };
+
+        // Initialisation
+        chargerProduitsRecents();
+        chargerCategories();
+    </script>
 </body>
-  </html>
+</html>
