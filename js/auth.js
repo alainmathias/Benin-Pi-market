@@ -19,7 +19,7 @@ import {
     query,
     where,
     getDocs
-} from 'firebase-config.js';
+} from './firebase-config.js';
 
 // Cache utilisateur
 let currentUserCache = null;
