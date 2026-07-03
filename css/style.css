@@ -1,89 +1,17 @@
 /* css/style.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-/* Composants personnalisés */
-@layer components {
-    .btn-primary {
-        @apply bg-primary-500 text-white px-6 py-3 rounded-xl font-semibold 
-               hover:bg-primary-600 transform hover:-translate-y-1 
-               transition-all duration-300 shadow-md hover:shadow-lg;
-    }
-    
-    .btn-secondary {
-        @apply bg-secondary-500 text-white px-6 py-3 rounded-xl font-semibold 
-               hover:bg-secondary-600 transform hover:-translate-y-1 
-               transition-all duration-300 shadow-md hover:shadow-lg;
-    }
-    
-    .btn-outline {
-        @apply border-2 border-primary-500 text-primary-500 px-6 py-3 rounded-xl font-semibold 
-               hover:bg-primary-500 hover:text-white transition-all duration-300;
-    }
-    
-    .btn-danger {
-        @apply bg-red-500 text-white px-6 py-3 rounded-xl font-semibold 
-               hover:bg-red-600 transform hover:-translate-y-1 
-               transition-all duration-300 shadow-md hover:shadow-lg;
-    }
-    
-    .card {
-        @apply bg-white rounded-2xl shadow-card hover:shadow-card-hover 
-               transition-all duration-300 overflow-hidden;
-    }
-    
-    .input-field {
-        @apply w-full px-4 py-3 border-2 border-gray-200 rounded-xl 
-               focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 
-               transition-all duration-300;
-    }
-    
-    .label-field {
-        @apply block text-sm font-semibold text-gray-700 mb-2;
-    }
-    
-    .alert-success {
-        @apply bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl;
-    }
-    
-    .alert-danger {
-        @apply bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl;
-    }
-    
-    .alert-warning {
-        @apply bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded-xl;
-    }
-    
-    .badge-success {
-        @apply bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium;
-    }
-    
-    .badge-warning {
-        @apply bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-medium;
-    }
-    
-    .badge-danger {
-        @apply bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium;
-    }
-    
-    .badge-info {
-        @apply bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-medium;
-    }
-    
-    .container-custom {
-        @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-    }
-    
-    .section-title {
-        @apply text-2xl md:text-3xl font-bold text-dark mb-6;
-    }
-}
+/* ============================================
+   STYLES PERSONNALISÉS - COMPLÉMENT TAILWIND
+   ============================================ */
 
 /* Animations personnalisées */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
 }
 
 @keyframes pulse {
@@ -95,13 +23,27 @@
     animation: fadeIn 0.6s ease-out;
 }
 
+.animate-slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
 .animate-pulse-slow {
     animation: pulse 2s ease-in-out infinite;
 }
 
 /* Loading spinner */
 .spinner {
-    @apply inline-block w-8 h-8 border-4 border-gray-200 border-t-primary-500 rounded-full animate-spin;
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e5e7eb;
+    border-top-color: #1a73e8;
+    border-radius: 50%;
+    animation: spin 0.8s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 /* Scrollbar personnalisée */
@@ -110,28 +52,269 @@
 }
 
 ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
+    background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-primary-400 rounded-full hover:bg-primary-500 transition-colors;
+    background: #1a73e8;
+    border-radius: 4px;
 }
 
-/* Mobile menu */
-.mobile-menu {
-    @apply fixed inset-0 bg-black bg-opacity-50 z-50 md:hidden;
-    display: none;
+::-webkit-scrollbar-thumb:hover {
+    background: #1557b0;
 }
 
-.mobile-menu.active {
+/* Line clamp pour les titres */
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Boutons personnalisés */
+.btn-primary {
+    background: #1a73e8;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    background: #1557b0;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(26, 115, 232, 0.3);
+}
+
+.btn-secondary {
+    background: #ff6b00;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-secondary:hover {
+    background: #cc5500;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(255, 107, 0, 0.3);
+}
+
+/* Badges personnalisés */
+.badge-success {
+    background: #d4edda;
+    color: #155724;
+    padding: 2px 12px;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.badge-warning {
+    background: #fff3cd;
+    color: #856404;
+    padding: 2px 12px;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.badge-danger {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 2px 12px;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.badge-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    padding: 2px 12px;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Alertes personnalisées */
+.alert-success {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.alert-danger {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.alert-warning {
+    background: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+/* Cartes */
+.card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+/* Champs de formulaire */
+.input-field {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.input-field:focus {
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.2);
+}
+
+.input-field.error {
+    border-color: #dc3545;
+}
+
+.input-field.success {
+    border-color: #28a745;
+}
+
+/* Label */
+.label-field {
     display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
 }
 
-.mobile-menu-content {
-    @apply bg-white w-80 h-full p-6 shadow-2xl transform transition-transform duration-300;
-    transform: translateX(-100%);
+/* Container personnalisé */
+.container-custom {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 16px;
 }
 
-.mobile-menu.active .mobile-menu-content {
-    transform: translateX(0);
+@media (min-width: 640px) {
+    .container-custom {
+        padding: 0 24px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container-custom {
+        padding: 0 32px;
+    }
+}
+
+/* Section title */
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+    .section-title {
+        font-size: 2rem;
+    }
+}
+
+/* Bouton WhatsApp flottant */
+.whatsapp-float {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+    background: #25D366;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.whatsapp-float:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 48px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: #dee2e6;
+    display: block;
+    margin-bottom: 16px;
+}
+
+/* Image responsive */
+.img-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.img-contain {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
 }
