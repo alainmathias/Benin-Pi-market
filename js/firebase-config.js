@@ -31,14 +31,15 @@ import {
   getDownloadURL 
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js';
 
-// Configuration Firebase (à remplacer avec vos données)
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "VOTRE_API_KEY",
-  authDomain: "benin-pi-market.firebaseapp.com",
-  projectId: "benin-pi-market",
-  storageBucket: "benin-pi-market.appspot.com",
-  messagingSenderId: "VOTRE_SENDER_ID",
-  appId: "VOTRE_APP_ID"
+  apiKey: "AIzaSyB_ehKUxOsJ530Ll_64RyDSrAwgn2PMooY",
+  authDomain: "pimarket-1cb97.firebaseapp.com",
+  projectId: "pimarket-1cb97",
+  storageBucket: "pimarket-1cb97.firebasestorage.app",
+  messagingSenderId: "330618916054",
+  appId: "1:330618916054:web:1adb178215ef8d8d170d77",
+  measurementId: "G-WJV0H7WM3S"
 };
 
 // Initialisation
