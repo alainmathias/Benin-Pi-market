@@ -1,3 +1,4 @@
+<!-- inscription.html -->
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -7,40 +8,25 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            500: '#1a73e8',
-                            600: '#1557b0',
-                        },
-                        secondary: {
-                            500: '#ff6b00',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
 </head>
 <body class="bg-gray-50 font-sans">
 
     <header class="bg-white shadow-md sticky top-0 z-50">
         <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12">
+                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12" onerror="this.style.display='none'">
                 <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
             </div>
             <div class="flex items-center gap-4">
-                <a href="connexion.html" class="btn-outline text-sm px-4 py-2">Connexion</a>
+                <a href="connexion.html" class="border-2 border-primary-500 text-primary-500 px-4 py-2 rounded-xl font-semibold hover:bg-primary-500 hover:text-white transition">
+                    Connexion
+                </a>
             </div>
         </nav>
     </header>
 
     <div class="min-h-screen flex items-center justify-center py-12 px-4">
-        <div class="bg-white rounded-2xl shadow-card max-w-2xl w-full p-8 animate-fade-in">
+        <div class="bg-white rounded-2xl shadow-card max-w-2xl w-full p-8">
             <h2 class="text-3xl font-bold text-center text-dark mb-8">
                 <i class="fas fa-user-plus text-primary-500"></i> Créer un compte
             </h2>
@@ -48,59 +34,53 @@
             <div id="alert-container"></div>
             
             <form id="registerForm" class="space-y-4">
-                <!-- Nom et Prénom -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="nom" class="label-field">Nom *</label>
-                        <input type="text" id="nom" class="input-field" required>
+                        <label for="nom" class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
+                        <input type="text" id="nom" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
                     </div>
                     <div>
-                        <label for="prenom" class="label-field">Prénom *</label>
-                        <input type="text" id="prenom" class="input-field" required>
+                        <label for="prenom" class="block text-sm font-semibold text-gray-700 mb-2">Prénom *</label>
+                        <input type="text" id="prenom" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
                     </div>
                 </div>
 
-                <!-- Email -->
                 <div>
-                    <label for="email" class="label-field">Email (facultatif)</label>
-                    <input type="email" id="email" class="input-field" placeholder="votre@email.com">
+                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email (facultatif)</label>
+                    <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="votre@email.com">
                 </div>
 
-                <!-- Mot de passe -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="password" class="label-field">Mot de passe *</label>
-                        <input type="password" id="password" class="input-field" required minlength="6">
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Mot de passe *</label>
+                        <input type="password" id="password" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required minlength="6">
                         <p class="text-xs text-gray-500 mt-1">Minimum 6 caractères</p>
                     </div>
                     <div>
-                        <label for="passwordConfirm" class="label-field">Confirmer *</label>
-                        <input type="password" id="passwordConfirm" class="input-field" required>
+                        <label for="passwordConfirm" class="block text-sm font-semibold text-gray-700 mb-2">Confirmer *</label>
+                        <input type="password" id="passwordConfirm" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
                     </div>
                 </div>
 
-                <!-- Téléphone et WhatsApp -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="telephone" class="label-field">Téléphone *</label>
-                        <input type="tel" id="telephone" class="input-field" placeholder="+229 XX XX XX XX" required>
+                        <label for="telephone" class="block text-sm font-semibold text-gray-700 mb-2">Téléphone *</label>
+                        <input type="tel" id="telephone" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="+229 XX XX XX XX" required>
                     </div>
                     <div>
-                        <label for="whatsapp" class="label-field">WhatsApp *</label>
-                        <input type="tel" id="whatsapp" class="input-field" placeholder="+229 XX XX XX XX" required>
+                        <label for="whatsapp" class="block text-sm font-semibold text-gray-700 mb-2">WhatsApp *</label>
+                        <input type="tel" id="whatsapp" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="+229 XX XX XX XX" required>
                     </div>
                 </div>
 
-                <!-- Adresse -->
                 <div>
-                    <label for="adresse" class="label-field">Adresse *</label>
-                    <input type="text" id="adresse" class="input-field" placeholder="Votre adresse complète" required>
+                    <label for="adresse" class="block text-sm font-semibold text-gray-700 mb-2">Adresse *</label>
+                    <input type="text" id="adresse" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="Votre adresse complète" required>
                 </div>
 
-                <!-- Ville -->
                 <div>
-                    <label for="ville" class="label-field">Ville *</label>
-                    <select id="ville" class="input-field" required>
+                    <label for="ville" class="block text-sm font-semibold text-gray-700 mb-2">Ville *</label>
+                    <select id="ville" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
                         <option value="">Sélectionnez votre ville</option>
                         <option value="Cotonou">Cotonou</option>
                         <option value="Porto-Novo">Porto-Novo</option>
@@ -116,15 +96,14 @@
                     </select>
                 </div>
 
-                <!-- Profession et Catégorie -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="profession" class="label-field">Profession *</label>
-                        <input type="text" id="profession" class="input-field" placeholder="Menuisier, Commerçant..." required>
+                        <label for="profession" class="block text-sm font-semibold text-gray-700 mb-2">Profession *</label>
+                        <input type="text" id="profession" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="Menuisier, Commerçant..." required>
                     </div>
                     <div>
-                        <label for="categorieActivite" class="label-field">Catégorie d'activité *</label>
-                        <select id="categorieActivite" class="input-field" required>
+                        <label for="categorieActivite" class="block text-sm font-semibold text-gray-700 mb-2">Catégorie *</label>
+                        <select id="categorieActivite" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
                             <option value="">Sélectionnez</option>
                             <option value="Agriculture">🌾 Agriculture</option>
                             <option value="Artisanat">🪵 Artisanat</option>
@@ -145,7 +124,7 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-primary w-full py-4 text-lg">
+                <button type="submit" class="w-full bg-primary-500 text-white py-4 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg text-lg">
                     <i class="fas fa-user-plus mr-2"></i> S'inscrire
                 </button>
             </form>
@@ -153,10 +132,6 @@
             <div class="mt-6 text-center">
                 <p class="text-gray-600">Déjà un compte ? 
                     <a href="connexion.html" class="text-primary-500 font-semibold hover:underline">Se connecter</a>
-                </p>
-                <p class="text-xs text-gray-400 mt-2">
-                    En vous inscrivant, vous acceptez nos 
-                    <a href="conditions.html" class="text-primary-500 hover:underline">conditions d'utilisation</a>
                 </p>
             </div>
         </div>
@@ -169,6 +144,7 @@
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // Récupérer les valeurs
             const formData = {
                 nom: document.getElementById('nom').value.trim(),
                 prenom: document.getElementById('prenom').value.trim(),
@@ -194,14 +170,15 @@
                 return;
             }
 
-            const requiredFields = ['nom', 'prenom', 'telephone', 'whatsapp', 'adresse', 'ville', 'profession', 'categorieActivite'];
-            for (const field of requiredFields) {
+            const required = ['nom', 'prenom', 'telephone', 'whatsapp', 'adresse', 'ville', 'profession', 'categorieActivite'];
+            for (const field of required) {
                 if (!formData[field]) {
                     showAlert(`Veuillez remplir le champ "${field}"`, 'danger');
                     return;
                 }
             }
 
+            // Préparer les données utilisateur
             const userData = {
                 nom: formData.nom,
                 prenom: formData.prenom,
@@ -213,16 +190,29 @@
                 categorieActivite: formData.categorieActivite
             };
 
-            const email = formData.email || `${formData.telephone}@beninpimarket.com`;
-            const result = await inscription(email, formData.password, userData);
+            // Utiliser le téléphone comme email si email vide
+            const userEmail = formData.email || `${formData.telephone.replace(/\s/g, '')}@beninpimarket.com`;
+
+            // Afficher un message de chargement
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Inscription en cours...';
+            submitBtn.disabled = true;
+
+            // Appeler la fonction d'inscription
+            const result = await inscription(userEmail, formData.password, userData);
+
+            // Restaurer le bouton
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
 
             if (result.success) {
-                showAlert(result.message, 'success');
+                showAlert('✅ ' + result.message, 'success');
                 setTimeout(() => {
                     window.location.href = 'connexion.html';
                 }, 3000);
             } else {
-                showAlert(result.message, 'danger');
+                showAlert('❌ ' + result.message, 'danger');
             }
         });
     </script>
