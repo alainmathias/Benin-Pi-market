@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0', 700: '#104080' },
+                        secondary: { 500: '#ff6b00' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12" onerror="this.style.display='none'">
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-gray-600 hover:text-primary-500 transition">
+                    <i class="fas fa-home"></i> Accueil
+                </a>
+                <a href="inscription.html" class="bg-primary-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-600 transition shadow-md hover:shadow-lg">
+                    <i class="fas fa-user-plus mr-2"></i> S'inscrire
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="flex-1 flex items-center justify-center py-12 px-4">
+        <div class="bg-white rounded-2xl shadow-card max-w-md w-full p-8 animate-fade-in">
+            
+            <!-- En-tête -->
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-sign-in-alt text-3xl text-primary-500"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-dark">Connexion</h2>
+                <p class="text-gray-500 mt-2">Connectez-vous à votre compte</p>
+            </div>
+
+            <!-- Zone d'alerte -->
+            <div id="alert-container"></div>
+
+            <!-- Formulaire de connexion -->
+            <form id="loginForm" class="space-y-5">
+                <!-- Email / Téléphone -->
+                <div>
+                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-envelope text-primary-500 mr-2"></i> Email ou Téléphone
+                    </label>
+                    <input type="text" id="email" 
+                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" 
+                           placeholder="exemple@email.com ou +229 XX XX XX XX"
+                           required>
+                    <p class="text-xs text-gray-400 mt-1">Utilisez l'email ou le numéro de téléphone utilisé lors de l'inscription</p>
+                </div>
+
+                <!-- Mot de passe -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="password" class="block text-sm font-semibold text-gray-700">
+                            <i class="fas fa-lock text-primary-500 mr-2"></i> Mot de passe
+                        </label>
+                        <a href="mot-de-passe-oublie.html" class="text-sm text-primary-500 hover:underline">
+                            Mot de passe oublié ?
+                        </a>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="password" 
+                               class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition pr-12"
+                               placeholder="••••••••"
+                               required minlength="6">
+                        <button type="button" id="togglePassword" 
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Options supplémentaires -->
+                <div class="flex items-center justify-between">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="rememberMe" class="w-4 h-4 text-primary-500 border-gray-300 rounded focus:ring-primary-500">
+                        <span class="text-sm text-gray-600">Se souvenir de moi</span>
+                    </label>
+                    <span class="text-sm text-gray-400">
+                        <i class="fas fa-shield-alt text-primary-500 mr-1"></i> Connexion sécurisée
+                    </span>
+                </div>
+
+                <!-- Bouton de connexion -->
+                <button type="submit" id="loginBtn" 
+                        class="w-full bg-primary-500 text-white py-4 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg text-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Se connecter</span>
+                </button>
+
+                <!-- Séparateur -->
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-4 bg-white text-gray-400">ou</span>
+                    </div>
+                </div>
+
+                <!-- Connexion avec les réseaux sociaux -->
+                <div class="grid grid-cols-2 gap-3">
+                    <button type="button" onclick="connexionGoogle()" 
+                            class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition font-medium text-gray-700">
+                        <i class="fab fa-google text-red-500"></i> Google
+                    </button>
+                    <button type="button" onclick="connexionFacebook()" 
+                            class="flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-200 rounded-xl hover:bg-gray-50 transition font-medium text-gray-700">
+                        <i class="fab fa-facebook text-blue-600"></i> Facebook
+                    </button>
+                </div>
+            </form>
+
+            <!-- Pied de page -->
+            <div class="mt-8 text-center space-y-2">
+                <p class="text-gray-600">
+                    Pas encore de compte ? 
+                    <a href="inscription.html" class="text-primary-500 font-semibold hover:underline">
+                        Créer un compte
+                    </a>
+                </p>
+                <p class="text-xs text-gray-400">
+                    En vous connectant, vous acceptez nos 
+                    <a href="conditions.html" class="text-primary-500 hover:underline">conditions d'utilisation</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">
+                &copy; 2026 Bénin Pi Market. Tous droits réservés.
+            </p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script type="module">
+        import { auth, signInWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail } from './js/firebase-config.js';
+        import { connexion } from './js/auth.js';
+        import { showAlert } from './js/utils.js';
+
+        // ============================================
+        // VÉRIFIER SI L'UTILISATEUR EST DÉJÀ CONNECTÉ
+        // ============================================
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Rediriger vers le dashboard si déjà connecté
+                window.location.href = 'dashboard-vendeur.html';
+            }
+        });
+
+        // ============================================
+        // AFFICHER/MASQUER LE MOT DE PASSE
+        // ============================================
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('click', () => {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.querySelector('i').classList.toggle('fa-eye');
+            togglePassword.querySelector('i').classList.toggle('fa-eye-slash');
+        });
+
+        // ============================================
+        // SOUMISSION DU FORMULAIRE
+        // ============================================
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Récupérer les valeurs
+            const emailInput = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Validation
+            if (!emailInput || !password) {
+                showAlert('Veuillez remplir tous les champs.', 'danger');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAlert('Le mot de passe doit contenir au moins 6 caractères.', 'danger');
+                return;
+            }
+
+            // Vérifier si c'est un email ou un téléphone
+            let loginEmail = emailInput;
+            
+            // Si c'est un numéro de téléphone (contient des chiffres ou +)
+            if (emailInput.match(/^[\+\d\s\-]+$/)) {
+                // Nettoyer le numéro
+                const phone = emailInput.replace(/\s/g, '').replace(/-/g, '');
+                // Utiliser le téléphone comme email (format: +229XXXXXXXX@beninpimarket.com)
+                // ou simplement utiliser l'email d'origine
+                loginEmail = `${phone}@beninpimarket.com`;
+            }
+
+            // Afficher un message de chargement
+            const loginBtn = document.getElementById('loginBtn');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Connexion en cours...';
+            loginBtn.disabled = true;
+
+            try {
+                // Appeler la fonction de connexion
+                const result = await connexion(loginEmail, password);
+
+                // Restaurer le bouton
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+
+                if (result.success) {
+                    // Sauvegarder l'email si "Se souvenir de moi" est coché
+                    if (rememberMe) {
+                        localStorage.setItem('rememberedEmail', emailInput);
+                    } else {
+                        localStorage.removeItem('rememberedEmail');
+                    }
+
+                    showAlert('✅ ' + result.message, 'success');
+                    
+                    // Rediriger vers le dashboard
+                    setTimeout(() => {
+                        const userData = result.data;
+                        if (userData.role === 'admin') {
+                            window.location.href = 'dashboard-admin.html';
+                        } else {
+                            window.location.href = 'dashboard-vendeur.html';
+                        }
+                    }, 1500);
+                } else {
+                    showAlert('❌ ' + result.message, 'danger');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                showAlert('❌ Une erreur est survenue. Veuillez réessayer.', 'danger');
+            }
+        });
+
+        // ============================================
+        // CONNEXION AVEC GOOGLE (à configurer)
+        // ============================================
+        window.connexionGoogle = function() {
+            showAlert('🔧 La connexion avec Google sera bientôt disponible.', 'warning');
+        };
+
+        // ============================================
+        // CONNEXION AVEC FACEBOOK (à configurer)
+        // ============================================
+        window.connexionFacebook = function() {
+            showAlert('🔧 La connexion avec Facebook sera bientôt disponible.', 'warning');
+        };
+
+        // ============================================
+        // CHARGER L'EMAIL ENREGISTRÉ
+        // ============================================
+        const rememberedEmail = localStorage.getItem('rememberedEmail');
+        if (rememberedEmail) {
+            document.getElementById('email').value = rememberedEmail;
+            document.getElementById('rememberMe').checked = true;
+        }
+
+        // ============================================
+        // RÉINITIALISATION DU MOT DE PASSE (sur la page dédiée)
+        // ============================================
+        // La page "mot-de-passe-oublie.html" utilisera cette fonction
+        window.resetPassword = async function(email) {
+            try {
+                await sendPasswordResetEmail(auth, email);
+                return {
+                    success: true,
+                    message: 'Un email de réinitialisation a été envoyé.'
+                };
+            } catch (error) {
+                console.error('Erreur réinitialisation:', error);
+                return {
+                    success: false,
+                    message: error.message
+                };
+            }
+        };
+    </script>
+</body>
+</html>
