@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier un produit - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0' },
+                        secondary: { 500: '#ff6b00' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-3">
+                <img src="../images/logo.png" alt="Bénin Pi Market" class="h-12" onerror="this.style.display='none'">
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="my-products.html" class="text-gray-600 hover:text-primary-500 transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Mes produits
+                </a>
+                <a href="#" onclick="logout()" class="text-red-500 hover:text-red-600 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="flex-1 max-w-3xl mx-auto px-4 py-8 w-full">
+        <div class="bg-white rounded-2xl shadow-card p-6 md:p-8">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-edit text-2xl text-primary-500"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-dark">Modifier le produit</h1>
+                    <p class="text-gray-500 text-sm">Mettez à jour les informations de votre produit</p>
+                </div>
+            </div>
+
+            <div id="alert-container"></div>
+            <div id="loadingContainer" class="text-center py-12">
+                <div class="spinner mx-auto"></div>
+                <p class="mt-4 text-gray-500">Chargement du produit...</p>
+            </div>
+
+            <form id="productForm" class="space-y-5 hidden" enctype="multipart/form-data">
+
+                <!-- Titre -->
+                <div>
+                    <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Titre du produit <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="title" class="input-field w-full" required>
+                </div>
+
+                <!-- Catégorie et Sous-catégorie -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="category" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Catégorie <span class="text-red-500">*</span>
+                        </label>
+                        <select id="category" class="input-field w-full" required>
+                            <option value="">Sélectionnez</option>
+                            <option value="Agriculture">🌾 Agriculture</option>
+                            <option value="Artisanat">🪵 Artisanat</option>
+                            <option value="Construction">🏗️ Construction</option>
+                            <option value="Automobile">🚗 Automobile</option>
+                            <option value="Électronique">📱 Électronique</option>
+                            <option value="Téléphones">📱 Téléphones</option>
+                            <option value="Informatique">💻 Informatique</option>
+                            <option value="Mode">👗 Mode</option>
+                            <option value="Chaussures">👟 Chaussures</option>
+                            <option value="Beauté">💄 Beauté</option>
+                            <option value="Santé">🏥 Santé</option>
+                            <option value="Immobilier">🏠 Immobilier</option>
+                            <option value="Services">🛠️ Services</option>
+                            <option value="Restauration">🍽️ Restauration</option>
+                            <option value="Éducation">📚 Éducation</option>
+                            <option value="Transport">🚚 Transport</option>
+                            <option value="Hôtels">🏨 Hôtels</option>
+                            <option value="Tourisme">✈️ Tourisme</option>
+                            <option value="Événementiel">🎉 Événementiel</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subCategory" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Sous-catégorie
+                        </label>
+                        <input type="text" id="subCategory" class="input-field w-full" placeholder="Ex: Menuiserie">
+                    </div>
+                </div>
+
+                <!-- Prix et Ville -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Prix (FCFA) <span class="text-red-500">*</span>
+                        </label>
+                        <input type="number" id="price" class="input-field w-full" required>
+                    </div>
+                    <div>
+                        <label for="city" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Ville <span class="text-red-500">*</span>
+                        </label>
+                        <select id="city" class="input-field w-full" required>
+                            <option value="">Sélectionnez</option>
+                            <option value="Cotonou">Cotonou</option>
+                            <option value="Porto-Novo">Porto-Novo</option>
+                            <option value="Parakou">Parakou</option>
+                            <option value="Abomey-Calavi">Abomey-Calavi</option>
+                            <option value="Bohicon">Bohicon</option>
+                            <option value="Kandi">Kandi</option>
+                            <option value="Natitingou">Natitingou</option>
+                            <option value="Ouidah">Ouidah</option>
+                            <option value="Lokossa">Lokossa</option>
+                            <option value="Djougou">Djougou</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Description <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="description" rows="5" class="input-field w-full resize-none" required></textarea>
+                    <p class="text-xs text-gray-400 mt-1">
+                        <span id="charCount">0</span> caractères
+                    </p>
+                </div>
+
+                <!-- Images actuelles -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Images actuelles
+                    </label>
+                    <div id="currentImages" class="grid grid-cols-3 md:grid-cols-4 gap-3 mb-4">
+                    </div>
+                </div>
+
+                <!-- Ajouter des images -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        Ajouter des photos
+                    </label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-500 transition cursor-pointer"
+                         onclick="document.getElementById('images').click()">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3 block"></i>
+                        <p class="text-gray-600">Cliquez pour ajouter des photos</p>
+                        <p class="text-sm text-gray-400">JPG, PNG, WEBP (Max 5 Mo)</p>
+                        <input type="file" id="images" class="hidden" multiple accept="image/*">
+                    </div>
+                    <div id="imagePreview" class="grid grid-cols-3 md:grid-cols-4 gap-3 mt-4"></div>
+                </div>
+
+                <!-- Bouton de soumission -->
+                <button type="submit" id="submitBtn" 
+                        class="w-full bg-primary-500 text-white py-4 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg text-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i>
+                    Mettre à jour
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market</p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script type="module">
+        import { auth, db, doc, getDoc, updateDoc, storage, ref, uploadBytes, getDownloadURL, deleteObject, onAuthStateChanged } from '../js/firebase-config.js';
+        import { showAlert, logout } from '../js/utils.js';
+
+        window.logout = logout;
+
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+
+        let currentUser = null;
+        let productData = null;
+        let existingImages = [];
+        let newImageFiles = [];
+
+        // ============================================
+        // VÉRIFICATION DE L'AUTHENTIFICATION
+        // ============================================
+        onAuthStateChanged(auth, async (user) => {
+            if (!user || !productId) {
+                window.location.href = 'my-products.html';
+                return;
+            }
+
+            currentUser = user;
+            await loadProduct();
+        });
+
+        // ============================================
+        // CHARGER LE PRODUIT
+        // ============================================
+        async function loadProduct() {
+            try {
+                const docRef = doc(db, 'products', productId);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    showAlert('Produit non trouvé.', 'danger');
+                    setTimeout(() => window.location.href = 'my-products.html', 2000);
+                    return;
+                }
+
+                productData = docSnap.data();
+
+                // Vérifier que l'utilisateur est le propriétaire
+                if (productData.sellerId !== currentUser.uid) {
+                    showAlert('Vous n\'êtes pas autorisé à modifier ce produit.', 'danger');
+                    setTimeout(() => window.location.href = 'my-products.html', 2000);
+                    return;
+                }
+
+                existingImages = productData.images || [];
+
+                // Remplir le formulaire
+                document.getElementById('title').value = productData.title || '';
+                document.getElementById('category').value = productData.category || '';
+                document.getElementById('subCategory').value = productData.subCategory || '';
+                document.getElementById('price').value = productData.price || '';
+                document.getElementById('city').value = productData.city || '';
+                document.getElementById('description').value = productData.description || '';
+                document.getElementById('charCount').textContent = (productData.description || '').length;
+
+                // Afficher les images actuelles
+                displayCurrentImages();
+
+                // Afficher le formulaire
+                document.getElementById('loadingContainer').classList.add('hidden');
+                document.getElementById('productForm').classList.remove('hidden');
+
+            } catch (error) {
+                console.error('Erreur chargement produit:', error);
+                showAlert('Erreur lors du chargement du produit.', 'danger');
+            }
+        }
+
+        // ============================================
+        // AFFICHER LES IMAGES ACTUELLES
+        // ============================================
+        function displayCurrentImages() {
+            const container = document.getElementById('currentImages');
+            
+            if (existingImages.length === 0) {
+                container.innerHTML = `<p class="text-gray-500 text-sm col-span-full">Aucune image</p>`;
+                return;
+            }
+
+            container.innerHTML = existingImages.map((img, index) => `
+                <div class="relative group">
+                    <img src="${img}" class="w-full h-24 object-cover rounded-lg border-2 border-gray-200">
+                    <button type="button" onclick="removeExistingImage(${index})" 
+                            class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // SUPPRIMER UNE IMAGE EXISTANTE
+        // ============================================
+        window.removeExistingImage = function(index) {
+            if (!confirm('Supprimer cette image ?')) return;
+            
+            const imageUrl = existingImages[index];
+            
+            // Supprimer du Storage
+            try {
+                const imageRef = ref(storage, imageUrl);
+                deleteObject(imageRef).catch(() => {});
+            } catch (e) {}
+
+            existingImages.splice(index, 1);
+            displayCurrentImages();
+        };
+
+        // ============================================
+        // PRÉVISUALISATION DES NOUVELLES IMAGES
+        // ============================================
+        document.getElementById('images').addEventListener('change', function(e) {
+            const files = Array.from(this.files);
+            const preview = document.getElementById('imagePreview');
+            
+            if (files.length === 0) {
+                preview.innerHTML = '';
+                return;
+            }
+
+            preview.innerHTML = files.map((file, index) => `
+                <div class="relative group">
+                    <img src="${URL.createObjectURL(file)}" class="w-full h-24 object-cover rounded-lg border-2 border-primary-500">
+                    <button type="button" onclick="removeNewImage(${index})" 
+                            class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            newImageFiles = files;
+        });
+
+        window.removeNewImage = function(index) {
+            newImageFiles.splice(index, 1);
+            const input = document.getElementById('images');
+            const dataTransfer = new DataTransfer();
+            newImageFiles.forEach(file => dataTransfer.items.add(file));
+            input.files = dataTransfer.files;
+            input.dispatchEvent(new Event('change'));
+        };
+
+        // ============================================
+        // SOUMISSION DU FORMULAIRE
+        // ============================================
+        document.getElementById('productForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value.trim();
+            const category = document.getElementById('category').value;
+            const subCategory = document.getElementById('subCategory').value.trim();
+            const price = document.getElementById('price').value;
+            const city = document.getElementById('city').value;
+            const description = document.getElementById('description').value.trim();
+
+            // Validations
+            if (!title || !category || !price || !city || !description) {
+                showAlert('Veuillez remplir tous les champs obligatoires.', 'danger');
+                return;
+            }
+
+            if (price <= 0) {
+                showAlert('Le prix doit être supérieur à 0.', 'danger');
+                return;
+            }
+
+            // Upload des nouvelles images
+            let allImages = [...existingImages];
+            
+            if (newImageFiles.length > 0) {
+                const newUrls = await uploadImages(newImageFiles, currentUser.uid);
+                allImages = [...allImages, ...newUrls];
+            }
+
+            // Mettre à jour le produit
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mise à jour...';
+            submitBtn.disabled = true;
+
+            try {
+                const docRef = doc(db, 'products', productId);
+                await updateDoc(docRef, {
+                    title,
+                    category,
+                    subCategory,
+                    price: parseFloat(price),
+                    city,
+                    description,
+                    images: allImages,
+                    updatedAt: new Date().toISOString()
+                });
+
+                showAlert('✅ Produit mis à jour avec succès !', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'my-products.html';
+                }, 2000);
+
+            } catch (error) {
+                console.error('Erreur mise à jour:', error);
+                showAlert('❌ Erreur lors de la mise à jour.', 'danger');
+            }
+
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+
+        // ============================================
+        // UPLOAD DES IMAGES
+        // ============================================
+        async function uploadImages(images, userId) {
+            const urls = [];
+
+            for (let i = 0; i < images.length; i++) {
+                const file = images[i];
+                try {
+                    const filename = `${userId}/${Date.now()}_${i}.webp`;
+                    const storageRef = ref(storage, `products/${filename}`);
+                    await uploadBytes(storageRef, file);
+                    const url = await getDownloadURL(storageRef);
+                    urls.push(url);
+                } catch (error) {
+                    console.error(`Erreur upload image ${i}:`, error);
+                }
+            }
+
+            return urls;
+        }
+
+        // ============================================
+        // COMPTEUR DE CARACTÈRES
+        // ============================================
+        document.getElementById('description').addEventListener('input', function() {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+    </script>
+</body>
+</html>
