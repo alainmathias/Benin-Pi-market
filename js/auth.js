@@ -1,80 +1,161 @@
-// js/auth.js - Version améliorée pour la connexion
+// js/auth.js
+// ============================================
+// AUTHENTICATION - EN ANGLES
+// ============================================
 
 import { 
     auth, 
-    signInWithEmailAndPassword, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
     sendPasswordResetEmail,
     db, 
     doc, 
+    setDoc,
     getDoc,
-    updateDoc
+    updateDoc,
+    collection,
+    query,
+    where,
+    getDocs
 } from './firebase-config.js';
 
-// Cache utilisateur
+// Cache
 let currentUserCache = null;
 let currentUserDataCache = null;
 
 // ============================================
-// CONNEXION (version améliorée)
+// REGISTER
 // ============================================
-export async function connexion(email, password) {
+export async function register(email, password, userData) {
     try {
-        // Tenter la connexion
+        // Check if phone already exists
+        const phoneQuery = await getDocs(
+            query(collection(db, 'users'), where('telephone', '==', userData.telephone))
+        );
+        if (!phoneQuery.empty) {
+            return {
+                success: false,
+                message: 'This phone number is already used.'
+            };
+        }
+
+        // Check if email exists
+        if (email) {
+            const emailQuery = await getDocs(
+                query(collection(db, 'users'), where('email', '==', email))
+            );
+            if (!emailQuery.empty) {
+                return {
+                    success: false,
+                    message: 'This email is already used.'
+                };
+            }
+        }
+
+        // Create user in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Add data to Firestore
+        await setDoc(doc(db, 'users', user.uid), {
+            uid: user.uid,
+            ...userData,
+            email: email || '',
+            status: 'pending',          // pending, active, suspended
+            role: 'vendor',             // vendor, admin
+            createdAt: new Date().toISOString(),
+            photoURL: '',
+            lastLogin: new Date().toISOString(),
+            productsCount: 0,
+            isActive: true
+        });
+
+        currentUserDataCache = {
+            uid: user.uid,
+            ...userData,
+            email: email || '',
+            status: 'pending',
+            role: 'vendor'
+        };
+
+        return {
+            success: true,
+            message: 'Registration successful! Waiting for admin validation.',
+            user: user,
+            data: currentUserDataCache
+        };
+    } catch (error) {
+        console.error('Register error:', error);
+        let message = error.message;
+        if (error.code === 'auth/email-already-in-use') {
+            message = 'This email is already used.';
+        } else if (error.code === 'auth/weak-password') {
+            message = 'Password must be at least 6 characters.';
+        } else if (error.code === 'auth/invalid-email') {
+            message = 'Invalid email format.';
+        }
+        return {
+            success: false,
+            message: message
+        };
+    }
+}
+
+// ============================================
+// LOGIN
+// ============================================
+export async function login(email, password) {
+    try {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Récupérer les données depuis Firestore
         const userDoc = await getDoc(doc(db, 'users', user.uid));
-        
         if (!userDoc.exists()) {
             return {
                 success: false,
-                message: 'Compte non trouvé dans la base de données.'
+                message: 'Account not found in database.'
             };
         }
 
         const userData = userDoc.data();
-
-        // Vérifier le statut du compte
-        if (userData.statut === 'suspendu') {
-            // Déconnecter l'utilisateur
+        
+        // Check status
+        if (userData.status === 'suspended') {
             await signOut(auth);
             return {
                 success: false,
-                message: '❌ Votre compte a été suspendu. Contactez l\'administrateur.'
+                message: 'Your account has been suspended. Contact administrator.'
             };
         }
 
-        if (!userData.compteActive) {
+        if (!userData.isActive) {
             await signOut(auth);
             return {
                 success: false,
-                message: '❌ Votre compte est désactivé. Contactez l\'administrateur.'
+                message: 'Your account is deactivated. Contact administrator.'
             };
         }
 
-        if (userData.statut === 'en_attente') {
+        if (userData.status === 'pending') {
             return {
                 success: false,
-                message: '⏳ Votre compte est en attente de validation par l\'administrateur. Veuillez patienter.'
+                message: 'Your account is pending validation by administrator.'
             };
         }
 
-        // Mettre à jour la date de dernière connexion
+        // Update last login
         await updateDoc(doc(db, 'users', user.uid), {
-            dateDerniereConnexion: new Date().toISOString()
+            lastLogin: new Date().toISOString()
         });
 
-        // Mettre en cache
         currentUserCache = user;
         currentUserDataCache = userData;
 
-        // Message de bienvenue
         const welcomeMessage = userData.role === 'admin' 
-            ? '👋 Bienvenue Administrateur !' 
-            : `👋 Bonjour ${userData.prenom} ${userData.nom} !`;
+            ? '👋 Welcome Admin!' 
+            : `👋 Welcome ${userData.prenom} ${userData.nom}!`;
 
         return {
             success: true,
@@ -84,21 +165,19 @@ export async function connexion(email, password) {
         };
 
     } catch (error) {
-        console.error('Erreur connexion:', error);
-        
-        let message = '❌ Email ou mot de passe incorrect.';
+        console.error('Login error:', error);
+        let message = '❌ Invalid email or password.';
         if (error.code === 'auth/user-not-found') {
-            message = '❌ Aucun compte trouvé avec cet email.';
+            message = 'No account found with this email.';
         } else if (error.code === 'auth/wrong-password') {
-            message = '❌ Mot de passe incorrect.';
+            message = 'Incorrect password.';
         } else if (error.code === 'auth/too-many-requests') {
-            message = '⏳ Trop de tentatives. Réessayez dans quelques minutes.';
+            message = 'Too many attempts. Please try again later.';
         } else if (error.code === 'auth/invalid-email') {
-            message = '❌ Format d\'email invalide.';
+            message = 'Invalid email format.';
         } else if (error.code === 'auth/user-disabled') {
-            message = '❌ Ce compte a été désactivé.';
+            message = 'This account has been disabled.';
         }
-        
         return {
             success: false,
             message: message
@@ -107,35 +186,35 @@ export async function connexion(email, password) {
 }
 
 // ============================================
-// DÉCONNEXION
+// LOGOUT
 // ============================================
-export async function deconnexion() {
+export async function logout() {
     try {
         await signOut(auth);
         currentUserCache = null;
         currentUserDataCache = null;
         window.location.href = 'index.html';
     } catch (error) {
-        console.error('Erreur déconnexion:', error);
-        alert('Erreur lors de la déconnexion.');
+        console.error('Logout error:', error);
+        alert('Error logging out.');
     }
 }
 
 // ============================================
-// RÉINITIALISATION DU MOT DE PASSE
+// FORGOT PASSWORD
 // ============================================
-export async function resetPassword(email) {
+export async function forgotPassword(email) {
     try {
         await sendPasswordResetEmail(auth, email);
         return {
             success: true,
-            message: 'Un email de réinitialisation a été envoyé.'
+            message: 'Password reset email has been sent.'
         };
     } catch (error) {
-        console.error('Erreur réinitialisation:', error);
-        let message = 'Erreur lors de l\'envoi.';
+        console.error('Forgot password error:', error);
+        let message = 'Error sending email.';
         if (error.code === 'auth/user-not-found') {
-            message = 'Aucun compte trouvé avec cet email.';
+            message = 'No account found with this email.';
         }
         return {
             success: false,
@@ -145,28 +224,14 @@ export async function resetPassword(email) {
 }
 
 // ============================================
-// VÉRIFIER L'ÉTAT DE L'AUTHENTIFICATION
+// GET CURRENT USER
 // ============================================
-export function verifierAuth(callback) {
-    return onAuthStateChanged(auth, (user) => {
-        if (user) {
-            currentUserCache = user;
-            // Récupérer les données en arrière-plan
-            getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
-                if (docSnap.exists()) {
-                    currentUserDataCache = docSnap.data();
-                }
-            }).catch(() => {});
-        } else {
-            currentUserCache = null;
-            currentUserDataCache = null;
-        }
-        callback(user);
-    });
+export function getCurrentUser() {
+    return auth.currentUser || currentUserCache;
 }
 
 // ============================================
-// RÉCUPÉRER LES DONNÉES DE L'UTILISATEUR
+// GET CURRENT USER DATA (with cache)
 // ============================================
 export async function getCurrentUserData() {
     if (currentUserDataCache) {
@@ -183,14 +248,56 @@ export async function getCurrentUserData() {
         currentUserDataCache = userDoc.data();
         return currentUserDataCache;
     } catch (error) {
-        console.error('Erreur récupération données:', error);
+        console.error('Error getting user data:', error);
         return null;
     }
 }
 
 // ============================================
-// RÉCUPÉRER L'UTILISATEUR ACTUEL
+// CHECK AUTH STATE
 // ============================================
-export function getCurrentUser() {
-    return auth.currentUser || currentUserCache;
+export function onAuthChange(callback) {
+    return onAuthStateChanged(auth, (user) => {
+        if (user) {
+            currentUserCache = user;
+            getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+                if (docSnap.exists()) {
+                    currentUserDataCache = docSnap.data();
+                }
+            }).catch(() => {});
+        } else {
+            currentUserCache = null;
+            currentUserDataCache = null;
+        }
+        callback(user);
+    });
+}
+
+// ============================================
+// VALIDATE USER (Admin)
+// ============================================
+export async function validateUser(uid) {
+    try {
+        await updateDoc(doc(db, 'users', uid), {
+            status: 'active',
+            validatedAt: new Date().toISOString()
+        });
+        return { success: true, message: 'User validated successfully.' };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
+}
+
+// ============================================
+// SUSPEND USER (Admin)
+// ============================================
+export async function suspendUser(uid) {
+    try {
+        await updateDoc(doc(db, 'users', uid), {
+            status: 'suspended'
+        });
+        return { success: true, message: 'User suspended.' };
+    } catch (error) {
+        return { success: false, message: error.message };
+    }
 }
