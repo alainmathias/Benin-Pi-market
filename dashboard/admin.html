@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0' },
+                        secondary: { 500: '#ff6b00' },
+                        success: { 500: '#22c55e' },
+                        warning: { 500: '#f59e0b' },
+                        danger: { 500: '#ef4444' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-3">
+                <img src="../images/logo.png" alt="Bénin Pi Market" class="h-12" onerror="this.style.display='none'">
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <span class="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-semibold">
+                    <i class="fas fa-user-shield mr-1"></i> Admin
+                </span>
+                <a href="#" onclick="logout()" class="text-red-500 hover:text-red-600 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
+        <!-- En-tête -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-dark">
+                <i class="fas fa-tachometer-alt text-primary-500"></i> Dashboard Admin
+            </h1>
+            <p class="text-gray-500 mt-1">Gestion complète de la plateforme</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- Statistiques -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-xl shadow-card p-4 text-center">
+                <div class="text-2xl font-bold text-primary-500" id="totalUsers">0</div>
+                <div class="text-sm text-gray-500">Utilisateurs</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-4 text-center">
+                <div class="text-2xl font-bold text-warning-500" id="pendingUsers">0</div>
+                <div class="text-sm text-gray-500">En attente</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-4 text-center">
+                <div class="text-2xl font-bold text-success-500" id="totalProducts">0</div>
+                <div class="text-sm text-gray-500">Produits</div>
+            </div>
+            <div class="bg-white rounded-xl shadow-card p-4 text-center">
+                <div class="text-2xl font-bold text-secondary-500" id="pendingProducts">0</div>
+                <div class="text-sm text-gray-500">Produits à valider</div>
+            </div>
+        </div>
+
+        <!-- Onglets -->
+        <div class="bg-white rounded-xl shadow-card overflow-hidden mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="flex overflow-x-auto">
+                    <button onclick="switchTab('users')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-primary-500 text-primary-500" data-tab="users">
+                        <i class="fas fa-users mr-2"></i> Utilisateurs
+                    </button>
+                    <button onclick="switchTab('products')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="products">
+                        <i class="fas fa-box mr-2"></i> Produits
+                    </button>
+                    <button onclick="switchTab('categories')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="categories">
+                        <i class="fas fa-tags mr-2"></i> Catégories
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Contenu des onglets -->
+            <div class="p-6">
+                <!-- Utilisateurs -->
+                <div id="tab-users" class="tab-content">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-dark">Gestion des utilisateurs</h3>
+                        <div class="flex gap-2">
+                            <input type="text" id="searchUser" placeholder="Rechercher..." 
+                                   class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm">
+                            <select id="userFilter" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm">
+                                <option value="all">Tous</option>
+                                <option value="pending">En attente</option>
+                                <option value="active">Actifs</option>
+                                <option value="suspended">Suspendus</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Utilisateur</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase hidden md:table-cell">Contact</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Statut</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase hidden lg:table-cell">Inscription</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-gray-500">
+                                        <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>
+                                        Chargement...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Produits -->
+                <div id="tab-products" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-dark">Gestion des produits</h3>
+                        <div class="flex gap-2">
+                            <input type="text" id="searchProduct" placeholder="Rechercher..." 
+                                   class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm">
+                            <select id="productFilter" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm">
+                                <option value="all">Tous</option>
+                                <option value="pending">En attente</option>
+                                <option value="published">Publiés</option>
+                                <option value="rejected">Refusés</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Produit</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase hidden md:table-cell">Vendeur</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Prix</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Statut</th>
+                                    <th class="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center py-8 text-gray-500">
+                                        <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>
+                                        Chargement...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Catégories -->
+                <div id="tab-categories" class="tab-content hidden">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-dark">Gestion des catégories</h3>
+                        <button onclick="openAddCategoryModal()" class="btn-primary text-sm px-4 py-2">
+                            <i class="fas fa-plus mr-2"></i> Ajouter
+                        </button>
+                    </div>
+                    <div id="categoriesContainer" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div class="col-span-full text-center py-8 text-gray-500">
+                            <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>
+                            Chargement...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAL AJOUT CATÉGORIE ========== -->
+    <div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-dark">Ajouter une catégorie</h3>
+                <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
+                    <input type="text" id="categoryName" class="input-field w-full" placeholder="Ex: Artisanat" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Icône (emoji)</label>
+                    <input type="text" id="categoryIcon" class="input-field w-full" placeholder="🪵" maxlength="2">
+                </div>
+                <button type="submit" class="btn-primary w-full">
+                    <i class="fas fa-save mr-2"></i> Enregistrer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market - Admin</p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script type="module">
+        import { auth, db, collection, query, where, orderBy, getDocs, doc, updateDoc, deleteDoc, addDoc, onAuthStateChanged } from '../js/firebase-config.js';
+        import { showAlert, logout, formatDate } from '../js/utils.js';
+
+        window.logout = logout;
+
+        let currentUser = null;
+        let users = [];
+        let products = [];
+        let categories = [];
+
+        // ============================================
+        // VÉRIFICATION ADMIN
+        // ============================================
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            currentUser = user;
+
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (!userDoc.exists() || userDoc.data().role !== 'admin') {
+                    window.location.href = '../dashboard/vendor.html';
+                    return;
+                }
+
+                await loadAllData();
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAlert('Erreur de chargement des données.', 'danger');
+            }
+        });
+
+        // ============================================
+        // CHARGER TOUTES LES DONNÉES
+        // ============================================
+        async function loadAllData() {
+            await Promise.all([
+                loadUsers(),
+                loadProducts(),
+                loadCategories()
+            ]);
+            updateStats();
+        }
+
+        // ============================================
+        // CHARGER LES UTILISATEURS
+        // ============================================
+        async function loadUsers() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'users'));
+                users = [];
+                querySnapshot.forEach((doc) => {
+                    users.push({ id: doc.id, ...doc.data() });
+                });
+                renderUsers();
+            } catch (error) {
+                console.error('Erreur chargement utilisateurs:', error);
+            }
+        }
+
+        // ============================================
+        // CHARGER LES PRODUITS
+        // ============================================
+        async function loadProducts() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'products'));
+                products = [];
+                querySnapshot.forEach((doc) => {
+                    products.push({ id: doc.id, ...doc.data() });
+                });
+                renderProducts();
+            } catch (error) {
+                console.error('Erreur chargement produits:', error);
+            }
+        }
+
+        // ============================================
+        // CHARGER LES CATÉGORIES
+        // ============================================
+        async function loadCategories() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'categories'));
+                categories = [];
+                querySnapshot.forEach((doc) => {
+                    categories.push({ id: doc.id, ...doc.data() });
+                });
+                renderCategories();
+            } catch (error) {
+                console.error('Erreur chargement catégories:', error);
+            }
+        }
+
+        // ============================================
+        // STATISTIQUES
+        // ============================================
+        function updateStats() {
+            const totalUsers = users.length;
+            const pendingUsers = users.filter(u => u.status === 'pending').length;
+            const totalProducts = products.length;
+            const pendingProducts = products.filter(p => p.status === 'pending').length;
+
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('pendingUsers').textContent = pendingUsers;
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('pendingProducts').textContent = pendingProducts;
+        }
+
+        // ============================================
+        // AFFICHER LES UTILISATEURS
+        // ============================================
+        function renderUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            const search = document.getElementById('searchUser')?.value.toLowerCase() || '';
+            const filter = document.getElementById('userFilter')?.value || 'all';
+
+            let filtered = users;
+            if (search) {
+                filtered = filtered.filter(u => 
+                    u.nom?.toLowerCase().includes(search) ||
+                    u.prenom?.toLowerCase().includes(search) ||
+                    u.email?.toLowerCase().includes(search) ||
+                    u.telephone?.includes(search)
+                );
+            }
+            if (filter !== 'all') {
+                filtered = filtered.filter(u => u.status === filter);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-8 text-gray-500">
+                            <i class="fas fa-users text-4xl text-gray-300 block mb-2"></i>
+                            Aucun utilisateur trouvé
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(user => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                    <td class="px-4 py-3">
+                        <div>
+                            <span class="font-medium">${user.prenom || ''} ${user.nom || ''}</span>
+                            <div class="text-xs text-gray-500">${user.role || 'vendor'}</div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 hidden md:table-cell">
+                        <div class="text-sm">${user.telephone || '-'}</div>
+                        <div class="text-xs text-gray-500">${user.email || '-'}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium
+                            ${user.status === 'active' ? 'bg-success-100 text-success-700' : 
+                              user.status === 'pending' ? 'bg-warning-100 text-warning-700' : 
+                              'bg-danger-100 text-danger-700'}">
+                            ${user.status === 'active' ? '✅ Actif' : 
+                              user.status === 'pending' ? '⏳ En attente' : 
+                              '🚫 Suspendu'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3 hidden lg:table-cell text-sm text-gray-500">
+                        ${formatDate(user.createdAt)}
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex gap-2">
+                            ${user.status === 'pending' ? `
+                                <button onclick="validateUser('${user.id}')" class="text-success-500 hover:text-success-600 transition" title="Valider">
+                                    <i class="fas fa-check-circle text-lg"></i>
+                                </button>
+                            ` : ''}
+                            ${user.status === 'active' ? `
+                                <button onclick="suspendUser('${user.id}')" class="text-warning-500 hover:text-warning-600 transition" title="Suspendre">
+                                    <i class="fas fa-pause-circle text-lg"></i>
+                                </button>
+                            ` : ''}
+                            ${user.status === 'suspended' ? `
+                                <button onclick="validateUser('${user.id}')" class="text-success-500 hover:text-success-600 transition" title="Réactiver">
+                                    <i class="fas fa-play-circle text-lg"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteUser('${user.id}')" class="text-danger-500 hover:text-danger-600 transition" title="Supprimer">
+                                <i class="fas fa-trash text-lg"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ============================================
+        // AFFICHER LES PRODUITS
+        // ============================================
+        function renderProducts() {
+            const tbody = document.getElementById('productsTableBody');
+            const search = document.getElementById('searchProduct')?.value.toLowerCase() || '';
+            const filter = document.getElementById('productFilter')?.value || 'all';
+
+            let filtered = products;
+            if (search) {
+                filtered = filtered.filter(p => 
+                    p.title?.toLowerCase().includes(search) ||
+                    p.sellerName?.toLowerCase().includes(search)
+                );
+            }
+            if (filter !== 'all') {
+                filtered = filtered.filter(p => p.status === filter);
+            }
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="text-center py-8 text-gray-500">
+                            <i class="fas fa-box-open text-4xl text-gray-300 block mb-2"></i>
+                            Aucun produit trouvé
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(product => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                ${product.images && product.images[0] 
+                                    ? `<img src="${product.images[0]}" class="w-full h-full object-cover">` 
+                                    : `<i class="fas fa-image text-gray-300 w-full h-full flex items-center justify-center"></i>`
+                                }
+                            </div>
+                            <div>
+                                <div class="font-medium">${product.title}</div>
+                                <div class="text-xs text-gray-500">${product.category || '-'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 hidden md:table-cell">
+                        <div class="text-sm">${product.sellerName || 'Inconnu'}</div>
+                    </td>
+                    <td class="px-4 py-3 font-semibold text-secondary-500">
+                        ${new Intl.NumberFormat('fr-BJ', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(product.price || 0)}
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="px-2 py-1 rounded-full text-xs font-medium
+                            ${product.status === 'published' ? 'bg-success-100 text-success-700' : 
+                              product.status === 'pending' ? 'bg-warning-100 text-warning-700' : 
+                              'bg-danger-100 text-danger-700'}">
+                            ${product.status === 'published' ? '✅ Publié' : 
+                              product.status === 'pending' ? '⏳ En attente' : 
+                              '❌ Refusé'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex gap-2">
+                            ${product.status === 'pending' ? `
+                                <button onclick="approveProduct('${product.id}')" class="text-success-500 hover:text-success-600 transition" title="Approuver">
+                                    <i class="fas fa-check-circle text-lg"></i>
+                                </button>
+                                <button onclick="rejectProduct('${product.id}')" class="text-danger-500 hover:text-danger-600 transition" title="Refuser">
+                                    <i class="fas fa-times-circle text-lg"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteProduct('${product.id}')" class="text-danger-500 hover:text-danger-600 transition" title="Supprimer">
+                                <i class="fas fa-trash text-lg"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // ============================================
+        // AFFICHER LES CATÉGORIES
+        // ============================================
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+
+            if (categories.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <i class="fas fa-tags text-4xl text-gray-300 block mb-2"></i>
+                        Aucune catégorie
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = categories.map(cat => `
+                <div class="bg-gray-50 rounded-xl p-4 text-center group relative">
+                    <div class="text-4xl mb-2">${cat.icon || '📦'}</div>
+                    <div class="font-medium">${cat.name}</div>
+                    <button onclick="deleteCategory('${cat.id}')" 
+                            class="absolute top-2 right-2 text-red-400 hover:text-red-600 transition opacity-0 group-hover:opacity-100">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // ACTIONS UTILISATEURS
+        // ============================================
+        window.validateUser = async function(uid) {
+            if (!confirm('Valider ce compte ?')) return;
+            try {
+                await updateDoc(doc(db, 'users', uid), { status: 'active', validatedAt: new Date().toISOString() });
+                showAlert('✅ Compte validé avec succès.', 'success');
+                await loadUsers();
+                updateStats();
+            } catch (error) {
+                showAlert('❌ Erreur lors de la validation.', 'danger');
+            }
+        };
+
+        window.suspendUser = async function(uid) {
+            if (!confirm('Suspendre ce compte ?')) return;
+            try {
+                await updateDoc(doc(db, 'users', uid), { status: 'suspended' });
+                showAlert('✅ Compte suspendu.', 'success');
+                await loadUsers();
+                updateStats();
+            } catch (error) {
+                showAlert('❌ Erreur lors de la suspension.', 'danger');
+            }
+        };
+
+        window.deleteUser = async function(uid) {
+            if (!confirm('Supprimer définitivement ce compte ? Cette action est irréversible.')) return;
+            try {
+                await deleteDoc(doc(db, 'users', uid));
+                showAlert('✅ Compte supprimé.', 'success');
+                await loadUsers();
+                updateStats();
+            } catch (error) {
+                showAlert('❌ Erreur lors de la suppression.', 'danger');
+            }
+        };
+
+        // ============================================
+        // ACTIONS PRODUITS
+        // ============================================
+        window.approveProduct = async function(id) {
+            try {
+                await updateDoc(doc(db, 'products', id), { 
+                    status: 'published',
+                    approvedAt: new Date().toISOString()
+                });
+                showAlert('✅ Produit approuvé avec succès.', 'success');
+                await loadProducts();
+                updateStats();
+            } catch (error) {
+                showAlert('❌ Erreur lors de l\'approbation.', 'danger');
+            }
+        };
+
+        window.rejectProduct = async function(id) {
+            if (!confirm('Refuser ce produit ?')) return;
+            try {
+                await updateDoc(doc(db, 'products', id), { 
+                    status: 'rejected',
+                    rejectedAt: new Date().toISOString()
+                });
+                showAlert('✅ Produit refusé.', 'success');
+                await loadProducts();
+                updateStats();
+            } catch (error) {
+                showAlert('❌ Erreur lors du refus.', 'danger');
+            }
+        };
+
+        window.deleteProduct = async function(id) {
+            if (!confirm('Supprimer définitivement ce produit ? Cette action est irréversible.')) return;
+            try {
+                await deleteDoc(doc(db, 'products', id));
+                showAlert('✅ Produit supprimé.', 'success');
+                await loadProducts();
+                updateStats();
+            } catch (error) {
+                showAlert('❌ Erreur lors de la suppression.', 'danger');
+            }
+        };
+
+        // ============================================
+        // ACTIONS CATÉGORIES
+        // ============================================
+        window.openAddCategoryModal = function() {
+            document.getElementById('categoryModal').classList.remove('hidden');
+            document.getElementById('categoryForm').reset();
+        };
+
+        window.closeCategoryModal = function() {
+            document.getElementById('categoryModal').classList.add('hidden');
+        };
+
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('categoryName').value.trim();
+            const icon = document.getElementById('categoryIcon').value.trim() || '📦';
+
+            if (!name) {
+                showAlert('Veuillez saisir un nom.', 'danger');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, 'categories'), {
+                    name,
+                    icon,
+                    createdAt: new Date().toISOString()
+                });
+                showAlert('✅ Catégorie ajoutée avec succès.', 'success');
+                closeCategoryModal();
+                await loadCategories();
+            } catch (error) {
+                showAlert('❌ Erreur lors de l\'ajout.', 'danger');
+            }
+        });
+
+        window.deleteCategory = async function(id) {
+            if (!confirm('Supprimer cette catégorie ?')) return;
+            try {
+                await deleteDoc(doc(db, 'categories', id));
+                showAlert('✅ Catégorie supprimée.', 'success');
+                await loadCategories();
+            } catch (error) {
+                showAlert('❌ Erreur lors de la suppression.', 'danger');
+            }
+        };
+
+        // ============================================
+        // SWITCH D'ONGLETS
+        // ============================================
+        window.switchTab = function(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('border-primary-500', 'text-primary-500');
+                el.classList.add('border-transparent', 'text-gray-500');
+            });
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('border-transparent', 'text-gray-500');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('border-primary-500', 'text-primary-500');
+        };
+
+        // ============================================
+        // FILTRES ET RECHERCHE (events)
+        // ============================================
+        document.getElementById('searchUser')?.addEventListener('input', renderUsers);
+        document.getElementById('userFilter')?.addEventListener('change', renderUsers);
+        document.getElementById('searchProduct')?.addEventListener('input', renderProducts);
+        document.getElementById('productFilter')?.addEventListener('change', renderProducts);
+
+        // ============================================
+        // IMPORT getDoc
+        // ============================================
+        import { getDoc } from '../js/firebase-config.js';
+    </script>
+</body>
+</html>
