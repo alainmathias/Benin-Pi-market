@@ -1,25 +1,25 @@
 // js/utils.js
 // ============================================
-// FONCTIONS UTILITAIRES
+// UTILITY FUNCTIONS - EN ANGLAIS
 // ============================================
 
-// FORMATER LE PRIX (FCFA)
-export function formatPrix(prix) {
+// FORMAT PRICE (FCFA)
+export function formatPrice(price) {
     return new Intl.NumberFormat('fr-BJ', {
         style: 'currency',
         currency: 'XOF',
         minimumFractionDigits: 0,
         maximumFractionDigits: 0
-    }).format(prix);
+    }).format(price);
 }
 
-// FORMATER LA DATE
+// FORMAT DATE
 export function formatDate(dateString) {
-    if (!dateString) return 'Date inconnue';
+    if (!dateString) return 'Unknown date';
     
     try {
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Date invalide';
+        if (isNaN(date.getTime())) return 'Invalid date';
         
         const now = new Date();
         const diff = now - date;
@@ -28,11 +28,11 @@ export function formatDate(dateString) {
         const hours = Math.floor(diff / 3600000);
         const days = Math.floor(diff / 86400000);
         
-        if (minutes < 1) return 'À l\'instant';
-        if (minutes < 60) return `Il y a ${minutes} min`;
-        if (hours < 24) return `Il y a ${hours}h`;
-        if (days < 7) return `Il y a ${days}j`;
-        if (days < 30) return `Il y a ${Math.floor(days/7)} sem`;
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return `${minutes} min ago`;
+        if (hours < 24) return `${hours}h ago`;
+        if (days < 7) return `${days} days ago`;
+        if (days < 30) return `${Math.floor(days/7)} weeks ago`;
         
         return date.toLocaleDateString('fr-BJ', {
             day: 'numeric',
@@ -40,61 +40,61 @@ export function formatDate(dateString) {
             year: 'numeric'
         });
     } catch {
-        return 'Date invalide';
+        return 'Invalid date';
     }
 }
 
-// AFFICHER LES PRODUITS
-export function afficherProduits(produits, containerId) {
+// DISPLAY PRODUCTS
+export function displayProducts(products, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    if (!produits || produits.length === 0) {
+    if (!products || products.length === 0) {
         container.innerHTML = `
             <div class="col-span-full text-center py-16">
                 <i class="fas fa-box-open text-6xl text-gray-300 mb-4 block"></i>
-                <p class="text-gray-500 text-lg">Aucun produit trouvé</p>
-                <p class="text-gray-400 text-sm mt-2">Soyez le premier à publier un produit !</p>
+                <p class="text-gray-500 text-lg">No products found</p>
+                <p class="text-gray-400 text-sm mt-2">Be the first to publish a product!</p>
             </div>
         `;
         return;
     }
 
-    container.innerHTML = produits.map((produit, index) => `
+    container.innerHTML = products.map((product, index) => `
         <div class="bg-white rounded-2xl shadow-card hover:shadow-card-hover overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2 group animate-fade-in" 
              style="animation-delay: ${index * 0.05}s"
-             onclick="window.location.href='produit-detail.html?id=${produit.id}'">
+             onclick="window.location.href='products/detail.html?id=${product.id}'">
             <div class="h-48 bg-gray-100 flex items-center justify-center overflow-hidden relative">
-                ${produit.images && produit.images.length > 0 
-                    ? `<img src="${produit.images[0]}" alt="${produit.titre}" 
+                ${product.images && product.images.length > 0 
+                    ? `<img src="${product.images[0]}" alt="${product.title}" 
                            class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                            loading="lazy"
                            onerror="this.style.display='none'">` 
                     : `<i class="fas fa-image text-6xl text-gray-300"></i>`
                 }
-                ${produit.statut === 'en_attente' ? `
+                ${product.status === 'pending' ? `
                     <span class="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-3 py-1 rounded-full">
-                        En attente
+                        Pending
                     </span>
                 ` : ''}
             </div>
             <div class="p-4">
-                <h3 class="font-bold text-lg text-dark mb-1 line-clamp-1">${produit.titre || 'Sans titre'}</h3>
-                <div class="text-secondary-500 font-bold text-xl">${formatPrix(produit.prix || 0)}</div>
+                <h3 class="font-bold text-lg text-dark mb-1 line-clamp-1">${product.title || 'Untitled'}</h3>
+                <div class="text-secondary-500 font-bold text-xl">${formatPrice(product.price || 0)}</div>
                 <div class="flex justify-between items-center mt-2 text-sm text-gray-500">
-                    <span><i class="fas fa-map-marker-alt mr-1"></i> ${produit.ville || 'Non spécifié'}</span>
-                    <span><i class="far fa-clock mr-1"></i> ${formatDate(produit.datePublication)}</span>
+                    <span><i class="fas fa-map-marker-alt mr-1"></i> ${product.city || 'Not specified'}</span>
+                    <span><i class="far fa-clock mr-1"></i> ${formatDate(product.createdAt)}</span>
                 </div>
                 <div class="mt-2">
-                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">Disponible</span>
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-medium">Available</span>
                 </div>
             </div>
         </div>
     `).join('');
 }
 
-// AFFICHER LES CATÉGORIES
-export function afficherCategories(categories, containerId) {
+// DISPLAY CATEGORIES
+export function displayCategories(categories, containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -102,26 +102,26 @@ export function afficherCategories(categories, containerId) {
         container.innerHTML = `
             <div class="col-span-full text-center py-8 text-gray-500">
                 <i class="fas fa-folder-open text-3xl block mb-2"></i>
-                Aucune catégorie disponible
+                No categories available
             </div>
         `;
         return;
     }
 
     container.innerHTML = categories.map(cat => `
-        <a href="produits.html?categorie=${encodeURIComponent(cat.nom)}" 
+        <a href="products/list.html?category=${encodeURIComponent(cat.name)}" 
            class="bg-gray-100 hover:bg-primary-500 hover:text-white p-6 rounded-2xl text-center transition-all duration-300 group">
-            <span class="text-4xl block mb-2 group-hover:scale-110 transition">${cat.icone || '📦'}</span>
-            <span class="font-medium">${cat.nom}</span>
+            <span class="text-4xl block mb-2 group-hover:scale-110 transition">${cat.icon || '📦'}</span>
+            <span class="font-medium">${cat.name}</span>
         </a>
     `).join('');
 }
 
-// AFFICHER UNE ALERTE
+// SHOW ALERT
 export function showAlert(message, type = 'success', containerId = 'alert-container') {
     const container = document.getElementById(containerId);
     if (!container) {
-        console.warn('Conteneur d\'alerte non trouvé:', containerId);
+        console.warn('Alert container not found:', containerId);
         return;
     }
 
@@ -146,7 +146,6 @@ export function showAlert(message, type = 'success', containerId = 'alert-contai
     container.innerHTML = '';
     container.appendChild(alertDiv);
     
-    // Auto-fermeture après 6 secondes
     setTimeout(() => {
         alertDiv.style.opacity = '0';
         alertDiv.style.transform = 'translateY(-10px)';
@@ -156,14 +155,14 @@ export function showAlert(message, type = 'success', containerId = 'alert-contai
     }, 6000);
 }
 
-// VALIDER UN FORMULAIRE
+// VALIDATE FORM
 export function validateForm(formData, requiredFields) {
     const errors = [];
     
     for (const field of requiredFields) {
         const value = formData[field];
         if (value === undefined || value === null || value.toString().trim() === '') {
-            errors.push(`Le champ "${field}" est obligatoire`);
+            errors.push(`"${field}" is required`);
         }
     }
     
@@ -173,8 +172,8 @@ export function validateForm(formData, requiredFields) {
     };
 }
 
-// AFFICHER UN LOADING
-export function showLoading(containerId, message = 'Chargement...') {
+// SHOW LOADING
+export function showLoading(containerId, message = 'Loading...') {
     const container = document.getElementById(containerId);
     if (!container) return;
     
@@ -186,46 +185,28 @@ export function showLoading(containerId, message = 'Chargement...') {
     `;
 }
 
-// MASQUER LE LOADING
+// HIDE LOADING
 export function hideLoading(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
 }
 
-// TRONQUER UN TEXTE
+// TRUNCATE TEXT
 export function truncateText(text, maxLength = 100) {
     if (!text) return '';
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
 }
 
-// VALIDER UN EMAIL
+// VALIDATE EMAIL
 export function isValidEmail(email) {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(email);
 }
 
-// VALIDER UN NUMÉRO DE TÉLÉPHONE
+// VALIDATE PHONE (Benin format)
 export function isValidPhone(phone) {
-    // Format Bénin: +229 XX XX XX XX ou XX XX XX XX
     const re = /^(\+229)?[0-9]{8,10}$/;
     return re.test(phone.replace(/\s/g, ''));
-}
-
-// COPIER DANS LE PRESSE-PAPIER
-export function copyToClipboard(text) {
-    if (navigator.clipboard) {
-        navigator.clipboard.writeText(text).catch(() => {});
-    } else {
-        // Fallback
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        document.body.appendChild(textarea);
-        textarea.select();
-        try {
-            document.execCommand('copy');
-        } catch {}
-        document.body.removeChild(textarea);
-    }
 }
