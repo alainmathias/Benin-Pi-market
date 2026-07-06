@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produits - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0' },
+                        secondary: { 500: '#ff6b00' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-3">
+                <img src="../images/logo.png" alt="Bénin Pi Market" class="h-12" onerror="this.style.display='none'">
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="../auth/connexion.html" class="border-2 border-primary-500 text-primary-500 px-4 py-2 rounded-xl font-semibold hover:bg-primary-500 hover:text-white transition">
+                    Connexion
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-dark mb-8">
+            <i class="fas fa-box text-primary-500"></i> Tous les produits
+        </h1>
+
+        <!-- Filtres -->
+        <div class="bg-white rounded-2xl shadow-card p-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Recherche</label>
+                    <input type="text" id="searchInput" placeholder="Rechercher..." 
+                           class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Catégorie</label>
+                    <select id="categorieFilter" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition">
+                        <option value="">Toutes</option>
+                        <option value="Artisanat">Artisanat</option>
+                        <option value="Agriculture">Agriculture</option>
+                        <option value="Mode">Mode</option>
+                        <option value="Électronique">Électronique</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ville</label>
+                    <select id="villeFilter" class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition">
+                        <option value="">Toutes</option>
+                        <option value="Cotonou">Cotonou</option>
+                        <option value="Porto-Novo">Porto-Novo</option>
+                        <option value="Parakou">Parakou</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Prix max</label>
+                    <input type="number" id="prixMax" placeholder="FCFA" 
+                           class="w-full px-4 py-2 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition">
+                </div>
+            </div>
+            <button onclick="appliquerFiltres()" class="mt-4 bg-primary-500 text-white px-6 py-2 rounded-xl font-semibold hover:bg-primary-600 transition">
+                <i class="fas fa-filter mr-2"></i> Appliquer les filtres
+            </button>
+        </div>
+
+        <!-- Résultats -->
+        <div id="produitsContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-12 text-gray-500">
+                <i class="fas fa-spinner fa-spin text-3xl"></i>
+                <p class="mt-2">Chargement des produits...</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { db, collection, getDocs, query, where, orderBy, limit } from '../js/firebase-config.js';
+        import { afficherProduits } from '../js/utils.js';
+
+        async function chargerProduits() {
+            try {
+                const q = query(
+                    collection(db, 'produits'),
+                    where('statut', '==', 'publie'),
+                    orderBy('datePublication', 'desc'),
+                    limit(50)
+                );
+                const querySnapshot = await getDocs(q);
+                const produits = [];
+                querySnapshot.forEach((doc) => {
+                    produits.push({ id: doc.id, ...doc.data() });
+                });
+                afficherProduits(produits, 'produitsContainer');
+            } catch (error) {
+                console.error('Erreur:', error);
+                document.getElementById('produitsContainer').innerHTML = 
+                    '<div class="col-span-full text-center py-12 text-red-500">Erreur de chargement</div>';
+            }
+        }
+
+        window.appliquerFiltres = function() {
+            // Logique de filtrage à implémenter
+            chargerProduits();
+        };
+
+        chargerProduits();
+    </script>
+</body>
+</html>
