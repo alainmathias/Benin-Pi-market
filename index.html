@@ -4,60 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bénin Pi Market - Annonces Bénin</title>
-    
-    <!-- ========== TAILWIND CSS (CDN) ========== -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- ========== POLICE ET ICÔNES ========== -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
-    <!-- ========== STYLES PERSONNALISÉS ========== -->
     <link rel="stylesheet" href="css/style.css">
-    
-    <!-- ========== CONFIGURATION TAILWIND ========== -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: {
-                            50: '#e8f0fe',
-                            100: '#d2e3fc',
-                            200: '#a4c2f4',
-                            300: '#77a9eb',
-                            400: '#4a8fe3',
-                            500: '#1a73e8',  // Bleu principal
-                            600: '#1557b0',
-                            700: '#104080',
-                            800: '#0a2a50',
-                            900: '#051428',
-                        },
-                        secondary: {
-                            50: '#fff2e6',
-                            100: '#ffe6cc',
-                            200: '#ffcc99',
-                            300: '#ffb366',
-                            400: '#ff9933',
-                            500: '#ff6b00',  // Orange principal
-                            600: '#cc5500',
-                            700: '#994000',
-                            800: '#662a00',
-                            900: '#331500',
-                        },
-                        dark: '#1a1a2e',
-                        light: '#f8f9fa',
-                    },
-                    fontFamily: {
-                        'sans': ['Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
-                    },
-                    borderRadius: {
-                        'xl': '12px',
-                        '2xl': '16px',
-                    },
-                    boxShadow: {
-                        'card': '0 4px 20px rgba(0,0,0,0.1)',
-                        'card-hover': '0 8px 30px rgba(0,0,0,0.15)',
-                    },
+                        primary: { 500: '#1a73e8', 600: '#1557b0' },
+                        secondary: { 500: '#ff6b00' }
+                    }
                 }
             }
         }
@@ -65,36 +22,35 @@
 </head>
 <body class="bg-gray-50 font-sans antialiased">
 
-    <!-- ========== HEADER ========== -->
+    <!-- HEADER -->
     <header class="bg-white shadow-md sticky top-0 z-50">
         <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <!-- Logo -->
-            <div class="flex items-center gap-3">
-                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12 w-auto" onerror="this.style.display='none'">
+            <a href="index.html" class="flex items-center gap-3">
+                <img src="images/logo.png" alt="Bénin Pi Market" class="h-12" onerror="this.style.display='none'">
                 <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
-            </div>
+            </a>
 
             <!-- Navigation Desktop -->
             <div class="hidden md:flex items-center gap-8">
                 <a href="index.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Accueil</a>
-                <a href="produits.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Produits</a>
-                <a href="categories.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Catégories</a>
-                <a href="a-propos.html" class="text-gray-700 hover:text-primary-500 font-medium transition">À propos</a>
-                <a href="contact.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Contact</a>
+                <a href="products/list.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Produits</a>
+                <a href="categories/all.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Catégories</a>
+                <a href="info/about.html" class="text-gray-700 hover:text-primary-500 font-medium transition">À propos</a>
+                <a href="info/contact.html" class="text-gray-700 hover:text-primary-500 font-medium transition">Contact</a>
             </div>
 
             <!-- Actions -->
             <div class="flex items-center gap-4">
-                <a href="recherche.html" class="text-gray-600 hover:text-primary-500 transition">
+                <a href="products/list.html?search=" class="text-gray-600 hover:text-primary-500 transition">
                     <i class="fas fa-search text-xl"></i>
                 </a>
                 
                 <!-- Non connecté -->
                 <div id="authButtons" class="flex items-center gap-3">
-                    <a href="connexion.html" class="border-2 border-primary-500 text-primary-500 px-4 py-2 rounded-xl font-semibold hover:bg-primary-500 hover:text-white transition">
+                    <a href="auth/login.html" class="border-2 border-primary-500 text-primary-500 px-4 py-2 rounded-xl font-semibold hover:bg-primary-500 hover:text-white transition">
                         Connexion
                     </a>
-                    <a href="inscription.html" class="bg-primary-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg">
+                    <a href="auth/register.html" class="bg-primary-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-primary-600 transition">
                         Inscription
                     </a>
                 </div>
@@ -102,19 +58,18 @@
                 <!-- Connecté -->
                 <div id="userMenu" class="hidden relative group">
                     <div class="flex items-center gap-3 cursor-pointer">
-                        <img src="" alt="Photo" id="userAvatar" class="w-10 h-10 rounded-full border-2 border-primary-500 object-cover">
                         <span id="userName" class="font-medium text-gray-700"></span>
                         <i class="fas fa-chevron-down text-gray-400 text-sm"></i>
                     </div>
                     <div class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300">
                         <div class="py-2">
-                            <a href="dashboard-vendeur.html" class="block px-4 py-2 hover:bg-gray-50 transition">
+                            <a href="dashboard/vendor.html" class="block px-4 py-2 hover:bg-gray-50 transition">
                                 <i class="fas fa-tachometer-alt w-5 text-primary-500"></i> Dashboard
                             </a>
-                            <a href="mon-profil.html" class="block px-4 py-2 hover:bg-gray-50 transition">
+                            <a href="user/profile.html" class="block px-4 py-2 hover:bg-gray-50 transition">
                                 <i class="fas fa-user w-5 text-primary-500"></i> Profil
                             </a>
-                            <a href="mes-produits.html" class="block px-4 py-2 hover:bg-gray-50 transition">
+                            <a href="products/my-products.html" class="block px-4 py-2 hover:bg-gray-50 transition">
                                 <i class="fas fa-box w-5 text-primary-500"></i> Mes produits
                             </a>
                             <hr class="my-2">
@@ -125,7 +80,7 @@
                     </div>
                 </div>
 
-                <!-- Menu mobile toggle -->
+                <!-- Menu mobile -->
                 <button id="mobileMenuToggle" class="md:hidden text-2xl text-gray-700">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -143,13 +98,13 @@
                 </div>
                 <div class="space-y-4">
                     <a href="index.html" class="block text-gray-700 hover:text-primary-500 font-medium">Accueil</a>
-                    <a href="produits.html" class="block text-gray-700 hover:text-primary-500 font-medium">Produits</a>
-                    <a href="categories.html" class="block text-gray-700 hover:text-primary-500 font-medium">Catégories</a>
-                    <a href="a-propos.html" class="block text-gray-700 hover:text-primary-500 font-medium">À propos</a>
-                    <a href="contact.html" class="block text-gray-700 hover:text-primary-500 font-medium">Contact</a>
+                    <a href="products/list.html" class="block text-gray-700 hover:text-primary-500 font-medium">Produits</a>
+                    <a href="categories/all.html" class="block text-gray-700 hover:text-primary-500 font-medium">Catégories</a>
+                    <a href="info/about.html" class="block text-gray-700 hover:text-primary-500 font-medium">À propos</a>
+                    <a href="info/contact.html" class="block text-gray-700 hover:text-primary-500 font-medium">Contact</a>
                     <hr>
-                    <a href="connexion.html" class="block text-primary-500 font-medium">Connexion</a>
-                    <a href="inscription.html" class="block bg-primary-500 text-white text-center px-4 py-2 rounded-xl font-semibold">Inscription</a>
+                    <a href="auth/login.html" class="block text-primary-500 font-medium">Connexion</a>
+                    <a href="auth/register.html" class="block bg-primary-500 text-white text-center px-4 py-2 rounded-xl font-semibold">Inscription</a>
                 </div>
             </div>
         </div>
@@ -157,12 +112,6 @@
 
     <!-- ========== BANNIÈRE HERO ========== -->
     <section class="relative bg-gradient-to-r from-primary-500 to-primary-700 text-white py-20 md:py-28 overflow-hidden">
-        <!-- Décoration -->
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-0 left-0 w-64 h-64 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
-            <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full translate-x-1/3 translate-y-1/3"></div>
-        </div>
-        
         <div class="max-w-7xl mx-auto px-4 relative z-10 text-center">
             <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
                 Bienvenue sur <span class="text-secondary-500">Bénin Pi Market</span>
@@ -171,10 +120,9 @@
                 La plateforme de mise en relation entre professionnels et clients au Bénin
             </p>
             
-            <!-- Barre de recherche -->
             <div class="max-w-2xl mx-auto flex flex-col sm:flex-row bg-white rounded-full shadow-xl overflow-hidden">
                 <input type="text" id="searchInput" 
-                       placeholder="Que recherchez-vous ? (produit, catégorie, ville...)" 
+                       placeholder="Que recherchez-vous ?" 
                        class="flex-1 px-6 py-4 outline-none text-gray-800">
                 <button onclick="rechercher()" 
                         class="bg-secondary-500 hover:bg-secondary-600 text-white px-8 py-4 font-semibold transition flex items-center justify-center gap-2">
@@ -182,26 +130,13 @@
                 </button>
             </div>
 
-            <!-- Catégories rapides -->
             <div class="flex flex-wrap gap-3 justify-center mt-8">
-                <a href="produits.html?categorie=Artisanat" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
-                    🪵 Artisanat
-                </a>
-                <a href="produits.html?categorie=Agriculture" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
-                    🌾 Agriculture
-                </a>
-                <a href="produits.html?categorie=Mode" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
-                    👗 Mode
-                </a>
-                <a href="produits.html?categorie=Électronique" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
-                    📱 Électronique
-                </a>
-                <a href="produits.html?categorie=Immobilier" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
-                    🏠 Immobilier
-                </a>
-                <a href="produits.html?categorie=Services" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">
-                    🛠️ Services
-                </a>
+                <a href="products/list.html?category=Artisanat" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">🪵 Artisanat</a>
+                <a href="products/list.html?category=Agriculture" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">🌾 Agriculture</a>
+                <a href="products/list.html?category=Mode" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">👗 Mode</a>
+                <a href="products/list.html?category=Électronique" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">📱 Électronique</a>
+                <a href="products/list.html?category=Immobilier" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">🏠 Immobilier</a>
+                <a href="products/list.html?category=Services" class="bg-white/20 backdrop-blur-sm hover:bg-white/30 px-4 py-2 rounded-full transition">🛠️ Services</a>
             </div>
         </div>
     </section>
@@ -211,12 +146,11 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex justify-between items-center mb-8">
                 <h2 class="text-2xl md:text-3xl font-bold text-dark">Produits récents</h2>
-                <a href="produits.html" class="text-primary-500 hover:text-primary-600 font-semibold flex items-center gap-2 transition">
+                <a href="products/list.html" class="text-primary-500 hover:text-primary-600 font-semibold flex items-center gap-2 transition">
                     Voir tout <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
             <div id="recentProducts" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Chargé dynamiquement -->
                 <div class="col-span-full text-center py-12 text-gray-500">
                     <i class="fas fa-spinner fa-spin text-3xl"></i>
                     <p class="mt-2">Chargement des produits...</p>
@@ -225,12 +159,11 @@
         </div>
     </section>
 
-    <!-- ========== CATÉGORIES POPULAIRES ========== -->
+    <!-- ========== CATÉGORIES ========== -->
     <section class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4">
             <h2 class="text-2xl md:text-3xl font-bold text-dark text-center mb-8">Catégories populaires</h2>
             <div id="categoriesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                <!-- Chargé dynamiquement -->
             </div>
         </div>
     </section>
@@ -240,26 +173,23 @@
         <div class="max-w-7xl mx-auto px-4">
             <h2 class="text-2xl md:text-3xl font-bold text-dark text-center mb-8">Comment ça marche ?</h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Étape 1 -->
                 <div class="bg-white rounded-2xl shadow-card hover:shadow-card-hover p-8 text-center transition relative">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">1</div>
                     <i class="fas fa-user-plus text-5xl text-primary-500 mt-4 mb-4"></i>
                     <h3 class="text-xl font-bold mb-2">Créez un compte</h3>
-                    <p class="text-gray-600">Inscrivez-vous et attendez la validation de l'administrateur</p>
+                    <p class="text-gray-600">Inscrivez-vous et attendez la validation</p>
                 </div>
-                <!-- Étape 2 -->
                 <div class="bg-white rounded-2xl shadow-card hover:shadow-card-hover p-8 text-center transition relative">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">2</div>
                     <i class="fas fa-upload text-5xl text-primary-500 mt-4 mb-4"></i>
                     <h3 class="text-xl font-bold mb-2">Publiez vos produits</h3>
-                    <p class="text-gray-600">Ajoutez photos, prix et description de vos produits</p>
+                    <p class="text-gray-600">Ajoutez photos, prix et description</p>
                 </div>
-                <!-- Étape 3 -->
                 <div class="bg-white rounded-2xl shadow-card hover:shadow-card-hover p-8 text-center transition relative">
                     <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-secondary-500 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg">3</div>
                     <i class="fab fa-whatsapp text-5xl text-green-500 mt-4 mb-4"></i>
                     <h3 class="text-xl font-bold mb-2">Recevez des contacts</h3>
-                    <p class="text-gray-600">Les clients vous contactent directement via WhatsApp</p>
+                    <p class="text-gray-600">Les clients vous contactent via WhatsApp</p>
                 </div>
             </div>
         </div>
@@ -273,31 +203,25 @@
                     <h3 class="text-xl font-bold mb-4">Bénin Pi Market</h3>
                     <p class="text-gray-400">La plateforme de mise en relation entre professionnels et clients au Bénin.</p>
                     <div class="flex gap-4 mt-4">
-                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition">
-                            <i class="fab fa-whatsapp"></i>
-                        </a>
-                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition">
-                            <i class="fab fa-instagram"></i>
-                        </a>
+                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" class="bg-white/10 hover:bg-primary-500 w-10 h-10 rounded-full flex items-center justify-center transition"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">Liens rapides</h4>
                     <div class="space-y-2">
-                        <a href="produits.html" class="block text-gray-400 hover:text-white transition">Produits</a>
-                        <a href="categories.html" class="block text-gray-400 hover:text-white transition">Catégories</a>
-                        <a href="a-propos.html" class="block text-gray-400 hover:text-white transition">À propos</a>
-                        <a href="contact.html" class="block text-gray-400 hover:text-white transition">Contact</a>
+                        <a href="products/list.html" class="block text-gray-400 hover:text-white transition">Produits</a>
+                        <a href="categories/all.html" class="block text-gray-400 hover:text-white transition">Catégories</a>
+                        <a href="info/about.html" class="block text-gray-400 hover:text-white transition">À propos</a>
+                        <a href="info/contact.html" class="block text-gray-400 hover:text-white transition">Contact</a>
                     </div>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">Légal</h4>
                     <div class="space-y-2">
-                        <a href="conditions.html" class="block text-gray-400 hover:text-white transition">Conditions d'utilisation</a>
-                        <a href="politique.html" class="block text-gray-400 hover:text-white transition">Politique de confidentialité</a>
+                        <a href="info/terms.html" class="block text-gray-400 hover:text-white transition">Conditions d'utilisation</a>
+                        <a href="info/privacy.html" class="block text-gray-400 hover:text-white transition">Politique de confidentialité</a>
                     </div>
                 </div>
                 <div>
@@ -315,84 +239,69 @@
         </div>
     </footer>
 
-    <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
-        // Importer les configurations
         import { auth, onAuthStateChanged, db, collection, getDocs, query, where, orderBy, limit, doc, getDoc } from './js/firebase-config.js';
         import { deconnexion } from './js/auth.js';
         import { afficherProduits, afficherCategories } from './js/utils.js';
 
-        // Exposer la fonction de déconnexion
         window.deconnexion = deconnexion;
 
-        // Gestion du menu mobile
+        // Menu mobile
         const mobileToggle = document.getElementById('mobileMenuToggle');
         const closeMobile = document.getElementById('closeMobileMenu');
         const mobileMenu = document.getElementById('mobileMenu');
 
-        if (mobileToggle) {
-            mobileToggle.addEventListener('click', () => {
-                mobileMenu.classList.remove('hidden');
-                setTimeout(() => {
-                    document.querySelector('.mobile-menu-content')?.classList.remove('-translate-x-full');
-                }, 10);
-            });
-        }
+        mobileToggle?.addEventListener('click', () => {
+            mobileMenu.classList.remove('hidden');
+            document.querySelector('.mobile-menu-content')?.classList.remove('-translate-x-full');
+        });
 
-        if (closeMobile) {
-            closeMobile.addEventListener('click', () => {
-                document.querySelector('.mobile-menu-content')?.classList.add('-translate-x-full');
-                setTimeout(() => {
-                    mobileMenu.classList.add('hidden');
-                }, 300);
-            });
-        }
+        closeMobile?.addEventListener('click', () => {
+            document.querySelector('.mobile-menu-content')?.classList.add('-translate-x-full');
+            setTimeout(() => mobileMenu.classList.add('hidden'), 300);
+        });
 
-        // Vérifier l'authentification
+        // Auth
         onAuthStateChanged(auth, (user) => {
             const authButtons = document.getElementById('authButtons');
             const userMenu = document.getElementById('userMenu');
             const userName = document.getElementById('userName');
 
             if (user) {
-                if (authButtons) authButtons.style.display = 'none';
-                if (userMenu) userMenu.classList.remove('hidden');
-                
+                authButtons.style.display = 'none';
+                userMenu.classList.remove('hidden');
                 getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        if (userName) userName.textContent = `${userData.prenom} ${userData.nom}`;
+                        userName.textContent = `${userData.prenom} ${userData.nom}`;
                     }
-                }).catch(() => {});
+                });
             } else {
-                if (authButtons) authButtons.style.display = 'flex';
-                if (userMenu) userMenu.classList.add('hidden');
+                authButtons.style.display = 'flex';
+                userMenu.classList.add('hidden');
             }
         });
 
-        // Charger les produits récents
+        // Charger produits
         async function chargerProduitsRecents() {
             try {
                 const q = query(
-                    collection(db, 'produits'),
-                    where('statut', '==', 'publie'),
+                    collection(db, 'products'),
+                    where('status', '==', 'published'),
                     orderBy('datePublication', 'desc'),
                     limit(8)
                 );
                 const querySnapshot = await getDocs(q);
-                const produits = [];
+                const products = [];
                 querySnapshot.forEach((doc) => {
-                    produits.push({ id: doc.id, ...doc.data() });
+                    products.push({ id: doc.id, ...doc.data() });
                 });
-                afficherProduits(produits, 'recentProducts');
+                afficherProduits(products, 'recentProducts');
             } catch (error) {
-                console.error('Erreur chargement produits:', error);
-                document.getElementById('recentProducts').innerHTML = 
-                    '<div class="col-span-full text-center py-12 text-red-500">Impossible de charger les produits</div>';
+                document.getElementById('recentProducts').innerHTML = '<div class="col-span-full text-center py-12 text-red-500">Erreur de chargement</div>';
             }
         }
 
-        // Charger les catégories
         async function chargerCategories() {
             try {
                 const querySnapshot = await getDocs(collection(db, 'categories'));
@@ -402,19 +311,17 @@
                 });
                 afficherCategories(categories, 'categoriesGrid');
             } catch (error) {
-                console.error('Erreur chargement catégories:', error);
+                console.error('Erreur catégories:', error);
             }
         }
 
-        // Fonction de recherche
         window.rechercher = function() {
             const searchTerm = document.getElementById('searchInput')?.value;
-            if (searchTerm && searchTerm.trim()) {
-                window.location.href = `produits.html?search=${encodeURIComponent(searchTerm.trim())}`;
+            if (searchTerm?.trim()) {
+                window.location.href = `products/list.html?search=${encodeURIComponent(searchTerm.trim())}`;
             }
         };
 
-        // Initialisation
         chargerProduitsRecents();
         chargerCategories();
     </script>
