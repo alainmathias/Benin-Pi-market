@@ -10,9 +10,12 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  sendPasswordResetEmail,        // ✅ AJOUTÉ
+  sendPasswordResetEmail,
   updateProfile,
-  sendEmailVerification
+  sendEmailVerification,
+  updatePassword,           // ✅ AJOUTÉ
+  reauthenticateWithCredential,
+  EmailAuthProvider
 } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 import { 
   getFirestore, 
@@ -50,6 +53,8 @@ import {
 // ============================================
 // 🔑 METTEZ VOS CLÉS ICI
 // ============================================
+
+
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyB_ehKUxOsJ530Ll_64RyDSrAwgn2PMooY",
@@ -82,9 +87,12 @@ export {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  sendPasswordResetEmail,      // ✅ MAINTENANT EXPORTÉ
+  sendPasswordResetEmail,
   updateProfile,
   sendEmailVerification,
+  updatePassword,           // ✅ MAINTENANT EXPORTÉ
+  reauthenticateWithCredential,
+  EmailAuthProvider,
   
   // Firestore
   collection, 
