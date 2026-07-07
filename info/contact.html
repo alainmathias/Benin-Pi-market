@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0' },
+                        secondary: { 500: '#ff6b00' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">BP</div>
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="../index.html" class="text-gray-600 hover:text-primary-500 transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Accueil
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="flex-1 max-w-4xl mx-auto px-4 py-8 w-full">
+
+        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <!-- Bannière -->
+            <div class="bg-gradient-to-r from-primary-500 to-primary-700 text-white p-8 text-center">
+                <i class="fas fa-envelope text-5xl mb-4 block"></i>
+                <h1 class="text-3xl font-bold">Contactez-nous</h1>
+                <p class="text-blue-100 mt-2">Nous sommes là pour vous aider</p>
+            </div>
+
+            <div class="p-8">
+                <div id="alert-container"></div>
+
+                <!-- Coordonnées -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-gray-50 rounded-xl p-4 text-center">
+                        <i class="fas fa-phone text-2xl text-primary-500 mb-2 block"></i>
+                        <h4 class="font-semibold text-dark">Téléphone</h4>
+                        <p class="text-gray-600">+229 97 12 34 56</p>
+                        <p class="text-xs text-gray-400">Lun-Ven, 8h-18h</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-center">
+                        <i class="fas fa-envelope text-2xl text-primary-500 mb-2 block"></i>
+                        <h4 class="font-semibold text-dark">Email</h4>
+                        <p class="text-gray-600">contact@beninpimarket.com</p>
+                        <p class="text-xs text-gray-400">Réponse sous 24h</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-xl p-4 text-center">
+                        <i class="fab fa-whatsapp text-2xl text-green-500 mb-2 block"></i>
+                        <h4 class="font-semibold text-dark">WhatsApp</h4>
+                        <p class="text-gray-600">+229 97 12 34 56</p>
+                        <p class="text-xs text-gray-400">Réponse rapide</p>
+                    </div>
+                </div>
+
+                <!-- Formulaire -->
+                <h3 class="text-xl font-bold text-dark mb-4">Envoyez-nous un message</h3>
+                <form id="contactForm" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Nom complet *</label>
+                            <input type="text" id="contactName" class="input-field w-full" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">Email *</label>
+                            <input type="email" id="contactEmail" class="input-field w-full" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Sujet *</label>
+                        <select id="contactSubject" class="input-field w-full" required>
+                            <option value="">Sélectionnez un sujet</option>
+                            <option value="support">Support technique</option>
+                            <option value="commercial">Demande commerciale</option>
+                            <option value="partenariat">Partenariat</option>
+                            <option value="signalement">Signaler un problème</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Message *</label>
+                        <textarea id="contactMessage" rows="5" class="input-field w-full resize-none" placeholder="Décrivez votre demande..." required></textarea>
+                        <p class="text-xs text-gray-400 mt-1"><span id="msgCount">0</span> caractères</p>
+                    </div>
+                    <button type="submit" class="btn-primary w-full">
+                        <i class="fas fa-paper-plane mr-2"></i> Envoyer le message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market - Contact</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { showAlert } from '../js/utils.js';
+
+        // Compteur de caractères
+        const message = document.getElementById('contactMessage');
+        const msgCount = document.getElementById('msgCount');
+        message.addEventListener('input', () => {
+            msgCount.textContent = message.value.length;
+        });
+
+        // Soumission
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                showAlert('Veuillez remplir tous les champs.', 'danger');
+                return;
+            }
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Envoi en cours...';
+            btn.disabled = true;
+
+            try {
+                // Simuler l'envoi
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                showAlert('✅ Message envoyé avec succès ! Nous vous répondrons rapidement.', 'success');
+                document.getElementById('contactForm').reset();
+                msgCount.textContent = '0';
+            } catch (error) {
+                showAlert('❌ Erreur lors de l\'envoi. Veuillez réessayer.', 'danger');
+            }
+
+            btn.innerHTML = original;
+            btn.disabled = false;
+        });
+    </script>
+</body>
+</html>
