@@ -269,7 +269,10 @@
 
     <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
-        import { auth, db, doc, getDoc, updateDoc, onAuthStateChanged, updatePassword, collection, query, where, getDocs } from '../js/firebase-config.js';
+        import { 
+            auth, db, doc, getDoc, updateDoc, onAuthStateChanged, 
+            updatePassword, collection, query, where, getDocs 
+        } from '../js/firebase-config.js';
         import { showAlert, formatDate, logout } from '../js/utils.js';
 
         window.logout = logout;
@@ -472,7 +475,15 @@
 
                 // Mettre à jour le mot de passe si demandé
                 if (newPassword) {
-                    await updatePassword(currentUser, newPassword);
+                    try {
+                        await updatePassword(currentUser, newPassword);
+                    } catch (pwdError) {
+                        if (pwdError.code === 'auth/requires-recent-login') {
+                            showAlert('⚠️ Pour des raisons de sécurité, veuillez vous reconnecter avant de changer votre mot de passe.', 'warning');
+                        } else {
+                            throw pwdError;
+                        }
+                    }
                 }
 
                 // Mettre à jour les données locales
