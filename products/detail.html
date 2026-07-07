@@ -13,7 +13,11 @@
                 extend: {
                     colors: {
                         primary: { 500: '#1a73e8', 600: '#1557b0' },
-                        secondary: { 500: '#ff6b00' }
+                        secondary: { 500: '#ff6b00', 600: '#cc5500' },
+                        pi: { 500: '#f9a825', 600: '#f57f17' },
+                        success: { 500: '#22c55e' },
+                        warning: { 500: '#f59e0b' },
+                        danger: { 500: '#ef4444' }
                     }
                 }
             }
@@ -24,29 +28,83 @@
 
     <!-- ========== HEADER ========== -->
     <header class="bg-white shadow-md sticky top-0 z-50">
-        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="../index.html" class="flex items-center gap-3">
-                <img src="../images/logo.png" alt="Bénin Pi Market" class="h-12" onerror="this.style.display='none'">
+        <nav class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg transition group-hover:scale-105">BP</div>
                 <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
             </a>
             <div class="flex items-center gap-4">
                 <a href="list.html" class="text-gray-600 hover:text-primary-500 transition">
                     <i class="fas fa-arrow-left mr-2"></i> Retour
                 </a>
-                <a href="../auth/login.html" class="border-2 border-primary-500 text-primary-500 px-4 py-2 rounded-xl font-semibold hover:bg-primary-500 hover:text-white transition">
-                    Connexion
+                <a href="#" onclick="window.logout()" class="text-red-500 hover:text-red-600 transition">
+                    <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
         </nav>
     </header>
 
     <!-- ========== CONTENU PRINCIPAL ========== -->
-    <div class="flex-1 max-w-6xl mx-auto px-4 py-8 w-full">
+    <div class="flex-1 max-w-6xl mx-auto px-4 py-6 w-full">
+        
+        <!-- Alertes -->
+        <div id="alert-container"></div>
+
+        <!-- Conteneur produit -->
         <div id="productContainer" class="bg-white rounded-2xl shadow-card overflow-hidden">
-            <!-- Loading -->
             <div class="text-center py-16">
                 <div class="spinner mx-auto"></div>
                 <p class="mt-4 text-gray-500">Chargement du produit...</p>
+            </div>
+        </div>
+
+        <!-- ========== SECTION AVIS ========== -->
+        <div id="reviewsSection" class="mt-8 bg-white rounded-2xl shadow-card p-6 hidden">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-dark">
+                    <i class="fas fa-star text-yellow-400 mr-2"></i> Avis des clients
+                </h3>
+                <span id="reviewCount" class="text-sm text-gray-500">0 avis</span>
+            </div>
+
+            <!-- Note moyenne -->
+            <div id="averageRatingDisplay" class="flex items-center gap-4 mb-4 p-4 bg-gray-50 rounded-xl">
+                <div class="text-4xl font-bold text-primary-500" id="avgRating">0.0</div>
+                <div>
+                    <div id="avgStars" class="text-2xl">☆☆☆☆☆</div>
+                    <span id="totalReviewsText" class="text-sm text-gray-500">0 avis</span>
+                </div>
+            </div>
+
+            <!-- Formulaire avis -->
+            <div id="reviewFormContainer" class="hidden mb-6 p-4 bg-primary-50 rounded-xl border border-primary-200">
+                <h4 class="font-semibold text-dark mb-2">Donnez votre avis</h4>
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-sm text-gray-600">Votre note :</span>
+                    <div id="starRatingInput" class="flex gap-1">
+                        <button onclick="setRating(1)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="1"><i class="fas fa-star"></i></button>
+                        <button onclick="setRating(2)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="2"><i class="fas fa-star"></i></button>
+                        <button onclick="setRating(3)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="3"><i class="fas fa-star"></i></button>
+                        <button onclick="setRating(4)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="4"><i class="fas fa-star"></i></button>
+                        <button onclick="setRating(5)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="5"><i class="fas fa-star"></i></button>
+                    </div>
+                    <span id="selectedRatingText" class="text-sm text-gray-500 ml-2">Sélectionnez une note</span>
+                </div>
+                <div class="flex gap-3">
+                    <input type="text" id="reviewComment" placeholder="Votre commentaire..." class="flex-1 input-field text-sm">
+                    <button onclick="submitReview()" class="btn-primary text-sm px-4 py-2">
+                        <i class="fas fa-paper-plane mr-1"></i> Envoyer
+                    </button>
+                </div>
+                <input type="hidden" id="selectedRating" value="0">
+            </div>
+
+            <!-- Liste avis -->
+            <div id="reviewsList" class="space-y-4">
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>
+                    Chargement des avis...
+                </div>
             </div>
         </div>
     </div>
@@ -61,47 +119,93 @@
     <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
         import { auth, db, doc, getDoc, updateDoc, onAuthStateChanged } from '../js/firebase-config.js';
-        import { formatPrice, formatDate, showAlert } from '../js/utils.js';
+        import { formatPrice, formatDate, showAlert, logout } from '../js/utils.js';
+        import { getExchangeRate, toPi, formatPi } from '../js/pi-utils.js';
+        import { getProductReviews, addReview, renderStars } from '../js/reviews.js';
+        import { showNotification } from '../js/notifications.js';
 
-        // Récupérer l'ID depuis l'URL
+        window.logout = logout;
+
         const params = new URLSearchParams(window.location.search);
         const productId = params.get('id');
+        const EXCHANGE_RATE = getExchangeRate();
 
-        // Si pas d'ID, afficher une erreur
-        if (!productId) {
-            document.getElementById('productContainer').innerHTML = `
-                <div class="text-center py-16">
-                    <i class="fas fa-exclamation-circle text-6xl text-red-400 block mb-4"></i>
-                    <h2 class="text-2xl font-bold text-dark">Produit non trouvé</h2>
-                    <p class="text-gray-500 mt-2">Aucun ID de produit spécifié.</p>
-                    <a href="list.html" class="btn-primary mt-6 inline-block">
-                        <i class="fas fa-arrow-left mr-2"></i> Voir les produits
-                    </a>
-                </div>
-            `;
-        }
-
-        // Vérifier l'authentification
+        let productData = null;
+        let sellerData = null;
         let currentUser = null;
-        let userData = null;
+        let selectedRating = 0;
 
-        onAuthStateChanged(auth, async (user) => {
+        // ============================================
+        // VÉRIFICATION AUTH
+        // ============================================
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
             if (user) {
-                currentUser = user;
-                try {
-                    const userDoc = await getDoc(doc(db, 'users', user.uid));
-                    if (userDoc.exists()) {
-                        userData = userDoc.data();
+                // Vérifier si l'utilisateur est validé pour les avis
+                getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        const reviewForm = document.getElementById('reviewFormContainer');
+                        if (userData.status === 'active') {
+                            reviewForm.classList.remove('hidden');
+                        } else {
+                            reviewForm.innerHTML = `
+                                <p class="text-yellow-600 text-sm">
+                                    <i class="fas fa-clock mr-1"></i> 
+                                    ${userData.status === 'pending' ? 'Votre compte doit être validé pour donner un avis.' : 'Compte suspendu.'}
+                                </p>
+                            `;
+                        }
                     }
-                } catch (e) {
-                    console.error('Erreur récupération utilisateur:', e);
-                }
+                });
+            } else {
+                const reviewForm = document.getElementById('reviewFormContainer');
+                reviewForm.innerHTML = `
+                    <p class="text-gray-500 text-sm">
+                        <i class="fas fa-info-circle mr-1"></i> 
+                        <a href="../auth/login.html" class="text-primary-500 hover:underline">Connectez-vous</a> pour donner votre avis.
+                    </p>
+                `;
             }
-            // Charger le produit (même si non connecté)
-            chargerProduit();
         });
 
-        async function chargerProduit() {
+        // ============================================
+        // GESTION ÉTOILES
+        // ============================================
+        window.setRating = function(rating) {
+            selectedRating = rating;
+            document.getElementById('selectedRating').value = rating;
+            document.getElementById('selectedRatingText').textContent = `${rating} étoile${rating > 1 ? 's' : ''}`;
+            
+            document.querySelectorAll('#starRatingInput button').forEach(btn => {
+                const star = parseInt(btn.dataset.star);
+                if (star <= rating) {
+                    btn.classList.remove('text-gray-300');
+                    btn.classList.add('text-yellow-400');
+                } else {
+                    btn.classList.remove('text-yellow-400');
+                    btn.classList.add('text-gray-300');
+                }
+            });
+        };
+
+        // ============================================
+        // CHARGER PRODUIT
+        // ============================================
+        async function loadProduct() {
+            if (!productId) {
+                document.getElementById('productContainer').innerHTML = `
+                    <div class="text-center py-16">
+                        <i class="fas fa-exclamation-circle text-6xl text-red-400 block mb-4"></i>
+                        <h2 class="text-2xl font-bold text-dark">Produit non trouvé</h2>
+                        <a href="list.html" class="btn-primary mt-4 inline-block">
+                            <i class="fas fa-arrow-left mr-2"></i> Voir les produits
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
             try {
                 const docRef = doc(db, 'products', productId);
                 const docSnap = await getDoc(docRef);
@@ -111,38 +215,22 @@
                         <div class="text-center py-16">
                             <i class="fas fa-box-open text-6xl text-gray-300 block mb-4"></i>
                             <h2 class="text-2xl font-bold text-dark">Produit introuvable</h2>
-                            <p class="text-gray-500 mt-2">Ce produit n'existe pas ou a été supprimé.</p>
-                            <a href="list.html" class="btn-primary mt-6 inline-block">
+                            <a href="list.html" class="btn-primary mt-4 inline-block">
                                 <i class="fas fa-arrow-left mr-2"></i> Voir les produits
                             </a>
-
-<!-- Bouton Payer en Crypto Pi -->
-<div class="mt-4">
-    <a href="payment.html?id=${product.id}" 
-       class="w-full bg-pi-500 hover:bg-pi-600 text-white py-4 rounded-xl font-semibold transition flex items-center justify-center gap-2 text-lg">
-        <i class="fas fa-coin text-xl"></i>
-        Acheter en Crypto Pi
-    </a>
-    <p class="text-xs text-center text-gray-400 mt-2">
-        💰 Paiement sécurisé en Crypto Pi via WhatsApp
-    </p>
-</div>
-
                         </div>
                     `;
                     return;
                 }
 
-                const product = docSnap.data();
+                productData = docSnap.data();
 
-                // Vérifier si le produit est publié
-                if (product.status !== 'published') {
+                if (productData.status !== 'published') {
                     document.getElementById('productContainer').innerHTML = `
                         <div class="text-center py-16">
                             <i class="fas fa-lock text-6xl text-yellow-400 block mb-4"></i>
                             <h2 class="text-2xl font-bold text-dark">Produit non disponible</h2>
-                            <p class="text-gray-500 mt-2">Ce produit est en attente de validation ou a été retiré.</p>
-                            <a href="list.html" class="btn-primary mt-6 inline-block">
+                            <a href="list.html" class="btn-primary mt-4 inline-block">
                                 <i class="fas fa-arrow-left mr-2"></i> Voir les produits
                             </a>
                         </div>
@@ -150,131 +238,253 @@
                     return;
                 }
 
-                // Vérifier si l'utilisateur peut voir le bouton WhatsApp
-                const canContact = currentUser && userData && userData.status === 'active';
+                // Récupérer vendeur
+                if (productData.sellerId) {
+                    const sellerDoc = await getDoc(doc(db, 'users', productData.sellerId));
+                    if (sellerDoc.exists()) {
+                        sellerData = sellerDoc.data();
+                    }
+                }
 
                 // Incrémenter les vues
                 await updateDoc(docRef, {
-                    views: (product.views || 0) + 1
+                    views: (productData.views || 0) + 1
                 });
 
-                // Afficher le produit
-                document.getElementById('productContainer').innerHTML = `
-                    <div class="grid md:grid-cols-2 gap-8 p-6 md:p-8">
-                        <!-- Images -->
-                        <div>
-                            <div class="bg-gray-100 rounded-xl h-80 md:h-96 flex items-center justify-center overflow-hidden">
-                                ${product.images && product.images.length > 0 
-                                    ? `<img src="${product.images[0]}" alt="${product.title}" class="w-full h-full object-cover" id="mainImage">`
-                                    : `<i class="fas fa-image text-6xl text-gray-300"></i>`
-                                }
-                            </div>
-                            ${product.images && product.images.length > 1 ? `
-                                <div class="grid grid-cols-4 gap-2 mt-4">
-                                    ${product.images.map((img, index) => `
-                                        <div class="bg-gray-100 rounded-lg h-20 overflow-hidden cursor-pointer hover:opacity-75 transition border-2 ${index === 0 ? 'border-primary-500' : 'border-transparent'}"
-                                             onclick="document.getElementById('mainImage').src='${img}'; document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('border-primary-500')); this.classList.add('border-primary-500')">
-                                            <img src="${img}" class="w-full h-full object-cover thumbnail">
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
-                        </div>
+                displayProduct();
+                loadReviews();
 
-                        <!-- Informations -->
-                        <div>
-                            <!-- Catégorie -->
-                            <div class="flex items-center gap-2 mb-2">
-                                <span class="bg-primary-100 text-primary-700 text-sm px-3 py-1 rounded-full">
-                                    ${product.category || 'Non catégorisé'}
-                                </span>
-                                ${product.subCategory ? `
-                                    <span class="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">
-                                        ${product.subCategory}
-                                    </span>
-                                ` : ''}
-                            </div>
-
-                            <!-- Titre -->
-                            <h1 class="text-3xl font-bold text-dark">${product.title}</h1>
-
-                            <!-- Prix -->
-                            <div class="text-3xl font-bold text-secondary-500 mt-2">
-                                ${formatPrice(product.price)}
-                            </div>
-
-                            <!-- Localisation et date -->
-                            <div class="flex flex-wrap items-center gap-4 mt-4 text-gray-600">
-                                <span><i class="fas fa-map-marker-alt text-primary-500 mr-1"></i> ${product.city || 'Non spécifié'}</span>
-                                <span><i class="far fa-calendar mr-1"></i> Publié le ${formatDate(product.createdAt)}</span>
-                                <span><i class="far fa-eye mr-1"></i> ${product.views || 0} vues</span>
-                            </div>
-
-                            <!-- Disponibilité -->
-                            <div class="mt-4">
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium">
-                                    <i class="fas fa-check-circle mr-1"></i> Disponible
-                                </span>
-                            </div>
-
-                            <!-- Description -->
-                            <div class="mt-6">
-                                <h3 class="font-semibold text-lg text-dark mb-2">Description</h3>
-                                <p class="text-gray-600 whitespace-pre-line">${product.description || 'Aucune description'}</p>
-                            </div>
-
-                            <!-- Vendeur -->
-                            <div class="mt-6 p-4 bg-gray-50 rounded-xl">
-                                <h4 class="font-semibold text-dark mb-2">
-                                    <i class="fas fa-store text-primary-500 mr-2"></i> Vendeur
-                                </h4>
-                                <p class="font-medium">${product.sellerName || 'Vendeur inconnu'}</p>
-                                <p class="text-sm text-gray-500">${product.city || ''}</p>
-                            </div>
-
-                            <!-- Bouton WhatsApp -->
-                            ${canContact && product.sellerWhatsapp ? `
-                                <a href="https://wa.me/${product.sellerWhatsapp.replace(/\s/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(
-                                    `Bonjour, je vous contacte depuis Bénin Pi Market. Je suis intéressé par votre produit : "${product.title}". Pouvez-vous me donner plus d'informations ? Merci.`
-                                )}" 
-                                   target="_blank"
-                                   class="btn-secondary w-full mt-6 justify-center text-lg py-4">
-                                    <i class="fab fa-whatsapp mr-2 text-xl"></i> Contacter sur WhatsApp
-                                </a>
-                            ` : !currentUser ? `
-                                <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                                    <p class="text-yellow-700 text-center">
-                                        <i class="fas fa-info-circle mr-2"></i>
-                                        <a href="../auth/login.html" class="font-semibold underline hover:no-underline">Connectez-vous</a> 
-                                        pour contacter le vendeur
-                                    </p>
-                                </div>
-                            ` : userData && userData.status === 'pending' ? `
-                                <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
-                                    <p class="text-yellow-700 text-center">
-                                        <i class="fas fa-clock mr-2"></i>
-                                        Votre compte est en attente de validation. Revenez plus tard pour contacter les vendeurs.
-                                    </p>
-                                </div>
-                            ` : null}
-                        </div>
-                    </div>
-                `;
+                // Afficher section avis
+                document.getElementById('reviewsSection').classList.remove('hidden');
 
             } catch (error) {
-                console.error('Erreur chargement produit:', error);
+                console.error('Erreur:', error);
                 document.getElementById('productContainer').innerHTML = `
                     <div class="text-center py-16">
                         <i class="fas fa-exclamation-circle text-6xl text-red-400 block mb-4"></i>
                         <h2 class="text-2xl font-bold text-dark">Erreur de chargement</h2>
-                        <p class="text-gray-500 mt-2">${error.message || 'Une erreur est survenue.'}</p>
-                        <a href="list.html" class="btn-primary mt-6 inline-block">
-                            <i class="fas fa-arrow-left mr-2"></i> Voir les produits
-                        </a>
+                        <p class="text-gray-500">${error.message}</p>
                     </div>
                 `;
             }
         }
+
+        // ============================================
+        // AFFICHER PRODUIT
+        // ============================================
+        function displayProduct() {
+            const priceInPi = toPi(productData.price || 0);
+            const canContact = currentUser && sellerData && sellerData.status === 'active';
+
+            document.getElementById('productContainer').innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6 p-6">
+                    <!-- Images -->
+                    <div>
+                        <div class="bg-gray-100 rounded-xl h-80 md:h-96 flex items-center justify-center overflow-hidden">
+                            ${productData.images && productData.images.length > 0 
+                                ? `<img src="${productData.images[0]}" alt="${productData.title}" class="w-full h-full object-cover" id="mainImage">`
+                                : `<i class="fas fa-image text-6xl text-gray-300"></i>`
+                            }
+                        </div>
+                        ${productData.images && productData.images.length > 1 ? `
+                            <div class="grid grid-cols-4 gap-2 mt-4">
+                                ${productData.images.map((img, index) => `
+                                    <div class="bg-gray-100 rounded-lg h-20 overflow-hidden cursor-pointer hover:opacity-75 transition border-2 ${index === 0 ? 'border-primary-500' : 'border-transparent'}"
+                                         onclick="document.getElementById('mainImage').src='${img}'; document.querySelectorAll('.thumbnail').forEach(el => el.classList.remove('border-primary-500')); this.classList.add('border-primary-500')">
+                                        <img src="${img}" class="w-full h-full object-cover thumbnail">
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <!-- Infos -->
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="bg-primary-100 text-primary-700 text-sm px-3 py-1 rounded-full">${productData.category || 'Non catégorisé'}</span>
+                            ${productData.subCategory ? `<span class="bg-gray-100 text-gray-600 text-sm px-3 py-1 rounded-full">${productData.subCategory}</span>` : ''}
+                        </div>
+
+                        <h1 class="text-3xl font-bold text-dark">${productData.title}</h1>
+
+                        <div class="flex items-center gap-4 mt-2">
+                            <span class="text-3xl font-bold text-secondary-500">${formatPrice(productData.price)}</span>
+                            <span class="bg-pi-100 text-pi-700 px-3 py-1 rounded-full text-sm font-semibold">${priceInPi.toFixed(1)} Pi</span>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-4 mt-4 text-gray-600">
+                            <span><i class="fas fa-map-marker-alt text-primary-500 mr-1"></i> ${productData.city || 'Non spécifié'}</span>
+                            <span><i class="far fa-calendar mr-1"></i> Publié le ${formatDate(productData.createdAt)}</span>
+                            <span><i class="far fa-eye mr-1"></i> ${productData.views || 0} vues</span>
+                        </div>
+
+                        <div class="mt-4">
+                            <span class="bg-success-100 text-success-700 px-3 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-check-circle mr-1"></i> Disponible
+                            </span>
+                        </div>
+
+                        <div class="mt-6">
+                            <h3 class="font-semibold text-lg text-dark mb-2">Description</h3>
+                            <p class="text-gray-600 whitespace-pre-line">${productData.description || 'Aucune description'}</p>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-gray-50 rounded-xl">
+                            <h4 class="font-semibold text-dark mb-2">
+                                <i class="fas fa-store text-primary-500 mr-2"></i> Vendeur
+                            </h4>
+                            <p class="font-medium">${productData.sellerName || 'Vendeur inconnu'}</p>
+                            <p class="text-sm text-gray-500">${productData.city || ''}</p>
+                        </div>
+
+                        <!-- Boutons action -->
+                        <div class="mt-6 space-y-3">
+                            ${canContact && sellerData?.whatsapp ? `
+                                <a href="https://wa.me/${sellerData.whatsapp.replace(/\s/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(
+                                    `Bonjour, je vous contacte depuis Bénin Pi Market. Je suis intéressé par votre produit : "${productData.title}". Pouvez-vous me donner plus d'informations ? Merci.`
+                                )}" 
+                                   target="_blank"
+                                   class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2">
+                                    <i class="fab fa-whatsapp text-xl"></i> Contacter sur WhatsApp
+                                </a>
+                            ` : !currentUser ? `
+                                <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+                                    <a href="../auth/login.html" class="text-primary-500 font-semibold hover:underline">Connectez-vous</a> 
+                                    pour contacter le vendeur
+                                </div>
+                            ` : sellerData?.status === 'pending' ? `
+                                <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
+                                    Le vendeur est en attente de validation
+                                </div>
+                            ` : null}
+
+                            <a href="payment.html?id=${productData.id}" 
+                               class="w-full bg-pi-500 hover:bg-pi-600 text-white py-3 rounded-xl font-semibold transition flex items-center justify-center gap-2">
+                                <i class="fas fa-coin text-xl"></i> Acheter en Crypto Pi
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // AVIS
+        // ============================================
+        async function loadReviews() {
+            try {
+                const reviews = await getProductReviews(productId);
+                
+                const container = document.getElementById('reviewsList');
+                const countSpan = document.getElementById('reviewCount');
+                const avgDisplay = document.getElementById('avgRating');
+                const avgStars = document.getElementById('avgStars');
+                
+                countSpan.textContent = `${reviews.length} avis`;
+                
+                if (reviews.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-star text-4xl text-gray-300 block mb-2"></i>
+                            <p>Aucun avis pour le moment</p>
+                            <p class="text-sm">Soyez le premier à donner votre avis !</p>
+                        </div>
+                    `;
+                    avgDisplay.textContent = '0.0';
+                    avgStars.innerHTML = '☆☆☆☆☆';
+                    document.getElementById('totalReviewsText').textContent = '0 avis';
+                    return;
+                }
+                
+                const total = reviews.reduce((sum, r) => sum + r.rating, 0);
+                const average = total / reviews.length;
+                
+                avgDisplay.textContent = average.toFixed(1);
+                avgStars.innerHTML = renderStars(average);
+                document.getElementById('totalReviewsText').textContent = `${reviews.length} avis`;
+                
+                container.innerHTML = reviews.map(review => `
+                    <div class="bg-gray-50 rounded-xl p-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-semibold text-dark">${review.userName || 'Utilisateur'}</span>
+                                    <span class="text-yellow-400">${renderStars(review.rating)}</span>
+                                </div>
+                                <p class="text-gray-600 mt-1 text-sm">${review.comment || 'Aucun commentaire'}</p>
+                                <span class="text-xs text-gray-400">${new Date(review.createdAt).toLocaleDateString('fr-BJ')}</span>
+                            </div>
+                            ${currentUser && review.userId === currentUser.uid ? `
+                                <button onclick="deleteReview('${review.id}')" class="text-red-400 hover:text-red-600 transition text-sm">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Erreur chargement avis:', error);
+            }
+        }
+
+        // ============================================
+        // SOUMETTRE AVIS
+        // ============================================
+        window.submitReview = async function() {
+            if (!currentUser) {
+                showNotification('Veuillez vous connecter pour donner un avis.', 'warning');
+                return;
+            }
+            
+            const rating = parseInt(document.getElementById('selectedRating').value);
+            const comment = document.getElementById('reviewComment').value.trim();
+            
+            if (rating === 0) {
+                showNotification('Veuillez sélectionner une note.', 'warning');
+                return;
+            }
+            
+            if (!comment) {
+                showNotification('Veuillez écrire un commentaire.', 'warning');
+                return;
+            }
+            
+            const result = await addReview(productId, currentUser.uid, rating, comment);
+            
+            if (result.success) {
+                showNotification(result.message, 'success');
+                document.getElementById('reviewComment').value = '';
+                document.getElementById('selectedRating').value = 0;
+                document.getElementById('selectedRatingText').textContent = 'Sélectionnez une note';
+                document.querySelectorAll('#starRatingInput button').forEach(btn => {
+                    btn.classList.remove('text-yellow-400');
+                    btn.classList.add('text-gray-300');
+                });
+                await loadReviews();
+            } else {
+                showNotification(result.message, 'error');
+            }
+        };
+
+        window.deleteReview = async function(reviewId) {
+            if (!confirm('Voulez-vous supprimer cet avis ?')) return;
+            
+            const { deleteReview } = await import('../js/reviews.js');
+            const result = await deleteReview(reviewId, currentUser?.uid, false);
+            
+            if (result.success) {
+                showNotification(result.message, 'success');
+                await loadReviews();
+            } else {
+                showNotification(result.message, 'error');
+            }
+        };
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        loadProduct();
     </script>
 </body>
 </html>
