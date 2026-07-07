@@ -1,0 +1,265 @@
+<!-- ============================================
+     COMPOSANT AVIS - À INTÉGRER DANS LA PAGE DÉTAIL PRODUIT
+     ============================================ -->
+
+<!-- Section des avis -->
+<div id="reviewsSection" class="mt-8 border-t border-gray-200 pt-8">
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="text-xl font-bold text-dark">
+            <i class="fas fa-star text-yellow-400 mr-2"></i> Avis des clients
+        </h3>
+        <span id="reviewCount" class="text-sm text-gray-500">0 avis</span>
+    </div>
+
+    <!-- Note moyenne -->
+    <div id="averageRatingDisplay" class="flex items-center gap-4 mb-4 p-4 bg-gray-50 rounded-xl">
+        <div class="text-4xl font-bold text-primary-500" id="avgRating">0.0</div>
+        <div>
+            <div id="avgStars" class="text-2xl">☆☆☆☆☆</div>
+            <span id="totalReviewsText" class="text-sm text-gray-500">0 avis</span>
+        </div>
+    </div>
+
+    <!-- Formulaire d'avis (visible si connecté) -->
+    <div id="reviewFormContainer" class="hidden mb-6 p-4 bg-primary-50 rounded-xl border border-primary-200">
+        <h4 class="font-semibold text-dark mb-2">Donnez votre avis</h4>
+        <div class="flex items-center gap-2 mb-3">
+            <span class="text-sm text-gray-600">Votre note :</span>
+            <div id="starRatingInput" class="flex gap-1">
+                <button onclick="setRating(1)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="1">
+                    <i class="fas fa-star"></i>
+                </button>
+                <button onclick="setRating(2)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="2">
+                    <i class="fas fa-star"></i>
+                </button>
+                <button onclick="setRating(3)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="3">
+                    <i class="fas fa-star"></i>
+                </button>
+                <button onclick="setRating(4)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="4">
+                    <i class="fas fa-star"></i>
+                </button>
+                <button onclick="setRating(5)" class="text-2xl transition hover:scale-110 focus:outline-none text-gray-300" data-star="5">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
+            <span id="selectedRatingText" class="text-sm text-gray-500 ml-2">Sélectionnez une note</span>
+        </div>
+        <div class="flex gap-3">
+            <input type="text" id="reviewComment" placeholder="Votre commentaire..." 
+                   class="flex-1 input-field text-sm">
+            <button onclick="submitReview()" class="btn-primary text-sm px-4 py-2">
+                <i class="fas fa-paper-plane mr-1"></i> Envoyer
+            </button>
+        </div>
+        <input type="hidden" id="selectedRating" value="0">
+    </div>
+
+    <!-- Liste des avis -->
+    <div id="reviewsList" class="space-y-4">
+        <div class="text-center py-8 text-gray-500">
+            <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>
+            Chargement des avis...
+        </div>
+    </div>
+</div>
+
+<!-- ============================================
+     JAVASCRIPT POUR LES AVIS
+     ============================================ -->
+<script type="module">
+    import { auth, onAuthStateChanged } from '../js/firebase-config.js';
+    import { getProductReviews, addReview, renderStars, updateProductRating } from '../js/reviews.js';
+    import { showNotification } from '../js/notifications.js';
+
+    let currentProductId = null;
+    let currentUser = null;
+    let selectedRating = 0;
+    let userReviews = [];
+
+    // Récupérer l'ID du produit depuis l'URL
+    const params = new URLSearchParams(window.location.search);
+    currentProductId = params.get('id');
+
+    // ============================================
+    // GESTION DES ÉTOILES
+    // ============================================
+    window.setRating = function(rating) {
+        selectedRating = rating;
+        document.getElementById('selectedRating').value = rating;
+        document.getElementById('selectedRatingText').textContent = `${rating} étoile${rating > 1 ? 's' : ''}`;
+        
+        // Mettre à jour les étoiles
+        document.querySelectorAll('#starRatingInput button').forEach(btn => {
+            const star = parseInt(btn.dataset.star);
+            if (star <= rating) {
+                btn.classList.remove('text-gray-300');
+                btn.classList.add('text-yellow-400');
+            } else {
+                btn.classList.remove('text-yellow-400');
+                btn.classList.add('text-gray-300');
+            }
+        });
+    };
+
+    // ============================================
+    // VÉRIFIER L'AUTHENTIFICATION
+    // ============================================
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        const reviewForm = document.getElementById('reviewFormContainer');
+        
+        if (user) {
+            // Vérifier si l'utilisateur est validé
+            import('../js/firebase-config.js').then(({ db, doc, getDoc }) => {
+                getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        if (userData.status === 'active') {
+                            reviewForm.classList.remove('hidden');
+                        } else {
+                            reviewForm.innerHTML = `
+                                <p class="text-yellow-600 text-sm">
+                                    <i class="fas fa-clock mr-1"></i> 
+                                    ${userData.status === 'pending' ? 'Votre compte doit être validé pour donner un avis.' : 'Compte suspendu. Contactez l\'administrateur.'}
+                                </p>
+                            `;
+                        }
+                    }
+                });
+            });
+        } else {
+            reviewForm.innerHTML = `
+                <p class="text-gray-500 text-sm">
+                    <i class="fas fa-info-circle mr-1"></i> 
+                    <a href="../auth/login.html" class="text-primary-500 hover:underline">Connectez-vous</a> pour donner votre avis.
+                </p>
+            `;
+        }
+    });
+
+    // ============================================
+    // CHARGER LES AVIS
+    // ============================================
+    async function loadReviews() {
+        if (!currentProductId) return;
+
+        try {
+            const reviews = await getProductReviews(currentProductId);
+            userReviews = reviews;
+            
+            const container = document.getElementById('reviewsList');
+            const countSpan = document.getElementById('reviewCount');
+            const avgDisplay = document.getElementById('avgRating');
+            const avgStars = document.getElementById('avgStars');
+            
+            countSpan.textContent = `${reviews.length} avis`;
+            
+            if (reviews.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-star text-4xl text-gray-300 block mb-2"></i>
+                        <p>Aucun avis pour le moment</p>
+                        <p class="text-sm">Soyez le premier à donner votre avis !</p>
+                    </div>
+                `;
+                avgDisplay.textContent = '0.0';
+                avgStars.innerHTML = '☆☆☆☆☆';
+                document.getElementById('totalReviewsText').textContent = '0 avis';
+                return;
+            }
+            
+            // Calculer la moyenne
+            const total = reviews.reduce((sum, r) => sum + r.rating, 0);
+            const average = total / reviews.length;
+            
+            avgDisplay.textContent = average.toFixed(1);
+            avgStars.innerHTML = renderStars(average);
+            document.getElementById('totalReviewsText').textContent = `${reviews.length} avis`;
+            
+            // Afficher les avis
+            container.innerHTML = reviews.map(review => `
+                <div class="bg-gray-50 rounded-xl p-4">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-dark">${review.userName || 'Utilisateur'}</span>
+                                <span class="text-yellow-400">${renderStars(review.rating)}</span>
+                            </div>
+                            <p class="text-gray-600 mt-1 text-sm">${review.comment || 'Aucun commentaire'}</p>
+                            <span class="text-xs text-gray-400">${new Date(review.createdAt).toLocaleDateString('fr-BJ')}</span>
+                        </div>
+                        ${currentUser && review.userId === currentUser.uid ? `
+                            <button onclick="deleteReview('${review.id}')" class="text-red-400 hover:text-red-600 transition text-sm">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+            
+        } catch (error) {
+            console.error('Erreur chargement avis:', error);
+        }
+    }
+
+    // ============================================
+    // SOUMETTRE UN AVIS
+    // ============================================
+    window.submitReview = async function() {
+        if (!currentUser) {
+            showNotification('Veuillez vous connecter pour donner un avis.', 'warning');
+            return;
+        }
+        
+        const rating = parseInt(document.getElementById('selectedRating').value);
+        const comment = document.getElementById('reviewComment').value.trim();
+        
+        if (rating === 0) {
+            showNotification('Veuillez sélectionner une note.', 'warning');
+            return;
+        }
+        
+        if (!comment) {
+            showNotification('Veuillez écrire un commentaire.', 'warning');
+            return;
+        }
+        
+        const result = await addReview(currentProductId, currentUser.uid, rating, comment);
+        
+        if (result.success) {
+            showNotification(result.message, 'success');
+            document.getElementById('reviewComment').value = '';
+            document.getElementById('selectedRating').value = 0;
+            document.getElementById('selectedRatingText').textContent = 'Sélectionnez une note';
+            document.querySelectorAll('#starRatingInput button').forEach(btn => {
+                btn.classList.remove('text-yellow-400');
+                btn.classList.add('text-gray-300');
+            });
+            await loadReviews();
+        } else {
+            showNotification(result.message, 'error');
+        }
+    };
+
+    // ============================================
+    // SUPPRIMER UN AVIS
+    // ============================================
+    window.deleteReview = async function(reviewId) {
+        if (!confirm('Voulez-vous supprimer cet avis ?')) return;
+        
+        const { deleteReview } = await import('../js/reviews.js');
+        const result = await deleteReview(reviewId, currentUser?.uid, false);
+        
+        if (result.success) {
+            showNotification(result.message, 'success');
+            await loadReviews();
+        } else {
+            showNotification(result.message, 'error');
+        }
+    };
+
+    // ============================================
+    // INITIALISATION
+    // ============================================
+    loadReviews();
+</script>
