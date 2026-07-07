@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catégories - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0' },
+                        secondary: { 500: '#ff6b00' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">BP</div>
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="../index.html" class="text-gray-600 hover:text-primary-500 transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Accueil
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="flex-1 max-w-7xl mx-auto px-4 py-8 w-full">
+
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-14 h-14 bg-primary-100 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-tags text-3xl text-primary-500"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-dark">Toutes les catégories</h1>
+                <p class="text-gray-500">Trouvez ce que vous cherchez par catégorie</p>
+            </div>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- Grille des catégories -->
+        <div id="categoriesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div class="col-span-full text-center py-12">
+                <div class="spinner mx-auto"></div>
+                <p class="mt-4 text-gray-500">Chargement des catégories...</p>
+            </div>
+        </div>
+
+        <!-- Produits par catégorie -->
+        <div class="mt-12">
+            <h2 class="text-2xl font-bold text-dark mb-6">Derniers produits par catégorie</h2>
+            <div id="productsByCategory" class="space-y-8">
+                <div class="text-center py-8 text-gray-500">
+                    <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>
+                    Chargement...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market - Catégories</p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script type="module">
+        import { db, collection, getDocs, query, where, orderBy, limit } from '../js/firebase-config.js';
+        import { showAlert, formatPrice, formatDate } from '../js/utils.js';
+
+        // ============================================
+        // CHARGER LES CATÉGORIES
+        // ============================================
+        async function loadCategories() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'categories'));
+                const categories = [];
+                querySnapshot.forEach((doc) => {
+                    categories.push({ id: doc.id, ...doc.data() });
+                });
+
+                const container = document.getElementById('categoriesGrid');
+                
+                if (categories.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-full text-center py-12">
+                            <i class="fas fa-folder-open text-6xl text-gray-300 block mb-4"></i>
+                            <p class="text-gray-500">Aucune catégorie disponible</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = categories.map(cat => `
+                    <a href="../products/list.html?category=${encodeURIComponent(cat.name)}" 
+                       class="bg-white rounded-2xl shadow-card hover:shadow-card-hover p-6 text-center transition-all duration-300 group hover:-translate-y-2">
+                        <span class="text-5xl block mb-3 group-hover:scale-110 transition">${cat.icon || '📦'}</span>
+                        <span class="font-semibold text-dark group-hover:text-primary-500 transition">${cat.name}</span>
+                        <span class="text-xs text-gray-400 block mt-1">Voir les produits</span>
+                    </a>
+                `).join('');
+
+                // Charger les produits par catégorie
+                await loadProductsByCategory(categories);
+
+            } catch (error) {
+                console.error('Erreur chargement catégories:', error);
+                document.getElementById('categoriesGrid').innerHTML = `
+                    <div class="col-span-full text-center py-12 text-red-500">
+                        <i class="fas fa-exclamation-circle text-4xl block mb-2"></i>
+                        Erreur de chargement des catégories
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================
+        // CHARGER LES PRODUITS PAR CATÉGORIE
+        // ============================================
+        async function loadProductsByCategory(categories) {
+            const container = document.getElementById('productsByCategory');
+            
+            if (categories.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-box-open text-4xl text-gray-300 block mb-2"></i>
+                        Aucune catégorie disponible
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            
+            for (const cat of categories) {
+                try {
+                    const q = query(
+                        collection(db, 'products'),
+                        where('category', '==', cat.name),
+                        where('status', '==', 'published'),
+                        orderBy('createdAt', 'desc'),
+                        limit(4)
+                    );
+                    
+                    const querySnapshot = await getDocs(q);
+                    const products = [];
+                    querySnapshot.forEach((doc) => {
+                        products.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    if (products.length > 0) {
+                        html += `
+                            <div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="text-xl font-bold text-dark flex items-center gap-2">
+                                        <span>${cat.icon || '📦'}</span> ${cat.name}
+                                    </h3>
+                                    <a href="../products/list.html?category=${encodeURIComponent(cat.name)}" 
+                                       class="text-primary-500 hover:text-primary-600 text-sm font-medium transition">
+                                        Voir tout <i class="fas fa-arrow-right ml-1"></i>
+                                    </a>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    ${products.map(product => `
+                                        <a href="../products/detail.html?id=${product.id}" 
+                                           class="bg-white rounded-xl shadow-card hover:shadow-card-hover overflow-hidden transition hover:-translate-y-1">
+                                            <div class="h-32 bg-gray-100 overflow-hidden">
+                                                ${product.images && product.images[0] 
+                                                    ? `<img src="${product.images[0]}" class="w-full h-full object-cover hover:scale-105 transition duration-300">` 
+                                                    : `<div class="w-full h-full flex items-center justify-center"><i class="fas fa-image text-3xl text-gray-300"></i></div>`
+                                                }
+                                            </div>
+                                            <div class="p-3">
+                                                <h4 class="font-semibold text-sm text-dark line-clamp-1">${product.title}</h4>
+                                                <div class="text-secondary-500 font-bold text-sm">${formatPrice(product.price || 0)}</div>
+                                                <div class="flex justify-between items-center mt-1 text-xs text-gray-400">
+                                                    <span><i class="fas fa-map-marker-alt mr-1"></i> ${product.city || '-'}</span>
+                                                    <span><i class="far fa-eye mr-1"></i> ${product.views || 0}</span>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error(`Erreur chargement produits pour ${cat.name}:`, error);
+                }
+            }
+
+            if (html === '') {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-box-open text-4xl text-gray-300 block mb-2"></i>
+                        Aucun produit disponible pour le moment
+                    </div>
+                `;
+            } else {
+                container.innerHTML = html;
+            }
+        }
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        loadCategories();
+
+        console.log('✅ Page Catégories chargée avec succès !');
+    </script>
+</body>
+</html>
