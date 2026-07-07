@@ -207,237 +207,250 @@
         </div>
     </footer>
 
-    <!-- ========== JAVASCRIPT ========== -->
-    <script type="module">
-        import { auth, db, collection, query, where, orderBy, getDocs, doc, getDoc, updateDoc, onAuthStateChanged } from '../js/firebase-config.js';
-        import { showAlert, formatPrice, formatDate, logout } from '../js/utils.js';
+ <!-- ========== JAVASCRIPT - VERSION CORRIGÉE ========== -->
+<script type="module">
+    import { auth, db, collection, query, where, getDocs, doc, getDoc, updateDoc, onAuthStateChanged } from '../js/firebase-config.js';
+    import { showAlert, formatPrice, formatDate, logout } from '../js/utils.js';
 
-        window.logout = logout;
+    window.logout = logout;
 
-        let currentUser = null;
-        let userData = null;
-        let allProducts = [];
+    let currentUser = null;
+    let userData = null;
+    let allProducts = [];
 
-        // ============================================
-        // VÉRIFICATION DE L'AUTHENTIFICATION
-        // ============================================
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
+    // ============================================
+    // VÉRIFICATION DE L'AUTHENTIFICATION
+    // ============================================
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = '../auth/login.html';
+            return;
+        }
+
+        currentUser = user;
+
+        try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (!userDoc.exists()) {
                 window.location.href = '../auth/login.html';
                 return;
             }
 
-            currentUser = user;
+            userData = userDoc.data();
 
-            try {
-                const userDoc = await getDoc(doc(db, 'users', user.uid));
-                if (!userDoc.exists()) {
-                    window.location.href = '../auth/login.html';
-                    return;
-                }
-
-                userData = userDoc.data();
-
-                // Vérifier le rôle
-                if (userData.role === 'admin') {
-                    window.location.href = 'admin.html';
-                    return;
-                }
-
-                // Vérifier le statut du compte
-                checkAccountStatus();
-
-                // Afficher le nom
-                document.getElementById('userName').textContent = `${userData.prenom} ${userData.nom}`;
-                document.getElementById('welcomeMessage').textContent = 
-                    `👋 Bonjour ${userData.prenom} ${userData.nom} ! Bienvenue sur votre espace vendeur`;
-
-                // Charger les données
-                await loadProducts();
-
-            } catch (error) {
-                console.error('Erreur:', error);
-                showAlert('Erreur de chargement des données.', 'danger');
+            if (userData.role === 'admin') {
+                window.location.href = 'admin.html';
+                return;
             }
-        });
 
-        // ============================================
-        // VÉRIFICATION DU STATUT DU COMPTE
-        // ============================================
-        function checkAccountStatus() {
-            const banner = document.getElementById('statusBanner');
-            const message = document.getElementById('statusMessage');
+            checkAccountStatus();
 
-            if (userData.status === 'pending') {
-                banner.className = 'mb-6 p-4 rounded-xl bg-warning-50 border border-warning-200';
-                message.innerHTML = `
-                    <i class="fas fa-clock text-warning-500 mr-2"></i>
-                    Votre compte est en attente de validation par l'administrateur. 
-                    Vous ne pouvez pas encore publier de produits.
-                `;
-                banner.classList.remove('hidden');
-                document.querySelector('.btn-secondary')?.classList.add('opacity-50', 'cursor-not-allowed');
-                document.querySelector('.btn-secondary')?.setAttribute('onclick', "showAlert('Votre compte doit être validé pour publier.', 'warning')");
-            } else if (userData.status === 'suspended') {
-                banner.className = 'mb-6 p-4 rounded-xl bg-danger-50 border border-danger-200';
-                message.innerHTML = `
-                    <i class="fas fa-ban text-danger-500 mr-2"></i>
-                    Votre compte a été suspendu. Veuillez contacter l'administrateur.
-                `;
-                banner.classList.remove('hidden');
-                document.querySelector('.btn-secondary')?.classList.add('opacity-50', 'cursor-not-allowed');
-                document.querySelector('.btn-secondary')?.setAttribute('onclick', "showAlert('Compte suspendu. Contactez l\\\'administrateur.', 'danger')");
-            } else {
-                banner.classList.add('hidden');
-            }
+            document.getElementById('userName').textContent = `${userData.prenom} ${userData.nom}`;
+            document.getElementById('welcomeMessage').textContent = 
+                `👋 Bonjour ${userData.prenom} ${userData.nom} ! Bienvenue sur votre espace vendeur`;
+
+            await loadProducts();
+
+        } catch (error) {
+            console.error('Erreur:', error);
+            showAlert('Erreur de chargement des données.', 'danger');
         }
+    });
 
-        // ============================================
-        // CHARGER LES PRODUITS DU VENDEUR
-        // ============================================
-        async function loadProducts() {
-            try {
-                const q = query(
-                    collection(db, 'products'),
-                    where('sellerId', '==', currentUser.uid),
-                    orderBy('createdAt', 'desc')
+    // ============================================
+    // VÉRIFICATION DU STATUT DU COMPTE
+    // ============================================
+    function checkAccountStatus() {
+        const banner = document.getElementById('statusBanner');
+        const message = document.getElementById('statusMessage');
+
+        if (userData.status === 'pending') {
+            banner.className = 'mb-6 p-4 rounded-xl bg-warning-50 border border-warning-200';
+            message.innerHTML = `
+                <i class="fas fa-clock text-warning-500 mr-2"></i>
+                Votre compte est en attente de validation par l'administrateur. 
+                Vous ne pouvez pas encore publier de produits.
+            `;
+            banner.classList.remove('hidden');
+        } else if (userData.status === 'suspended') {
+            banner.className = 'mb-6 p-4 rounded-xl bg-danger-50 border border-danger-200';
+            message.innerHTML = `
+                <i class="fas fa-ban text-danger-500 mr-2"></i>
+                Votre compte a été suspendu. Veuillez contacter l'administrateur.
+            `;
+            banner.classList.remove('hidden');
+        } else {
+            banner.classList.add('hidden');
+        }
+    }
+
+    // ============================================
+    // CHARGER LES PRODUITS (SANS INDEX)
+    // ============================================
+    async function loadProducts() {
+        try {
+            // Requête sans orderBy pour éviter l'index
+            const q = query(
+                collection(db, 'products'),
+                where('sellerId', '==', currentUser.uid)
+            );
+            
+            const querySnapshot = await getDocs(q);
+            allProducts = [];
+            querySnapshot.forEach((doc) => {
+                allProducts.push({ id: doc.id, ...doc.data() });
+            });
+
+            // Trier manuellement par date (plus récent en premier)
+            allProducts.sort((a, b) => {
+                const dateA = a.createdAt || '';
+                const dateB = b.createdAt || '';
+                return dateB.localeCompare(dateA);
+            });
+
+            updateStats();
+            renderRecentProducts();
+
+        } catch (error) {
+            console.error('Erreur chargement produits:', error);
+            
+            // Si l'erreur est liée à un index manquant, proposer le lien
+            if (error.message && error.message.includes('index')) {
+                showAlert(
+                    '⚠️ Un index est nécessaire. Créez-le via le lien dans la console ou contactez l\'administrateur.',
+                    'warning'
                 );
-                
-                const querySnapshot = await getDocs(q);
-                allProducts = [];
-                querySnapshot.forEach((doc) => {
-                    allProducts.push({ id: doc.id, ...doc.data() });
-                });
-
-                updateStats();
-                renderRecentProducts();
-
-            } catch (error) {
-                console.error('Erreur chargement produits:', error);
+                console.log('📝 Lien pour créer l\'index:', error.message.match(/https:\/\/console\.firebase\.google\.com[^\s]*/)?.[0]);
+            } else {
                 showAlert('Erreur lors du chargement de vos produits.', 'danger');
             }
-        }
-
-        // ============================================
-        // METTRE À JOUR LES STATISTIQUES
-        // ============================================
-        function updateStats() {
-            const total = allProducts.length;
-            const pending = allProducts.filter(p => p.status === 'pending').length;
-            const published = allProducts.filter(p => p.status === 'published').length;
-            const views = allProducts.reduce((sum, p) => sum + (p.views || 0), 0);
-
-            document.getElementById('totalProducts').textContent = total;
-            document.getElementById('pendingProducts').textContent = pending;
-            document.getElementById('publishedProducts').textContent = published;
-            document.getElementById('totalViews').textContent = views;
-        }
-
-        // ============================================
-        // AFFICHER LES PRODUITS RÉCENTS
-        // ============================================
-        function renderRecentProducts() {
-            const tbody = document.getElementById('recentProductsTable');
-            const recent = allProducts.slice(0, 5);
-
-            if (recent.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="text-center py-8">
-                            <i class="fas fa-box-open text-4xl text-gray-300 block mb-3"></i>
-                            <p class="text-gray-500">Vous n'avez pas encore publié de produits.</p>
-                            <a href="../products/add.html" class="btn-primary mt-4 inline-block text-sm">
-                                <i class="fas fa-plus mr-2"></i> Publier votre premier produit
-                            </a>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = recent.map(product => `
-                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
-                                ${product.images && product.images[0] 
-                                    ? `<img src="${product.images[0]}" class="w-full h-full object-cover">` 
-                                    : `<i class="fas fa-image text-gray-300"></i>`
-                                }
-                            </div>
-                            <div>
-                                <a href="../products/detail.html?id=${product.id}" class="font-medium text-dark hover:text-primary-500 transition">
-                                    ${product.title}
-                                </a>
-                                <div class="text-xs text-gray-500">${formatDate(product.createdAt)}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 hidden md:table-cell text-sm text-gray-600">
-                        ${product.category || '-'}
-                    </td>
-                    <td class="px-6 py-4 font-semibold text-secondary-500">
-                        ${formatPrice(product.price || 0)}
-                    </td>
-                    <td class="px-6 py-4 hidden sm:table-cell">
-                        <span class="px-2 py-1 rounded-full text-xs font-medium
-                            ${product.status === 'published' ? 'bg-success-100 text-success-700' : 
-                              product.status === 'pending' ? 'bg-warning-100 text-warning-700' : 
-                              'bg-danger-100 text-danger-700'}">
-                            ${product.status === 'published' ? '✅ Publié' : 
-                              product.status === 'pending' ? '⏳ En attente' : 
-                              '❌ Refusé'}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 hidden lg:table-cell text-gray-600">
-                        ${product.views || 0}
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center gap-2">
-                            <a href="../products/edit.html?id=${product.id}" 
-                               class="text-primary-500 hover:text-primary-600 transition" title="Modifier">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button onclick="deleteProduct('${product.id}')" 
-                                    class="text-red-500 hover:text-red-600 transition" title="Supprimer">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            <a href="../products/detail.html?id=${product.id}" 
-                               class="text-gray-400 hover:text-gray-600 transition" title="Voir">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                        </div>
+            
+            document.getElementById('recentProductsTable').innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-exclamation-circle text-4xl text-warning-500 block mb-3"></i>
+                        <p>Impossible de charger vos produits.</p>
+                        <p class="text-xs text-gray-400 mt-2">Veuillez réessayer plus tard.</p>
                     </td>
                 </tr>
-            `).join('');
+            `;
+        }
+    }
+
+    // ============================================
+    // METTRE À JOUR LES STATISTIQUES
+    // ============================================
+    function updateStats() {
+        const total = allProducts.length;
+        const pending = allProducts.filter(p => p.status === 'pending').length;
+        const published = allProducts.filter(p => p.status === 'published').length;
+        const views = allProducts.reduce((sum, p) => sum + (p.views || 0), 0);
+
+        document.getElementById('totalProducts').textContent = total;
+        document.getElementById('pendingProducts').textContent = pending;
+        document.getElementById('publishedProducts').textContent = published;
+        document.getElementById('totalViews').textContent = views;
+    }
+
+    // ============================================
+    // AFFICHER LES PRODUITS RÉCENTS
+    // ============================================
+    function renderRecentProducts() {
+        const tbody = document.getElementById('recentProductsTable');
+        const recent = allProducts.slice(0, 5);
+
+        if (recent.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-8">
+                        <i class="fas fa-box-open text-4xl text-gray-300 block mb-3"></i>
+                        <p class="text-gray-500">Vous n'avez pas encore publié de produits.</p>
+                        <a href="../products/add.html" class="btn-primary mt-4 inline-block text-sm">
+                            <i class="fas fa-plus mr-2"></i> Publier votre premier produit
+                        </a>
+                    </td>
+                </tr>
+            `;
+            return;
         }
 
-        // ============================================
-        // SUPPRIMER UN PRODUIT
-        // ============================================
-        window.deleteProduct = async function(productId) {
-            if (!confirm('Voulez-vous vraiment supprimer ce produit ? Cette action est irréversible.')) {
-                return;
-            }
+        tbody.innerHTML = recent.map(product => `
+            <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                            ${product.images && product.images[0] 
+                                ? `<img src="${product.images[0]}" class="w-full h-full object-cover">` 
+                                : `<i class="fas fa-image text-gray-300"></i>`
+                            }
+                        </div>
+                        <div>
+                            <a href="../products/detail.html?id=${product.id}" class="font-medium text-dark hover:text-primary-500 transition">
+                                ${product.title}
+                            </a>
+                            <div class="text-xs text-gray-500">${formatDate(product.createdAt)}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 hidden md:table-cell text-sm text-gray-600">
+                    ${product.category || '-'}
+                </td>
+                <td class="px-6 py-4 font-semibold text-secondary-500">
+                    ${formatPrice(product.price || 0)}
+                </td>
+                <td class="px-6 py-4 hidden sm:table-cell">
+                    <span class="px-2 py-1 rounded-full text-xs font-medium
+                        ${product.status === 'published' ? 'bg-success-100 text-success-700' : 
+                          product.status === 'pending' ? 'bg-warning-100 text-warning-700' : 
+                          'bg-danger-100 text-danger-700'}">
+                        ${product.status === 'published' ? '✅ Publié' : 
+                          product.status === 'pending' ? '⏳ En attente' : 
+                          '❌ Refusé'}
+                    </span>
+                </td>
+                <td class="px-6 py-4 hidden lg:table-cell text-gray-600">
+                    ${product.views || 0}
+                </td>
+                <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <a href="../products/edit.html?id=${product.id}" 
+                           class="text-primary-500 hover:text-primary-600 transition" title="Modifier">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <button onclick="deleteProduct('${product.id}')" 
+                                class="text-red-500 hover:text-red-600 transition" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                        <a href="../products/detail.html?id=${product.id}" 
+                           class="text-gray-400 hover:text-gray-600 transition" title="Voir">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
 
-            try {
-                const { deleteDoc } = await import('../js/firebase-config.js');
-                await deleteDoc(doc(db, 'products', productId));
-                showAlert('✅ Produit supprimé avec succès.', 'success');
-                await loadProducts();
-            } catch (error) {
-                console.error('Erreur suppression:', error);
-                showAlert('❌ Erreur lors de la suppression.', 'danger');
-            }
-        };
+    // ============================================
+    // SUPPRIMER UN PRODUIT
+    // ============================================
+    window.deleteProduct = async function(productId) {
+        if (!confirm('Voulez-vous vraiment supprimer ce produit ? Cette action est irréversible.')) {
+            return;
+        }
 
-        // ============================================
-        // GESTION DES ERREURS CONNEXION
-        // ============================================
-        // Si l'utilisateur tente d'accéder sans être connecté
-        // La redirection est déjà gérée par onAuthStateChanged
+        try {
+            const { deleteDoc } = await import('../js/firebase-config.js');
+            await deleteDoc(doc(db, 'products', productId));
+            showAlert('✅ Produit supprimé avec succès.', 'success');
+            await loadProducts();
+        } catch (error) {
+            console.error('Erreur suppression:', error);
+            showAlert('❌ Erreur lors de la suppression.', 'danger');
+        }
+    };
 
-        console.log('✅ Dashboard Vendeur chargé avec succès !');
-    </script>
-</body>
-</html>
+    console.log('✅ Dashboard Vendeur chargé avec succès !');
+</script>
+
+</body></html>
