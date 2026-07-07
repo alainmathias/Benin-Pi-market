@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paiement Crypto Pi - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0' },
+                        secondary: { 500: '#ff6b00' },
+                        pi: { 500: '#f9a825', 600: '#f57f17' },
+                        success: { 500: '#22c55e' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">BP</div>
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="detail.html" class="text-gray-600 hover:text-primary-500 transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Retour
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="flex-1 max-w-3xl mx-auto px-4 py-8 w-full">
+        
+        <div id="alert-container"></div>
+
+        <!-- ====== PAS 1 : RÉSUMÉ DE LA COMMANDE ====== -->
+        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <div class="bg-gradient-to-r from-primary-500 to-primary-700 text-white p-6">
+                <div class="flex items-center gap-4">
+                    <i class="fas fa-shopping-cart text-3xl"></i>
+                    <div>
+                        <h1 class="text-2xl font-bold">Résumé de la commande</h1>
+                        <p class="text-blue-100 text-sm">Vérifiez les informations avant de procéder</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <!-- Produit -->
+                <div id="productInfo" class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                    <div class="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                        <i class="fas fa-image text-3xl text-gray-400"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-dark" id="productTitle">Chargement...</h3>
+                        <p class="text-sm text-gray-500" id="productSeller">Vendeur : Chargement...</p>
+                        <div class="flex items-center gap-3 mt-1">
+                            <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Crypto Pi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prix en Pi -->
+                <div class="flex justify-between items-center p-4 bg-pi-50 rounded-xl border border-pi-200">
+                    <div>
+                        <span class="text-sm text-gray-600">Prix en FCFA</span>
+                        <span class="text-lg font-bold text-gray-700" id="productPriceFCFA">-</span>
+                    </div>
+                    <div class="text-center">
+                        <i class="fas fa-arrow-right text-pi-500"></i>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-sm text-gray-600">Prix en Pi</span>
+                        <span class="text-2xl font-bold text-pi-600" id="productPricePi">-</span>
+                    </div>
+                </div>
+
+                <!-- Taux de conversion -->
+                <div class="text-center text-xs text-gray-400">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Taux de conversion : 1 Pi ≈ <span id="exchangeRate">1.000</span> FCFA
+                    <br>
+                    <span class="text-pi-500">💰 Crypto Pi</span> - Paiement sécurisé via WhatsApp
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== PAS 2 : CHOIX DU PAIEMENT ====== -->
+        <div class="mt-6">
+            <h2 class="text-xl font-bold text-dark mb-4">
+                <i class="fas fa-credit-card text-primary-500 mr-2"></i> Mode de paiement
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Option WhatsApp + Crypto Pi -->
+                <div class="bg-white rounded-2xl shadow-card p-6 border-2 border-pi-500 relative">
+                    <div class="absolute -top-3 right-4 bg-pi-500 text-white text-xs px-3 py-1 rounded-full">
+                        Recommandé
+                    </div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-pi-100 rounded-xl flex items-center justify-center">
+                            <i class="fab fa-whatsapp text-2xl text-green-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-dark">WhatsApp + Crypto Pi</h3>
+                            <p class="text-sm text-gray-500">Paiement en Crypto Pi</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600 mb-4">
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Paiement en Crypto Pi</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Transaction directe avec le vendeur</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Pas de frais de plateforme</li>
+                        <li><i class="fas fa-check text-green-500 mr-2"></i> Sécurisé via WhatsApp</li>
+                    </ul>
+                    <button onclick="initiatePiPayment()" class="w-full bg-pi-500 hover:bg-pi-600 text-white py-3 rounded-xl font-semibold transition">
+                        <i class="fab fa-whatsapp mr-2"></i> Payer en Crypto Pi
+                    </button>
+                    <p class="text-xs text-center text-gray-400 mt-2">
+                        Vous serez redirigé vers WhatsApp pour finaliser la transaction
+                    </p>
+                </div>
+
+                <!-- Option Contact Vendeur -->
+                <div class="bg-white rounded-2xl shadow-card p-6 border-2 border-gray-200 hover:border-primary-300 transition">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-headset text-2xl text-primary-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-dark">Contacter le vendeur</h3>
+                            <p class="text-sm text-gray-500">Négocier ou poser des questions</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm text-gray-600 mb-4">
+                        <li><i class="fas fa-check text-primary-500 mr-2"></i> Poser des questions</li>
+                        <li><i class="fas fa-check text-primary-500 mr-2"></i> Négocier le prix</li>
+                        <li><i class="fas fa-check text-primary-500 mr-2"></i> Discuter des modalités</li>
+                    </ul>
+                    <button onclick="contactSeller()" class="w-full bg-primary-500 hover:bg-primary-600 text-white py-3 rounded-xl font-semibold transition">
+                        <i class="fas fa-comment mr-2"></i> Contacter le vendeur
+                    </button>
+                    <p class="text-xs text-center text-gray-400 mt-2">
+                        Discutez directement avec le vendeur sur WhatsApp
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== PAS 3 : INSTRUCTIONS ====== -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <h3 class="font-semibold text-blue-800 mb-2">
+                <i class="fas fa-info-circle mr-2"></i> Comment ça fonctionne ?
+            </h3>
+            <ol class="space-y-2 text-sm text-gray-700">
+                <li class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs flex-shrink-0">1</span>
+                    <span>Vous cliquez sur <strong>"Payer en Crypto Pi"</strong></span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs flex-shrink-0">2</span>
+                    <span>Vous êtes redirigé vers <strong>WhatsApp</strong> avec le vendeur</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs flex-shrink-0">3</span>
+                    <span>Vous discutez des détails et convenez du montant en <strong>Crypto Pi</strong></span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs flex-shrink-0">4</span>
+                    <span>Vous effectuez le paiement en <strong>Pi</strong> directement</span>
+                </li>
+                <li class="flex items-start gap-3">
+                    <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-xs flex-shrink-0">5</span>
+                    <span>Le vendeur confirme la réception et organise la livraison</span>
+                </li>
+            </ol>
+        </div>
+
+        <!-- ====== PAS 4 : AVERTISSEMENT ====== -->
+        <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+            <div class="flex items-start gap-3">
+                <i class="fas fa-shield-alt text-yellow-600 text-xl mt-0.5"></i>
+                <div>
+                    <h4 class="font-semibold text-yellow-800">Conseils de sécurité</h4>
+                    <ul class="text-sm text-yellow-700 space-y-1 mt-1">
+                        <li>🔒 N'envoyez jamais de paiement sans vérifier l'identité du vendeur</li>
+                        <li>📸 Demandez des photos ou vidéos supplémentaires si nécessaire</li>
+                        <li>💬 Utilisez WhatsApp pour toute communication</li>
+                        <li>📝 Gardez une trace de vos conversations</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market - Paiement Crypto Pi</p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script type="module">
+        import { auth, db, doc, getDoc, onAuthStateChanged } from '../js/firebase-config.js';
+        import { showNotification, initNotifications } from '../js/notifications.js';
+        import { formatPrice } from '../js/utils.js';
+
+        // Initialiser les notifications
+        initNotifications();
+
+        // Récupérer l'ID du produit depuis l'URL
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get('id');
+
+        let productData = null;
+        let sellerData = null;
+        let currentUser = null;
+
+        // Taux de conversion Pi (à configurer)
+        const EXCHANGE_RATE = 1000; // 1 Pi ≈ 1000 FCFA
+
+        // ============================================
+        // VÉRIFICATION DE L'AUTHENTIFICATION
+        // ============================================
+        onAuthStateChanged(auth, (user) => {
+            currentUser = user;
+            if (!user) {
+                showNotification('Veuillez vous connecter pour effectuer un paiement.', 'warning');
+                // On ne bloque pas, on permet de voir le produit
+            }
+        });
+
+        // ============================================
+        // CHARGER LE PRODUIT
+        // ============================================
+        async function loadProduct() {
+            if (!productId) {
+                showNotification('Produit non trouvé.', 'error');
+                return;
+            }
+
+            try {
+                const docRef = doc(db, 'products', productId);
+                const docSnap = await getDoc(docRef);
+
+                if (!docSnap.exists()) {
+                    showNotification('Produit non trouvé.', 'error');
+                    return;
+                }
+
+                productData = docSnap.data();
+
+                // Vérifier si le produit est disponible
+                if (productData.status !== 'published') {
+                    showNotification('Ce produit n\'est pas disponible.', 'warning');
+                    return;
+                }
+
+                // Récupérer les infos du vendeur
+                if (productData.sellerId) {
+                    const sellerDoc = await getDoc(doc(db, 'users', productData.sellerId));
+                    if (sellerDoc.exists()) {
+                        sellerData = sellerDoc.data();
+                    }
+                }
+
+                // Afficher les informations
+                displayProduct();
+
+            } catch (error) {
+                console.error('Erreur chargement produit:', error);
+                showNotification('Erreur lors du chargement du produit.', 'error');
+            }
+        }
+
+        // ============================================
+        // AFFICHER LE PRODUIT
+        // ============================================
+        function displayProduct() {
+            const priceInFCFA = productData.price || 0;
+            const priceInPi = (priceInFCFA / EXCHANGE_RATE).toFixed(2);
+
+            // Informations produit
+            document.getElementById('productTitle').textContent = productData.title || 'Produit';
+            document.getElementById('productSeller').textContent = `Vendeur : ${productData.sellerName || 'Inconnu'}`;
+            document.getElementById('productPriceFCFA').textContent = formatPrice(priceInFCFA);
+            document.getElementById('productPricePi').textContent = `${priceInPi} Pi`;
+            document.getElementById('exchangeRate').textContent = EXCHANGE_RATE.toLocaleString();
+
+            // Image
+            const imgContainer = document.querySelector('#productInfo .w-20');
+            if (productData.images && productData.images.length > 0) {
+                imgContainer.innerHTML = `<img src="${productData.images[0]}" class="w-full h-full object-cover rounded-lg">`;
+            }
+        }
+
+        // ============================================
+        // INITIER LE PAIEMENT EN CRYPTO PI
+        // ============================================
+        window.initiatePiPayment = function() {
+            if (!currentUser) {
+                showNotification('Veuillez vous connecter pour effectuer un paiement.', 'warning');
+                setTimeout(() => {
+                    window.location.href = '../auth/login.html?redirect=payment&id=' + productId;
+                }, 2000);
+                return;
+            }
+
+            if (!productData || !sellerData) {
+                showNotification('Erreur : produit ou vendeur non trouvé.', 'error');
+                return;
+            }
+
+            const sellerWhatsapp = sellerData.whatsapp || sellerData.telephone;
+            if (!sellerWhatsapp) {
+                showNotification('Le vendeur n\'a pas de numéro WhatsApp configuré.', 'error');
+                return;
+            }
+
+            const priceInPi = (productData.price / EXCHANGE_RATE).toFixed(2);
+            const productName = productData.title || 'le produit';
+
+            // Message pré-rempli pour WhatsApp
+            const message = `Bonjour 👋
+
+Je souhaite acheter votre produit : "${productName}" sur Bénin Pi Market.
+
+💰 Prix : ${formatPrice(productData.price)} (soit ${priceInPi} Pi)
+
+Je suis intéressé(e) par ce produit. Pourrions-nous discuter des détails ?
+
+Merci 🙏`;
+
+            // URL WhatsApp
+            const waUrl = `https://wa.me/${sellerWhatsapp.replace(/\s/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(message)}`;
+
+            // Ouvrir WhatsApp
+            window.open(waUrl, '_blank');
+
+            // Notification de succès
+            showNotification('✅ WhatsApp ouvert ! Discutez avec le vendeur pour finaliser.', 'success');
+
+            // Journaliser la transaction (optionnel)
+            logTransaction();
+        };
+
+        // ============================================
+        // CONTACTER LE VENDEUR
+        // ============================================
+        window.contactSeller = function() {
+            if (!productData || !sellerData) {
+                showNotification('Erreur : produit ou vendeur non trouvé.', 'error');
+                return;
+            }
+
+            const sellerWhatsapp = sellerData.whatsapp || sellerData.telephone;
+            if (!sellerWhatsapp) {
+                showNotification('Le vendeur n\'a pas de numéro WhatsApp configuré.', 'error');
+                return;
+            }
+
+            const productName = productData.title || 'le produit';
+            const message = `Bonjour 👋
+
+Je souhaite obtenir plus d'informations sur votre produit : "${productName}" que j'ai vu sur Bénin Pi Market.
+
+Pouvez-vous me donner plus de détails ?
+
+Merci 🙏`;
+
+            const waUrl = `https://wa.me/${sellerWhatsapp.replace(/\s/g, '').replace(/^\+/, '')}?text=${encodeURIComponent(message)}`;
+            window.open(waUrl, '_blank');
+
+            showNotification('📱 WhatsApp ouvert !', 'info');
+        };
+
+        // ============================================
+        // JOURNALISER LA TRANSACTION (optionnel)
+        // ============================================
+        async function logTransaction() {
+            try {
+                const { addDoc, collection } = await import('../js/firebase-config.js');
+                await addDoc(collection(db, 'transactions'), {
+                    productId: productId,
+                    productTitle: productData.title,
+                    buyerId: currentUser?.uid || 'anonymous',
+                    sellerId: productData.sellerId,
+                    amount: productData.price,
+                    amountPi: (productData.price / EXCHANGE_RATE).toFixed(2),
+                    status: 'initiated',
+                    initiatedAt: new Date().toISOString()
+                });
+            } catch (error) {
+                console.log('Transaction loggée'); // Silencieux
+            }
+        }
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        loadProduct();
+
+        console.log('✅ Page Paiement Crypto Pi chargée avec succès !');
+    </script>
+</body>
+</html>
