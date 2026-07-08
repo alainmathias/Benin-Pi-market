@@ -199,32 +199,32 @@
             </div>
         </div>
 
-        <!-- ========== ONGLETS ========== -->
-        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
-            <!-- Navigation onglets -->
-            <div class="border-b border-gray-200 overflow-x-auto">
-                <nav class="flex">
-                    <button class="tab-btn active px-6 py-3 text-sm font-medium border-b-2 border-primary-500 text-primary-500" data-tab="users">
-                        <i class="fas fa-users mr-2"></i> Utilisateurs
-                        <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabUsersCount">0</span>
-                    </button>
-                    <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="products">
-                        <i class="fas fa-box mr-2"></i> Produits
-                        <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabProductsCount">0</span>
-                    </button>
-                    <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="categories">
-                        <i class="fas fa-tags mr-2"></i> Catégories
-                        <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabCategoriesCount">0</span>
-                    </button>
-                    <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="reviews">
-                        <i class="fas fa-star mr-2"></i> Avis
-                        <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabReviewsCount">0</span>
-                    </button>
-                    <button class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="settings">
-                        <i class="fas fa-cog mr-2"></i> Paramètres
-                    </button>
-                </nav>
-            </div>
+       <!-- ========== ONGLETS ========== -->
+<div class="bg-white rounded-2xl shadow-card overflow-hidden">
+    <!-- Navigation onglets -->
+    <div class="border-b border-gray-200 overflow-x-auto">
+        <nav class="flex">
+            <button onclick="window.switchTab('users')" class="tab-btn active px-6 py-3 text-sm font-medium border-b-2 border-primary-500 text-primary-500" data-tab="users">
+                <i class="fas fa-users mr-2"></i> Utilisateurs
+                <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabUsersCount">0</span>
+            </button>
+            <button onclick="window.switchTab('products')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="products">
+                <i class="fas fa-box mr-2"></i> Produits
+                <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabProductsCount">0</span>
+            </button>
+            <button onclick="window.switchTab('categories')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="categories">
+                <i class="fas fa-tags mr-2"></i> Catégories
+                <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabCategoriesCount">0</span>
+            </button>
+            <button onclick="window.switchTab('reviews')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="reviews">
+                <i class="fas fa-star mr-2"></i> Avis
+                <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabReviewsCount">0</span>
+            </button>
+            <button onclick="window.switchTab('settings')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700" data-tab="settings">
+                <i class="fas fa-cog mr-2"></i> Paramètres
+            </button>
+        </nav>
+    </div>
 
             <!-- ========== CONTENU DES ONGLETS ========== -->
             <div class="p-4 md:p-6">
