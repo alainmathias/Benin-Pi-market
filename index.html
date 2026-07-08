@@ -279,142 +279,138 @@
 
     </div>
 
-    <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
-        import { auth, onAuthStateChanged, db, collection, getDocs, query, where, orderBy, limit, doc, getDoc } from './js/firebase-config.js';
-        import { logout } from './js/auth.js';
-        import { displayProducts } from './js/utils.js';
-        import { getExchangeRate } from './js/pi-utils.js';
+    import { auth, onAuthStateChanged, db, collection, getDocs, query, where, orderBy, limit, doc, getDoc } from './js/firebase-config.js';
+    import { logout } from './js/auth.js';
+    import { displayProducts } from './js/utils.js';
+    import { getExchangeRate } from './js/pi-utils.js';
 
-        // Exposer logout globalement
-        window.logout = logout;
+    // ============================================
+    // EXPOSER LOGOUT GLOBALEMENT
+    // ============================================
+    window.logout = logout;
 
-        // ============================================
-        // AUTHENTIFICATION
-        // ============================================
-        onAuthStateChanged(auth, (user) => {
-            const authButtons = document.getElementById('authButtons');
-            const userMenu = document.getElementById('userMenu');
-            const userDisplay = document.getElementById('userDisplayName');
-            const greeting = document.getElementById('greetingText');
-            const navProfile = document.getElementById('navProfile');
-
-            if (user) {
-                // Connecté
-                if (authButtons) authButtons.style.display = 'none';
-                if (userMenu) userMenu.classList.remove('hidden');
-                
-                getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
-                    if (docSnap.exists()) {
-                        const userData = docSnap.data();
-                        if (userDisplay) userDisplay.textContent = `${userData.prenom} ${userData.nom}`;
-                        if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
-                    }
-                }).catch(() => {});
-                
-                if (navProfile) navProfile.href = 'dashboard/vendor.html';
-                
-            } else {
-                // Non connecté
-                if (authButtons) authButtons.style.display = 'flex';
-                if (userMenu) userMenu.classList.add('hidden');
-                if (userDisplay) userDisplay.textContent = 'Bénin Pi Market';
-                if (greeting) greeting.textContent = 'Bienvenue 👋';
-                if (navProfile) navProfile.href = 'auth/login.html';
+    // ============================================
+    // EXPOSER RECHERCHE GLOBALEMENT
+    // ============================================
+    window.rechercher = function() {
+        const searchInput = document.getElementById('searchInput');
+        if (searchInput) {
+            const searchTerm = searchInput.value?.trim();
+            if (searchTerm) {
+                window.location.href = `products/list.html?search=${encodeURIComponent(searchTerm)}`;
             }
-        });
-
-        // ============================================
-        // TAUX PI
-        // ============================================
-        try {
-            const rate = getExchangeRate();
-            const piDisplay = document.getElementById('piRateDisplay');
-            if (piDisplay) {
-                piDisplay.textContent = `1 Pi = ${rate.toLocaleString()} FCFA`;
-            }
-        } catch (e) {
-            console.warn('Erreur chargement taux Pi:', e);
         }
+    };
 
-        // ============================================
-        // CHARGER PRODUITS RÉCENTS
-        // ============================================
-        async function loadRecentProducts() {
-            const container = document.getElementById('recentProducts');
+    // ============================================
+    // AUTHENTIFICATION
+    // ============================================
+    onAuthStateChanged(auth, (user) => {
+        const authButtons = document.getElementById('authButtons');
+        const userMenu = document.getElementById('userMenu');
+        const userDisplay = document.getElementById('userDisplayName');
+        const greeting = document.getElementById('greetingText');
+        const navProfile = document.getElementById('navProfile');
+
+        if (user) {
+            if (authButtons) authButtons.style.display = 'none';
+            if (userMenu) userMenu.classList.remove('hidden');
             
-            try {
-                // Vérifier que la collection existe
-                const q = query(
-                    collection(db, 'products'),
-                    where('status', '==', 'published'),
-                    orderBy('createdAt', 'desc'),
-                    limit(4)
-                );
-                
-                const querySnapshot = await getDocs(q);
-                const products = [];
-                
-                querySnapshot.forEach((doc) => {
-                    products.push({ id: doc.id, ...doc.data() });
-                });
-
-                if (products.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-span-2 text-center py-8 text-gray-500">
-                            <i class="fas fa-box-open text-3xl block mb-2"></i>
-                            <p class="text-sm">Aucun produit disponible</p>
-                            <p class="text-xs text-gray-400">Soyez le premier à publier !</p>
-                        </div>
-                    `;
-                    return;
+            getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+                if (docSnap.exists()) {
+                    const userData = docSnap.data();
+                    if (userDisplay) userDisplay.textContent = `${userData.prenom} ${userData.nom}`;
+                    if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
                 }
+            }).catch(() => {});
+            
+            if (navProfile) navProfile.href = 'dashboard/vendor.html';
+        } else {
+            if (authButtons) authButtons.style.display = 'flex';
+            if (userMenu) userMenu.classList.add('hidden');
+            if (userDisplay) userDisplay.textContent = 'Bénin Pi Market';
+            if (greeting) greeting.textContent = 'Bienvenue 👋';
+            if (navProfile) navProfile.href = 'auth/login.html';
+        }
+    });
 
-                // Afficher les produits
-                displayProducts(products, 'recentProducts');
+    // ============================================
+    // TAUX PI
+    // ============================================
+    try {
+        const rate = getExchangeRate();
+        const piDisplay = document.getElementById('piRateDisplay');
+        if (piDisplay) {
+            piDisplay.textContent = `1 Pi = ${rate.toLocaleString()} FCFA`;
+        }
+    } catch (e) {
+        console.warn('Erreur chargement taux Pi:', e);
+    }
 
-            } catch (error) {
-                console.error('Erreur chargement produits:', error);
-                
-                // Si l'erreur est liée à l'index manquant
-                if (error.message && error.message.includes('index')) {
-                    container.innerHTML = `
-                        <div class="col-span-2 text-center py-8 text-yellow-600">
-                            <i class="fas fa-exclamation-triangle text-3xl block mb-2"></i>
-                            <p class="text-sm">Configuration en cours...</p>
-                            <p class="text-xs text-gray-400">Veuillez réessayer dans quelques minutes</p>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML = `
-                        <div class="col-span-2 text-center py-8 text-red-500">
-                            <i class="fas fa-exclamation-circle text-3xl block mb-2"></i>
-                            <p class="text-sm">Erreur de chargement</p>
-                        </div>
-                    `;
-                }
+    // ============================================
+    // CHARGER PRODUITS RÉCENTS
+    // ============================================
+    async function loadRecentProducts() {
+        const container = document.getElementById('recentProducts');
+        
+        try {
+            const q = query(
+                collection(db, 'products'),
+                where('status', '==', 'published'),
+                orderBy('createdAt', 'desc'),
+                limit(4)
+            );
+            
+            const querySnapshot = await getDocs(q);
+            const products = [];
+            
+            querySnapshot.forEach((doc) => {
+                products.push({ id: doc.id, ...doc.data() });
+            });
+
+            if (products.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                        <i class="fas fa-box-open text-3xl block mb-2"></i>
+                        <p class="text-sm">Aucun produit disponible</p>
+                        <p class="text-xs text-gray-400">Soyez le premier à publier !</p>
+                    </div>
+                `;
+                return;
+            }
+
+            displayProducts(products, 'recentProducts');
+
+        } catch (error) {
+            console.error('Erreur chargement produits:', error);
+            
+            if (error.message && error.message.includes('index')) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-yellow-600">
+                        <i class="fas fa-exclamation-triangle text-3xl block mb-2"></i>
+                        <p class="text-sm">Configuration en cours...</p>
+                        <p class="text-xs text-gray-400">Veuillez réessayer dans quelques minutes</p>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-red-500">
+                        <i class="fas fa-exclamation-circle text-3xl block mb-2"></i>
+                        <p class="text-sm">Erreur de chargement</p>
+                        <p class="text-xs text-gray-400">${error.message}</p>
+                    </div>
+                `;
             }
         }
+    }
 
-        // ============================================
-        // RECHERCHE
-        // ============================================
-        window.rechercher = function() {
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                const searchTerm = searchInput.value?.trim();
-                if (searchTerm) {
-                    window.location.href = `products/list.html?search=${encodeURIComponent(searchTerm)}`;
-                }
-            }
-        };
+    // ============================================
+    // INITIALISATION
+    // ============================================
+    loadRecentProducts();
 
-        // ============================================
-        // INITIALISATION
-        // ============================================
-        loadRecentProducts();
-
-        console.log('✅ Bénin Pi Market - Accueil moderne chargé !');
-    </script>
+    console.log('✅ Bénin Pi Market - Accueil moderne chargé !');
+</script>
 </body>
 </html>
