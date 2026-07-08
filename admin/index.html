@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0', 700: '#104080' },
+                        secondary: { 500: '#ff6b00', 600: '#cc5500' },
+                        success: { 500: '#22c55e', 600: '#16a34a' },
+                        warning: { 500: '#f59e0b', 600: '#d97706' },
+                        danger: { 500: '#ef4444', 600: '#dc2626' },
+                        purple: { 500: '#8b5cf6', 600: '#7c3aed' },
+                        pi: { 500: '#f9a825', 600: '#f57f17' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+        }
+        .tab-btn {
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
+        }
+        .tab-content {
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status-badge.active { background: #d4edda; color: #155724; }
+        .status-badge.pending { background: #fff3cd; color: #856404; }
+        .status-badge.suspended { background: #f8d7da; color: #721c24; }
+        .status-badge.published { background: #d4edda; color: #155724; }
+        .status-badge.rejected { background: #f8d7da; color: #721c24; }
+        .avatar-sm {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg transition group-hover:scale-105">BP</div>
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <span class="hidden sm:inline-flex items-center gap-2 bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">
+                    <i class="fas fa-user-shield"></i> Admin
+                </span>
+                <a href="#" onclick="window.logout()" class="text-red-500 hover:text-red-600 transition">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
+
+        <!-- En-tête -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+            <div>
+                <h1 class="text-3xl font-bold text-dark">
+                    <i class="fas fa-tachometer-alt text-primary-500"></i> Dashboard Admin
+                </h1>
+                <p class="text-gray-500 mt-1" id="welcomeMessage">Bienvenue sur votre espace d'administration</p>
+            </div>
+            <div class="flex gap-3 mt-4 md:mt-0">
+                <button onclick="refreshData()" class="btn-outline text-sm px-4 py-2">
+                    <i class="fas fa-sync-alt mr-2"></i> Rafraîchir
+                </button>
+            </div>
+        </div>
+
+        <!-- Alertes -->
+        <div id="alert-container"></div>
+
+        <!-- ========== STATISTIQUES ========== -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="stat-card bg-white rounded-xl shadow-card p-4 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-primary-100 rounded-full -translate-y-1/2 translate-x-1/3 opacity-50"></div>
+                <div class="relative">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-users text-primary-500"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-dark" id="totalUsers">0</div>
+                            <div class="text-sm text-gray-500">Utilisateurs</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-2 text-xs">
+                        <span class="text-success-600">✅ <span id="activeUsers">0</span> actifs</span>
+                        <span class="text-warning-600">⏳ <span id="pendingUsers">0</span> en attente</span>
+                        <span class="text-danger-600">🚫 <span id="suspendedUsers">0</span> suspendus</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white rounded-xl shadow-card p-4 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-secondary-100 rounded-full -translate-y-1/2 translate-x-1/3 opacity-50"></div>
+                <div class="relative">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-secondary-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-box text-secondary-500"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-dark" id="totalProducts">0</div>
+                            <div class="text-sm text-gray-500">Produits</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-2 text-xs">
+                        <span class="text-success-600">✅ <span id="publishedProducts">0</span> publiés</span>
+                        <span class="text-warning-600">⏳ <span id="pendingProducts">0</span> en attente</span>
+                        <span class="text-danger-600">❌ <span id="rejectedProducts">0</span> refusés</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white rounded-xl shadow-card p-4 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-purple-100 rounded-full -translate-y-1/2 translate-x-1/3 opacity-50"></div>
+                <div class="relative">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-eye text-purple-500"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-dark" id="totalViews">0</div>
+                            <div class="text-sm text-gray-500">Vues totales</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-2 text-xs">
+                        <span class="text-primary-600">📊 <span id="avgViews">0</span> par produit</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white rounded-xl shadow-card p-4 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-pi-100 rounded-full -translate-y-1/2 translate-x-1/3 opacity-50"></div>
+                <div class="relative">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-pi-100 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-star text-pi-500"></i>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-dark" id="totalReviews">0</div>
+                            <div class="text-sm text-gray-500">Avis</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-3 mt-2 text-xs">
+                        <span class="text-pi-600">⭐ <span id="avgRating">0.0</span> / 5</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ONGLETS ========== -->
+        <div class="bg-white rounded-2xl shadow-card overflow-hidden">
+            <!-- Navigation onglets -->
+            <div class="border-b border-gray-200 overflow-x-auto">
+                <nav class="flex">
+                    <button onclick="switchTab('users')" class="tab-btn active px-6 py-3 text-sm font-medium border-b-2 border-primary-500 text-primary-500 whitespace-nowrap" data-tab="users">
+                        <i class="fas fa-users mr-2"></i> Utilisateurs
+                        <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabUsersCount">0</span>
+                    </button>
+                    <button onclick="switchTab('products')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="products">
+                        <i class="fas fa-box mr-2"></i> Produits
+                        <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabProductsCount">0</span>
+                    </button>
+                    <button onclick="switchTab('categories')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="categories">
+                        <i class="fas fa-tags mr-2"></i> Catégories
+                        <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabCategoriesCount">0</span>
+                    </button>
+                    <button onclick="switchTab('reviews')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="reviews">
+                        <i class="fas fa-star mr-2"></i> Avis
+                        <span class="ml-1 text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full" id="tabReviewsCount">0</span>
+                    </button>
+                    <button onclick="switchTab('settings')" class="tab-btn px-6 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap" data-tab="settings">
+                        <i class="fas fa-cog mr-2"></i> Paramètres
+                    </button>
+                </nav>
+            </div>
+
+            <!-- ========== CONTENU DES ONGLETS ========== -->
+            <div class="p-4 md:p-6">
+
+                <!-- ---- TAB 1: UTILISATEURS ---- -->
+                <div id="tab-users" class="tab-content">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-dark">Gestion des utilisateurs</h3>
+                        <div class="flex flex-wrap gap-2 mt-3 md:mt-0">
+                            <input type="text" id="searchUser" placeholder="🔍 Rechercher..." 
+                                   class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm w-full md:w-48"
+                                   oninput="filterUsers()">
+                            <select id="userFilter" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm"
+                                    onchange="filterUsers()">
+                                <option value="all">Tous</option>
+                                <option value="pending">⏳ En attente</option>
+                                <option value="active">✅ Actifs</option>
+                                <option value="suspended">🚫 Suspendus</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Utilisateur</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden md:table-cell">Contact</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">Activité</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Statut</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTableBody">
+                                <tr><td colspan="5" class="text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>Chargement...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="usersPagination" class="flex justify-center mt-4"></div>
+                </div>
+
+                <!-- ---- TAB 2: PRODUITS ---- -->
+                <div id="tab-products" class="tab-content hidden">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-dark">Gestion des produits</h3>
+                        <div class="flex flex-wrap gap-2 mt-3 md:mt-0">
+                            <input type="text" id="searchProduct" placeholder="🔍 Rechercher..." 
+                                   class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm w-full md:w-48"
+                                   oninput="filterProducts()">
+                            <select id="productFilter" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm"
+                                    onchange="filterProducts()">
+                                <option value="all">Tous</option>
+                                <option value="pending">⏳ En attente</option>
+                                <option value="published">✅ Publiés</option>
+                                <option value="rejected">❌ Refusés</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Produit</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden md:table-cell">Vendeur</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Prix</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600 hidden lg:table-cell">Vues</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Statut</th>
+                                    <th class="px-4 py-3 text-left font-semibold text-gray-600">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <tr><td colspan="6" class="text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>Chargement...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="productsPagination" class="flex justify-center mt-4"></div>
+                </div>
+
+                <!-- ---- TAB 3: CATÉGORIES ---- -->
+                <div id="tab-categories" class="tab-content hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-dark">Gestion des catégories</h3>
+                        <button onclick="openCategoryModal()" class="btn-primary text-sm px-4 py-2">
+                            <i class="fas fa-plus mr-2"></i> Ajouter
+                        </button>
+                    </div>
+                    <div id="categoriesContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                        <div class="col-span-full text-center py-8 text-gray-500">
+                            <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>Chargement...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ---- TAB 4: AVIS ---- -->
+                <div id="tab-reviews" class="tab-content hidden">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-dark">Modération des avis</h3>
+                        <select id="reviewFilter" class="px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition text-sm"
+                                onchange="filterReviews()">
+                            <option value="all">Tous</option>
+                            <option value="1">⭐ 1 étoile</option>
+                            <option value="2">⭐⭐ 2 étoiles</option>
+                            <option value="3">⭐⭐⭐ 3 étoiles</option>
+                            <option value="4">⭐⭐⭐⭐ 4 étoiles</option>
+                            <option value="5">⭐⭐⭐⭐⭐ 5 étoiles</option>
+                        </select>
+                    </div>
+                    <div id="reviewsContainer" class="space-y-3">
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-spinner fa-spin text-2xl block mb-2"></i>Chargement...
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ---- TAB 5: PARAMÈTRES ---- -->
+                <div id="tab-settings" class="tab-content hidden">
+                    <h3 class="text-lg font-semibold text-dark mb-4">Paramètres de la plateforme</h3>
+                    
+                    <div class="space-y-6">
+                        <!-- Taux de change Pi -->
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                💰 Taux de change Pi (1 Pi = ? FCFA)
+                            </label>
+                            <div class="flex gap-3">
+                                <input type="number" id="piRate" class="input-field w-48" placeholder="1000" value="1000">
+                                <button onclick="savePiRate()" class="btn-primary text-sm px-4 py-2">
+                                    <i class="fas fa-save mr-2"></i> Enregistrer
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Ce taux sera affiché sur toute la plateforme</p>
+                        </div>
+
+                        <!-- Maintenance -->
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                🔧 Mode maintenance
+                            </label>
+                            <div class="flex items-center gap-3">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="maintenanceMode" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500"></div>
+                                    <span class="ml-3 text-sm text-gray-600" id="maintenanceStatus">Désactivé</span>
+                                </label>
+                                <button onclick="toggleMaintenance()" class="btn-primary text-sm px-4 py-2">
+                                    <i class="fas fa-save mr-2"></i> Appliquer
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Activez pour mettre la plateforme en maintenance</p>
+                        </div>
+
+                        <!-- Export données -->
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                📊 Exporter les données
+                            </label>
+                            <div class="flex gap-3 flex-wrap">
+                                <button onclick="exportData('users')" class="btn-outline text-sm px-4 py-2">
+                                    <i class="fas fa-users mr-2"></i> Utilisateurs
+                                </button>
+                                <button onclick="exportData('products')" class="btn-outline text-sm px-4 py-2">
+                                    <i class="fas fa-box mr-2"></i> Produits
+                                </button>
+                                <button onclick="exportData('reviews')" class="btn-outline text-sm px-4 py-2">
+                                    <i class="fas fa-star mr-2"></i> Avis
+                                </button>
+                                <button onclick="exportData('all')" class="btn-primary text-sm px-4 py-2">
+                                    <i class="fas fa-download mr-2"></i> Tout exporter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAL CATÉGORIE ========== -->
+    <div id="categoryModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-dark" id="categoryModalTitle">Ajouter une catégorie</h3>
+                <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="categoryForm">
+                <input type="hidden" id="categoryEditId">
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
+                    <input type="text" id="categoryName" class="input-field w-full" placeholder="Ex: Artisanat" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Icône (emoji)</label>
+                    <input type="text" id="categoryIcon" class="input-field w-full" placeholder="🪵" maxlength="2">
+                </div>
+                <div class="flex gap-3">
+                    <button type="submit" class="btn-primary flex-1">
+                        <i class="fas fa-save mr-2"></i> Enregistrer
+                    </button>
+                    <button type="button" onclick="closeCategoryModal()" class="btn-outline">
+                        Annuler
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== MODAL DÉTAIL PRODUIT ========== -->
+    <div id="productDetailModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 animate-fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-dark" id="productDetailTitle">Détail produit</h3>
+                <button onclick="closeProductDetail()" class="text-gray-400 hover:text-gray-600 transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="productDetailContent">
+                <div class="text-center py-8 text-gray-500">Chargement...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market - Administration</p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script type="module">
+        import { auth, db, collection, getDocs, query, where, orderBy, limit, startAfter, doc, updateDoc, deleteDoc, addDoc, onAuthStateChanged } from '../js/firebase-config.js';
+        import { showAlert, formatDate, logout } from '../js/utils.js';
+        import { getExchangeRate, setExchangeRate } from '../js/pi-utils.js';
+
+        window.logout = logout;
+
+        // ============================================
+        // ÉTAT
+        // ============================================
+        let currentUser = null;
+        let userData = null;
+        let allUsers = [];
+        let allProducts = [];
+        let allCategories = [];
+        let allReviews = [];
+        let currentTab = 'users';
+
+        // Pagination
+        const itemsPerPage = 10;
+        let currentUserPage = 1;
+        let currentProductPage = 1;
+
+        // ============================================
+        // VÉRIFICATION ADMIN
+        // ============================================
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            currentUser = user;
+
+            try {
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (!userDoc.exists() || userDoc.data().role !== 'admin') {
+                    window.location.href = '../dashboard/vendor.html';
+                    return;
+                }
+
+                userData = userDoc.data();
+                document.getElementById('welcomeMessage').textContent = `👋 Bonjour ${userData.prenom} ${userData.nom} ! Bienvenue sur votre espace d'administration`;
+
+                await loadAllData();
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAlert('Erreur de chargement des données.', 'danger');
+            }
+        });
+
+        // ============================================
+        // CHARGER TOUTES LES DONNÉES
+        // ============================================
+        async function loadAllData() {
+            try {
+                await Promise.all([
+                    loadUsers(),
+                    loadProducts(),
+                    loadCategories(),
+                    loadReviews()
+                ]);
+                updateStats();
+                renderUsers();
+                renderProducts();
+                renderCategories();
+                renderReviews();
+                updateTabCounts();
+
+            } catch (error) {
+                console.error('Erreur chargement données:', error);
+                showAlert('Erreur lors du chargement des données.', 'danger');
+            }
+        }
+
+        // ============================================
+        // CHARGER LES UTILISATEURS
+        // ============================================
+        async function loadUsers() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'users'));
+                allUsers = [];
+                querySnapshot.forEach((doc) => {
+                    allUsers.push({ id: doc.id, ...doc.data() });
+                });
+                // Trier par date d'inscription (plus récent en premier)
+                allUsers.sort((a, b) => b.createdAt?.localeCompare(a.createdAt) || 0);
+            } catch (error) {
+                console.error('Erreur chargement utilisateurs:', error);
+            }
+        }
+
+        // ============================================
+        // CHARGER LES PRODUITS
+        // ============================================
+        async function loadProducts() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'products'));
+                allProducts = [];
+                querySnapshot.forEach((doc) => {
+                    allProducts.push({ id: doc.id, ...doc.data() });
+                });
+                allProducts.sort((a, b) => b.createdAt?.localeCompare(a.createdAt) || 0);
+            } catch (error) {
+                console.error('Erreur chargement produits:', error);
+            }
+        }
+
+        // ============================================
+        // CHARGER LES CATÉGORIES
+        // ============================================
+        async function loadCategories() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'categories'));
+                allCategories = [];
+                querySnapshot.forEach((doc) => {
+                    allCategories.push({ id: doc.id, ...doc.data() });
+                });
+            } catch (error) {
+                console.error('Erreur chargement catégories:', error);
+            }
+        }
+
+        // ============================================
+        // CHARGER LES AVIS
+        // ============================================
+        async function loadReviews() {
+            try {
+                const querySnapshot = await getDocs(collection(db, 'reviews'));
+                allReviews = [];
+                querySnapshot.forEach((doc) => {
+                    allReviews.push({ id: doc.id, ...doc.data() });
+                });
+                allReviews.sort((a, b) => b.createdAt?.localeCompare(a.createdAt) || 0);
+            } catch (error) {
+                console.error('Erreur chargement avis:', error);
+            }
+        }
+
+        // ============================================
+        // STATISTIQUES
+        // ============================================
+        function updateStats() {
+            const totalUsers = allUsers.length;
+            const activeUsers = allUsers.filter(u => u.status === 'active').length;
+            const pendingUsers = allUsers.filter(u => u.status === 'pending').length;
+            const suspendedUsers = allUsers.filter(u => u.status === 'suspended').length;
+
+            const totalProducts = allProducts.length;
+            const publishedProducts = allProducts.filter(p => p.status === 'published').length;
+            const pendingProducts = allProducts.filter(p => p.status === 'pending').length;
+            const rejectedProducts = allProducts.filter(p => p.status === 'rejected').length;
+
+            const totalViews = allProducts.reduce((sum, p) => sum + (p.views || 0), 0);
+            const avgViews = totalProducts > 0 ? Math.round(totalViews / totalProducts) : 0;
+
+            const totalReviews = allReviews.length;
+            const avgRating = totalReviews > 0 
+                ? (allReviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews).toFixed(1)
+                : '0.0';
+
+            document.getElementById('totalUsers').textContent = totalUsers;
+            document.getElementById('activeUsers').textContent = activeUsers;
+            document.getElementById('pendingUsers').textContent = pendingUsers;
+            document.getElementById('suspendedUsers').textContent = suspendedUsers;
+
+            document.getElementById('totalProducts').textContent = totalProducts;
+            document.getElementById('publishedProducts').textContent = publishedProducts;
+            document.getElementById('pendingProducts').textContent = pendingProducts;
+            document.getElementById('rejectedProducts').textContent = rejectedProducts;
+
+            document.getElementById('totalViews').textContent = totalViews;
+            document.getElementById('avgViews').textContent = avgViews;
+
+            document.getElementById('totalReviews').textContent = totalReviews;
+            document.getElementById('avgRating').textContent = avgRating;
+        }
+
+        // ============================================
+        // METTRE À JOUR LES COMPTEURS DES ONGLETS
+        // ============================================
+        function updateTabCounts() {
+            document.getElementById('tabUsersCount').textContent = allUsers.length;
+            document.getElementById('tabProductsCount').textContent = allProducts.length;
+            document.getElementById('tabCategoriesCount').textContent = allCategories.length;
+            document.getElementById('tabReviewsCount').textContent = allReviews.length;
+        }
+
+        // ============================================
+        // SWITCH D'ONGLETS
+        // ============================================
+        window.switchTab = function(tab) {
+            currentTab = tab;
+            
+            // Cacher tous les contenus
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            
+            // Mettre à jour les boutons
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active', 'border-primary-500', 'text-primary-500');
+                el.classList.add('border-transparent', 'text-gray-500');
+            });
+            document.querySelector(`[data-tab="${tab}"]`).classList.remove('border-transparent', 'text-gray-500');
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active', 'border-primary-500', 'text-primary-500');
+        };
+
+        // ============================================
+        // RECHERCHE ET FILTRES UTILISATEURS
+        // ============================================
+        window.filterUsers = function() {
+            currentUserPage = 1;
+            renderUsers();
+        };
+
+        function getFilteredUsers() {
+            const search = document.getElementById('searchUser')?.value.toLowerCase() || '';
+            const filter = document.getElementById('userFilter')?.value || 'all';
+
+            let filtered = allUsers;
+            if (search) {
+                filtered = filtered.filter(u => 
+                    u.nom?.toLowerCase().includes(search) ||
+                    u.prenom?.toLowerCase().includes(search) ||
+                    u.email?.toLowerCase().includes(search) ||
+                    u.telephone?.includes(search)
+                );
+            }
+            if (filter !== 'all') {
+                filtered = filtered.filter(u => u.status === filter);
+            }
+            return filtered;
+        }
+
+        // ============================================
+        // AFFICHER UTILISATEURS
+        // ============================================
+        function renderUsers() {
+            const tbody = document.getElementById('usersTableBody');
+            const filtered = getFilteredUsers();
+            const start = (currentUserPage - 1) * itemsPerPage;
+            const end = Math.min(start + itemsPerPage, filtered.length);
+            const pageUsers = filtered.slice(start, end);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="5" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-users text-4xl text-gray-300 block mb-2"></i>
+                        Aucun utilisateur trouvé
+                    </td></tr>
+                `;
+                renderPagination('users', filtered.length);
+                return;
+            }
+
+            tbody.innerHTML = pageUsers.map(user => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-3">
+                            <div class="avatar-sm">${(user.prenom?.[0] || 'U')}${(user.nom?.[0] || '')}</div>
+                            <div>
+                                <div class="font-medium">${user.prenom || ''} ${user.nom || ''}</div>
+                                <div class="text-xs text-gray-500">${user.role || 'vendeur'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 hidden md:table-cell">
+                        <div class="text-sm">${user.telephone || '-'}</div>
+                        <div class="text-xs text-gray-500">${user.email || '-'}</div>
+                    </td>
+                    <td class="px-4 py-3 hidden lg:table-cell text-sm text-gray-600">
+                        ${user.profession || '-'}
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="status-badge ${user.status || 'pending'}">
+                            ${user.status === 'active' ? '✅ Actif' : 
+                              user.status === 'pending' ? '⏳ En attente' : 
+                              '🚫 Suspendu'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex gap-2">
+                            ${user.status === 'pending' ? `
+                                <button onclick="validateUser('${user.id}')" class="text-success-500 hover:text-success-600 transition" title="Valider">
+                                    <i class="fas fa-check-circle text-lg"></i>
+                                </button>
+                            ` : ''}
+                            ${user.status === 'active' ? `
+                                <button onclick="suspendUser('${user.id}')" class="text-warning-500 hover:text-warning-600 transition" title="Suspendre">
+                                    <i class="fas fa-pause-circle text-lg"></i>
+                                </button>
+                            ` : ''}
+                            ${user.status === 'suspended' ? `
+                                <button onclick="validateUser('${user.id}')" class="text-success-500 hover:text-success-600 transition" title="Réactiver">
+                                    <i class="fas fa-play-circle text-lg"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteUser('${user.id}')" class="text-danger-500 hover:text-danger-600 transition" title="Supprimer">
+                                <i class="fas fa-trash text-lg"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            renderPagination('users', filtered.length);
+        }
+
+        // ============================================
+        // RECHERCHE ET FILTRES PRODUITS
+        // ============================================
+        window.filterProducts = function() {
+            currentProductPage = 1;
+            renderProducts();
+        };
+
+        function getFilteredProducts() {
+            const search = document.getElementById('searchProduct')?.value.toLowerCase() || '';
+            const filter = document.getElementById('productFilter')?.value || 'all';
+
+            let filtered = allProducts;
+            if (search) {
+                filtered = filtered.filter(p => 
+                    p.title?.toLowerCase().includes(search) ||
+                    p.sellerName?.toLowerCase().includes(search) ||
+                    p.category?.toLowerCase().includes(search)
+                );
+            }
+            if (filter !== 'all') {
+                filtered = filtered.filter(p => p.status === filter);
+            }
+            return filtered;
+        }
+
+        // ============================================
+        // AFFICHER PRODUITS
+        // ============================================
+        function renderProducts() {
+            const tbody = document.getElementById('productsTableBody');
+            const filtered = getFilteredProducts();
+            const start = (currentProductPage - 1) * itemsPerPage;
+            const end = Math.min(start + itemsPerPage, filtered.length);
+            const pageProducts = filtered.slice(start, end);
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr><td colspan="6" class="text-center py-8 text-gray-500">
+                        <i class="fas fa-box-open text-4xl text-gray-300 block mb-2"></i>
+                        Aucun produit trouvé
+                    </td></tr>
+                `;
+                renderPagination('products', filtered.length);
+                return;
+            }
+
+            tbody.innerHTML = pageProducts.map(product => `
+                <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                ${product.images && product.images[0] 
+                                    ? `<img src="${product.images[0]}" class="w-full h-full object-cover">`
+                                    : `<i class="fas fa-image text-gray-300 w-full h-full flex items-center justify-center text-sm"></i>`
+                                }
+                            </div>
+                            <div>
+                                <div class="font-medium">${product.title}</div>
+                                <div class="text-xs text-gray-500">${product.category || '-'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 hidden md:table-cell text-sm text-gray-600">
+                        ${product.sellerName || 'Inconnu'}
+                    </td>
+                    <td class="px-4 py-3 font-semibold text-secondary-500">
+                        ${new Intl.NumberFormat('fr-BJ', { style: 'currency', currency: 'XOF', minimumFractionDigits: 0 }).format(product.price || 0)}
+                    </td>
+                    <td class="px-4 py-3 hidden lg:table-cell text-gray-600">
+                        ${product.views || 0}
+                    </td>
+                    <td class="px-4 py-3">
+                        <span class="status-badge ${product.status || 'pending'}">
+                            ${product.status === 'published' ? '✅ Publié' : 
+                              product.status === 'pending' ? '⏳ En attente' : 
+                              '❌ Refusé'}
+                        </span>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="flex gap-2">
+                            <button onclick="viewProduct('${product.id}')" class="text-primary-500 hover:text-primary-600 transition" title="Voir">
+                                <i class="fas fa-eye text-lg"></i>
+                            </button>
+                            ${product.status === 'pending' ? `
+                                <button onclick="approveProduct('${product.id}')" class="text-success-500 hover:text-success-600 transition" title="Approuver">
+                                    <i class="fas fa-check-circle text-lg"></i>
+                                </button>
+                                <button onclick="rejectProduct('${product.id}')" class="text-danger-500 hover:text-danger-600 transition" title="Refuser">
+                                    <i class="fas fa-times-circle text-lg"></i>
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteProduct('${product.id}')" class="text-danger-500 hover:text-danger-600 transition" title="Supprimer">
+                                <i class="fas fa-trash text-lg"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            renderPagination('products', filtered.length);
+        }
+
+        // ============================================
+        // AFFICHER CATÉGORIES
+        // ============================================
+        function renderCategories() {
+            const container = document.getElementById('categoriesContainer');
+
+            if (allCategories.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-8 text-gray-500">
+                        <i class="fas fa-tags text-4xl text-gray-300 block mb-2"></i>
+                        Aucune catégorie
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allCategories.map(cat => `
+                <div class="bg-gray-50 rounded-xl p-4 text-center group relative hover:shadow-md transition">
+                    <div class="text-4xl mb-2">${cat.icon || '📦'}</div>
+                    <div class="font-medium text-sm">${cat.name}</div>
+                    <div class="flex justify-center gap-2 mt-2">
+                        <button onclick="editCategory('${cat.id}')" class="text-primary-500 hover:text-primary-600 transition text-sm">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button onclick="deleteCategory('${cat.id}')" class="text-danger-500 hover:text-danger-600 transition text-sm">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // AFFICHER AVIS
+        // ============================================
+        window.filterReviews = function() {
+            renderReviews();
+        };
+
+        function renderReviews() {
+            const container = document.getElementById('reviewsContainer');
+            const filter = document.getElementById('reviewFilter')?.value || 'all';
+
+            let filtered = allReviews;
+            if (filter !== 'all') {
+                filtered = filtered.filter(r => r.rating === parseInt(filter));
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-star text-4xl text-gray-300 block mb-2"></i>
+                        Aucun avis trouvé
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(review => `
+                <div class="bg-gray-50 rounded-xl p-4 flex items-start justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-semibold text-dark">${review.userName || 'Utilisateur'}</span>
+                            <span class="text-yellow-400">
+                                ${'⭐'.repeat(Math.min(review.rating, 5))}${'☆'.repeat(Math.max(0, 5 - review.rating))}
+                            </span>
+                            <span class="text-xs text-gray-400">${formatDate(review.createdAt)}</span>
+                        </div>
+                        <p class="text-gray-600 text-sm mt-1">${review.comment || 'Aucun commentaire'}</p>
+                        <p class="text-xs text-gray-400 mt-1">Produit: ${review.productId || 'Inconnu'}</p>
+                    </div>
+                    <button onclick="deleteReview('${review.id}')" class="text-danger-500 hover:text-danger-600 transition ml-4">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // PAGINATION
+        // ============================================
+        function renderPagination(type, total) {
+            const container = document.getElementById(type === 'users' ? 'usersPagination' : 'productsPagination');
+            const totalPages = Math.ceil(total / itemsPerPage);
+            const currentPage = type === 'users' ? currentUserPage : currentProductPage;
+
+            if (totalPages <= 1) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = '<div class="flex gap-1">';
+            for (let i = 1; i <= Math.min(totalPages, 5); i++) {
+                html += `
+                    <button onclick="goToPage('${type}', ${i})" 
+                            class="px-3 py-1 rounded-lg text-sm ${i === currentPage ? 'bg-primary-500 text-white' : 'hover:bg-gray-100 text-gray-700'} transition">
+                        ${i}
+                    </button>
+                `;
+            }
+            if (totalPages > 5) {
+                html += `<span class="px-2 text-gray-400">...</span>`;
+                html += `
+                    <button onclick="goToPage('${type}', ${totalPages})" 
+                            class="px-3 py-1 rounded-lg text-sm hover:bg-gray-100 text-gray-700 transition">
+                        ${totalPages}
+                    </button>
+                `;
+            }
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        window.goToPage = function(type, page) {
+            if (type === 'users') {
+                currentUserPage = page;
+                renderUsers();
+            } else {
+                currentProductPage = page;
+                renderProducts();
+            }
+        };
+
+        // ============================================
+        // ACTIONS UTILISATEURS
+        // ============================================
+        window.validateUser = async function(uid) {
+            if (!confirm('Valider ce compte ?')) return;
+            try {
+                await updateDoc(doc(db, 'users', uid), { status: 'active', validatedAt: new Date().toISOString() });
+                showAlert('✅ Compte validé avec succès.', 'success');
+                await loadUsers();
+                updateStats();
+                renderUsers();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        };
+
+        window.suspendUser = async function(uid) {
+            if (!confirm('Suspendre ce compte ?')) return;
+            try {
+                await updateDoc(doc(db, 'users', uid), { status: 'suspended' });
+                showAlert('✅ Compte suspendu.', 'success');
+                await loadUsers();
+                updateStats();
+                renderUsers();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        };
+
+        window.deleteUser = async function(uid) {
+            if (!confirm('Supprimer définitivement ce compte ? Action irréversible.')) return;
+            try {
+                await deleteDoc(doc(db, 'users', uid));
+                showAlert('✅ Compte supprimé.', 'success');
+                await loadUsers();
+                updateStats();
+                renderUsers();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        };
+
+        // ============================================
+        // ACTIONS PRODUITS
+        // ============================================
+        window.viewProduct = async function(id) {
+            const modal = document.getElementById('productDetailModal');
+            const content = document.getElementById('productDetailContent');
+            const title = document.getElementById('productDetailTitle');
+            
+            try {
+                const docRef = doc(db, 'products', id);
+                const docSnap = await getDoc(docRef);
+                if (!docSnap.exists()) {
+                    content.innerHTML = '<p class="text-center text-gray-500">Produit non trouvé</p>';
+                    return;
+                }
+                const product = docSnap.data();
+                
+                title.textContent = product.title || 'Détail produit';
+                content.innerHTML = `
+                    <div class="space-y-3">
+                        ${product.images && product.images[0] ? `
+                            <img src="${product.images[0]}" class="w-full h-64 object-cover rounded-xl">
+                        ` : ''}
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div><span class="text-gray-500">Catégorie:</span> ${product.category || '-'}</div>
+                            <div><span class="text-gray-500">Prix:</span> ${new Intl.NumberFormat('fr-BJ', { style: 'currency', currency: 'XOF' }).format(product.price || 0)}</div>
+                            <div><span class="text-gray-500">Ville:</span> ${product.city || '-'}</div>
+                            <div><span class="text-gray-500">Vues:</span> ${product.views || 0}</div>
+                            <div class="col-span-2"><span class="text-gray-500">Vendeur:</span> ${product.sellerName || 'Inconnu'}</div>
+                            <div class="col-span-2"><span class="text-gray-500">Description:</span> ${product.description || 'Aucune description'}</div>
+                            <div class="col-span-2"><span class="text-gray-500">Publié le:</span> ${formatDate(product.createdAt)}</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="../products/detail.html?id=${id}" target="_blank" class="btn-primary text-sm flex-1 text-center">
+                                <i class="fas fa-external-link-alt mr-2"></i> Voir sur le site
+                            </a>
+                            <button onclick="closeProductDetail()" class="btn-outline text-sm">Fermer</button>
+                        </div>
+                    </div>
+                `;
+                modal.classList.remove('hidden');
+            } catch (error) {
+                showAlert('Erreur de chargement', 'danger');
+            }
+        };
+
+        window.closeProductDetail = function() {
+            document.getElementById('productDetailModal').classList.add('hidden');
+        };
+
+        window.approveProduct = async function(id) {
+            try {
+                await updateDoc(doc(db, 'products', id), { 
+                    status: 'published',
+                    approvedAt: new Date().toISOString()
+                });
+                showAlert('✅ Produit approuvé.', 'success');
+                await loadProducts();
+                updateStats();
+                renderProducts();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        };
+
+        window.rejectProduct = async function(id) {
+            if (!confirm('Refuser ce produit ?')) return;
+            try {
+                await updateDoc(doc(db, 'products', id), { 
+                    status: 'rejected',
+                    rejectedAt: new Date().toISOString()
+                });
+                showAlert('✅ Produit refusé.', 'success');
+                await loadProducts();
+                updateStats();
+                renderProducts();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        };
+
+        window.deleteProduct = async function(id) {
+            if (!confirm('Supprimer définitivement ce produit ? Action irréversible.')) return;
+            try {
+                await deleteDoc(doc(db, 'products', id));
+                showAlert('✅ Produit supprimé.', 'success');
+                await loadProducts();
+                updateStats();
+                renderProducts();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        };
+
+        // ============================================
+        // ACTIONS CATÉGORIES
+        // ============================================
+        window.openCategoryModal = function(id = null) {
+            const modal = document.getElementById('categoryModal');
+            const form = document.getElementById('categoryForm');
+            
+            if (id) {
+                const cat = allCategories.find(c => c.id === id);
+                if (cat) {
+                    document.getElementById('categoryModalTitle').textContent = 'Modifier la catégorie';
+                    document.getElementById('categoryEditId').value = id;
+                    document.getElementById('categoryName').value = cat.name || '';
+                    document.getElementById('categoryIcon').value = cat.icon || '';
+                }
+            } else {
+                document.getElementById('categoryModalTitle').textContent = 'Ajouter une catégorie';
+                document.getElementById('categoryEditId').value = '';
+                form.reset();
+            }
+            modal.classList.remove('hidden');
+        };
+
+        window.closeCategoryModal = function() {
+            document.getElementById('categoryModal').classList.add('hidden');
+        };
+
+        window.editCategory = function(id) {
+            openCategoryModal(id);
+        };
+
+        document.getElementById('categoryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('categoryEditId').value;
+            const name = document.getElementById('categoryName').value.trim();
+            const icon = document.getElementById('categoryIcon').value.trim() || '📦';
+
+            if (!name) {
+                showAlert('Veuillez saisir un nom.', 'danger');
+                return;
+            }
+
+            try {
+                if (id) {
+                    await updateDoc(doc(db, 'categories', id), { name, icon });
+                    showAlert('✅ Catégorie modifiée.', 'success');
+                } else {
+                    await addDoc(collection(db, 'categories'), { 
+                        name, 
+                        icon, 
+                        createdAt: new Date().toISOString() 
+                    });
+                    showAlert('✅ Catégorie ajoutée.', 'success');
+                }
+                closeCategoryModal();
+                await loadCategories();
+                renderCategories();
+                updateTabCounts();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        });
+
+        window.deleteCategory = async function(id) {
+            if (!confirm('Supprimer cette catégorie ?')) return;
+            try {
+                await deleteDoc(doc(db, 'categories', id));
+                showAlert('✅ Catégorie supprimée.', 'success');
+                await loadCategories();
+                renderCategories();
+                updateTabCounts();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        };
+
+        // ============================================
+        // ACTIONS AVIS
+        // ============================================
+        window.deleteReview = async function(id) {
+            if (!confirm('Supprimer cet avis ?')) return;
+            try {
+                await deleteDoc(doc(db, 'reviews', id));
+                showAlert('✅ Avis supprimé.', 'success');
+                await loadReviews();
+                renderReviews();
+                updateStats();
+            } catch (error) {
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+        };
+
+        // ============================================
+        // PARAMÈTRES
+        // ============================================
+        window.savePiRate = function() {
+            const rate = parseFloat(document.getElementById('piRate').value);
+            if (rate > 0) {
+                setExchangeRate(rate);
+                showAlert('✅ Taux de change mis à jour: 1 Pi = ' + rate + ' FCFA', 'success');
+                // Mettre à jour l'affichage sur toutes les pages
+                document.querySelectorAll('.pi-rate-display').forEach(el => {
+                    el.textContent = rate.toLocaleString();
+                });
+            } else {
+                showAlert('Veuillez saisir un taux valide.', 'danger');
+            }
+        };
+
+        window.toggleMaintenance = function() {
+            const checkbox = document.getElementById('maintenanceMode');
+            const status = document.getElementById('maintenanceStatus');
+            const isChecked = checkbox.checked;
+            status.textContent = isChecked ? 'Activé' : 'Désactivé';
+            status.className = `ml-3 text-sm ${isChecked ? 'text-warning-600' : 'text-gray-600'}`;
+            showAlert(`Mode maintenance ${isChecked ? 'activé' : 'désactivé'}.`, isChecked ? 'warning' : 'success');
+        };
+
+        // ============================================
+        // EXPORTATION DES DONNÉES
+        // ============================================
+        window.exportData = function(type) {
+            let data = [];
+            let filename = '';
+            
+            switch(type) {
+                case 'users':
+                    data = allUsers;
+                    filename = 'utilisateurs.json';
+                    break;
+                case 'products':
+                    data = allProducts;
+                    filename = 'produits.json';
+                    break;
+                case 'reviews':
+                    data = allReviews;
+                    filename = 'avis.json';
+                    break;
+                case 'all':
+                    data = { users: allUsers, products: allProducts, reviews: allReviews };
+                    filename = 'benin-pi-market-donnees.json';
+                    break;
+                default:
+                    return;
+            }
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showAlert('✅ Exportation terminée.', 'success');
+        };
+
+        // ============================================
+        // RAFRAÎCHIR LES DONNÉES
+        // ============================================
+        window.refreshData = function() {
+            showAlert('🔄 Rafraîchissement en cours...', 'info');
+            loadAllData();
+        };
+
+        // ============================================
+        // FERMER LA MODALE EN CLIQUANT À L'EXTÉRIEUR
+        // ============================================
+        document.getElementById('categoryModal').addEventListener('click', function(e) {
+            if (e.target === this) closeCategoryModal();
+        });
+        document.getElementById('productDetailModal').addEventListener('click', function(e) {
+            if (e.target === this) closeProductDetail();
+        });
+
+        // ============================================
+        // IMPORT getDoc
+        // ============================================
+        import { getDoc } from '../js/firebase-config.js';
+
+        console.log('✅ Dashboard Admin chargé avec succès !');
+    </script>
+</body>
+</html>
