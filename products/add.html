@@ -12,29 +12,66 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: { 500: '#1a73e8', 600: '#1557b0' },
-                        secondary: { 500: '#ff6b00' }
+                        primary: { 500: '#1a73e8', 600: '#1557b0', 700: '#104080' },
+                        secondary: { 500: '#ff6b00', 600: '#cc5500' },
+                        pi: { 500: '#f9a825', 600: '#f57f17' },
+                        success: { 500: '#22c55e' },
+                        warning: { 500: '#f59e0b' },
+                        danger: { 500: '#ef4444' }
                     }
                 }
             }
         }
     </script>
+    <style>
+        .upload-zone {
+            transition: all 0.3s ease;
+        }
+        .upload-zone.dragover {
+            border-color: #1a73e8;
+            background-color: #e8f0fe;
+        }
+        .preview-image {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .preview-image:hover .remove-btn {
+            opacity: 1;
+        }
+        .remove-btn {
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        progress::-webkit-progress-bar {
+            background-color: #e5e7eb;
+            border-radius: 9999px;
+        }
+        progress::-webkit-progress-value {
+            background-color: #1a73e8;
+            border-radius: 9999px;
+            transition: width 0.3s ease;
+        }
+        progress::-moz-progress-bar {
+            background-color: #1a73e8;
+            border-radius: 9999px;
+        }
+    </style>
 </head>
 <body class="bg-gray-50 font-sans min-h-screen flex flex-col">
 
     <!-- ========== HEADER ========== -->
     <header class="bg-white shadow-md sticky top-0 z-50">
-        <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="../index.html" class="flex items-center gap-3">
-                <img src="../images/logo.png" alt="Bénin Pi Market" class="h-12" onerror="this.style.display='none'">
+        <nav class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg transition group-hover:scale-105">BP</div>
                 <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
             </a>
             <div class="flex items-center gap-4">
                 <a href="my-products.html" class="text-gray-600 hover:text-primary-500 transition">
-                    <i class="fas fa-arrow-left mr-2"></i> Retour
+                    <i class="fas fa-arrow-left mr-2"></i> Mes produits
                 </a>
-                <a href="#" onclick="logout()" class="text-red-500 hover:text-red-600 transition">
-                    <i class="fas fa-sign-out-alt mr-1"></i> Déconnexion
+                <a href="#" onclick="window.logout()" class="text-red-500 hover:text-red-600 transition">
+                    <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
         </nav>
@@ -42,7 +79,9 @@
 
     <!-- ========== CONTENU PRINCIPAL ========== -->
     <div class="flex-1 max-w-3xl mx-auto px-4 py-8 w-full">
+        
         <div class="bg-white rounded-2xl shadow-card p-6 md:p-8">
+            <!-- En-tête -->
             <div class="flex items-center gap-3 mb-6">
                 <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
                     <i class="fas fa-plus-circle text-2xl text-primary-500"></i>
@@ -53,25 +92,32 @@
                 </div>
             </div>
 
+            <!-- Alertes -->
             <div id="alert-container"></div>
 
-            <form id="productForm" class="space-y-5" enctype="multipart/form-data">
+            <!-- Statut compte -->
+            <div id="statusBanner" class="hidden mb-4 p-4 rounded-xl bg-warning-50 border border-warning-200">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-clock text-warning-500"></i>
+                    <span id="statusMessage" class="text-warning-700">Votre compte est en attente de validation.</span>
+                </div>
+            </div>
 
+            <!-- ========== FORMULAIRE ========== -->
+            <form id="productForm" class="space-y-5" enctype="multipart/form-data">
                 <!-- Titre -->
                 <div>
-                    <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Titre du produit <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" id="title" 
-                           class="input-field w-full" 
-                           placeholder="Ex: Table en bois massif"
-                           required>
+                    <input type="text" id="title" class="input-field w-full" placeholder="Ex: Table en bois massif" required maxlength="100">
+                    <p class="text-xs text-gray-400 mt-1"><span id="titleCount">0</span>/100 caractères</p>
                 </div>
 
                 <!-- Catégorie et Sous-catégorie -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="category" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Catégorie <span class="text-red-500">*</span>
                         </label>
                         <select id="category" class="input-field w-full" required>
@@ -98,28 +144,24 @@
                         </select>
                     </div>
                     <div>
-                        <label for="subCategory" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Sous-catégorie
                         </label>
-                        <input type="text" id="subCategory" 
-                               class="input-field w-full" 
-                               placeholder="Ex: Menuiserie">
+                        <input type="text" id="subCategory" class="input-field w-full" placeholder="Ex: Menuiserie">
                     </div>
                 </div>
 
                 <!-- Prix et Ville -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Prix (FCFA) <span class="text-red-500">*</span>
                         </label>
-                        <input type="number" id="price" 
-                               class="input-field w-full" 
-                               placeholder="75000"
-                               required>
+                        <input type="number" id="price" class="input-field w-full" placeholder="75000" required min="0" step="100">
+                        <p class="text-xs text-gray-400 mt-1">💰 Converti automatiquement en Pi</p>
                     </div>
                     <div>
-                        <label for="city" class="block text-sm font-semibold text-gray-700 mb-2">
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
                             Ville <span class="text-red-500">*</span>
                         </label>
                         <select id="city" class="input-field w-full" required>
@@ -141,42 +183,72 @@
 
                 <!-- Description -->
                 <div>
-                    <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Description <span class="text-red-500">*</span>
                     </label>
-                    <textarea id="description" rows="5" 
-                              class="input-field w-full resize-none" 
-                              placeholder="Décrivez votre produit en détail (matériaux, dimensions, état, etc.)"
-                              required></textarea>
-                    <p class="text-xs text-gray-400 mt-1">
-                        <span id="charCount">0</span> caractères
-                    </p>
+                    <textarea id="description" rows="5" class="input-field w-full resize-none" placeholder="Décrivez votre produit en détail (matériaux, dimensions, état, etc.)" required maxlength="5000"></textarea>
+                    <p class="text-xs text-gray-400 mt-1"><span id="descCount">0</span>/5000 caractères</p>
                 </div>
 
                 <!-- Images -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">
                         Photos <span class="text-red-500">*</span>
+                        <span class="text-xs text-gray-400 font-normal">(Max 5 photos)</span>
                     </label>
-                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-500 transition cursor-pointer"
-                         onclick="document.getElementById('images').click()"
-                         ondrop="handleDrop(event)"
-                         ondragover="event.preventDefault()">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3 block"></i>
-                        <p class="text-gray-600">Cliquez ou glissez-déposez vos photos</p>
-                        <p class="text-sm text-gray-400 mt-1">JPG, PNG, WEBP (Max 5 Mo)</p>
+                    
+                    <!-- Zone de dépôt -->
+                    <div id="dropZone" class="upload-zone border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-500 transition cursor-pointer"
+                         onclick="document.getElementById('imagesInput').click()">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-gray-400 mb-3 block"></i>
+                        <p class="text-gray-600 font-medium">Cliquez ou glissez-déposez vos photos</p>
+                        <p class="text-sm text-gray-400 mt-1">JPG, PNG, WEBP (Max 5 Mo par photo)</p>
                         <p class="text-xs text-gray-400">Jusqu'à 5 photos</p>
-                        <input type="file" id="images" class="hidden" multiple accept="image/*" required>
+                        <input type="file" id="imagesInput" class="hidden" multiple accept="image/*" required>
                     </div>
+
+                    <!-- Prévisualisation -->
                     <div id="imagePreview" class="grid grid-cols-3 md:grid-cols-5 gap-3 mt-4"></div>
+
+                    <!-- Barre de progression upload -->
+                    <div id="uploadProgressContainer" class="hidden mt-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">
+                                <i class="fas fa-cloud-upload-alt text-primary-500 mr-2"></i>
+                                Upload en cours...
+                            </span>
+                            <span id="progressText" class="text-sm font-semibold text-primary-500">0%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                            <progress id="uploadProgress" value="0" max="100" class="w-full h-full appearance-none"></progress>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prix en Pi (auto-calculé) -->
+                <div class="bg-pi-50 border border-pi-200 rounded-xl p-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-sm text-gray-600">💰 Prix en Crypto Pi</span>
+                            <p class="text-xs text-gray-400">Taux: 1 Pi ≈ <span id="exchangeRateDisplay">1.000</span> FCFA</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-2xl font-bold text-pi-600" id="priceInPi">0.00</span>
+                            <span class="text-sm text-gray-500"> Pi</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Bouton de soumission -->
-                <button type="submit" id="submitBtn" 
-                        class="w-full bg-primary-500 text-white py-4 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg text-lg flex items-center justify-center gap-2">
+                <button type="submit" id="submitBtn" class="w-full bg-primary-500 text-white py-4 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg text-lg flex items-center justify-center gap-2">
                     <i class="fas fa-cloud-upload-alt"></i>
                     Publier le produit
                 </button>
+
+                <p class="text-xs text-center text-gray-400">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Votre produit sera visible après validation par l'administrateur
+                </p>
             </form>
         </div>
     </div>
@@ -184,20 +256,56 @@
     <!-- ========== FOOTER ========== -->
     <footer class="bg-dark text-white py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market</p>
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market - Ajouter un produit</p>
         </div>
     </footer>
 
     <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
-        import { auth, db, storage, ref, uploadBytes, getDownloadURL, onAuthStateChanged, doc, getDoc, addDoc, collection, serverTimestamp } from '../js/firebase-config.js';
+        import { auth, db, doc, getDoc, addDoc, collection, onAuthStateChanged } from '../js/firebase-config.js';
         import { showAlert, logout } from '../js/utils.js';
+        import { uploadMultipleToCloudinary } from '../js/Cloudinary-config.js';
+        import { getExchangeRate, toPi } from '../js/pi-utils.js';
 
-        // Exposer logout globalement
+        // ============================================
+        // EXPOSER LOGOUT
+        // ============================================
         window.logout = logout;
 
+        // ============================================
+        // ÉTAT
+        // ============================================
         let currentUser = null;
         let userData = null;
+        let isUploading = false;
+        let selectedFiles = [];
+        const EXCHANGE_RATE = getExchangeRate();
+        const MAX_IMAGES = 5;
+
+        // ============================================
+        // AFFICHER LE TAUX DE CHANGE
+        // ============================================
+        document.getElementById('exchangeRateDisplay').textContent = EXCHANGE_RATE.toLocaleString();
+
+        // ============================================
+        // COMPTEURS DE CARACTÈRES
+        // ============================================
+        document.getElementById('title').addEventListener('input', function() {
+            document.getElementById('titleCount').textContent = this.value.length;
+        });
+
+        document.getElementById('description').addEventListener('input', function() {
+            document.getElementById('descCount').textContent = this.value.length;
+        });
+
+        // ============================================
+        // CALCUL PRIX EN PI
+        // ============================================
+        document.getElementById('price').addEventListener('input', function() {
+            const price = parseFloat(this.value) || 0;
+            const priceInPi = toPi(price);
+            document.getElementById('priceInPi').textContent = priceInPi.toFixed(2);
+        });
 
         // ============================================
         // VÉRIFICATION DE L'AUTHENTIFICATION
@@ -209,7 +317,7 @@
             }
 
             currentUser = user;
-
+            
             try {
                 const userDoc = await getDoc(doc(db, 'users', user.uid));
                 if (!userDoc.exists()) {
@@ -219,99 +327,138 @@
 
                 userData = userDoc.data();
 
-                // Vérifier si le compte est validé
-                if (userData.status !== 'active') {
-                    showAlert(
-                        userData.status === 'pending' 
-                            ? 'Votre compte est en attente de validation. Vous ne pouvez pas encore publier de produits.' 
-                            : 'Votre compte est suspendu. Contactez l\'administrateur.',
-                        'danger'
-                    );
+                // Vérifier le statut du compte
+                const statusBanner = document.getElementById('statusBanner');
+                const statusMessage = document.getElementById('statusMessage');
+
+                if (userData.status === 'pending') {
+                    statusBanner.classList.remove('hidden');
+                    statusMessage.textContent = '⏳ Votre compte est en attente de validation par l\'administrateur. Vous ne pouvez pas encore publier.';
                     document.getElementById('submitBtn').disabled = true;
                     document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                } else if (userData.status === 'suspended') {
+                    statusBanner.classList.remove('hidden');
+                    statusBanner.className = 'mb-4 p-4 rounded-xl bg-danger-50 border border-danger-200';
+                    statusMessage.textContent = '🚫 Votre compte a été suspendu. Contactez l\'administrateur.';
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('submitBtn').classList.add('opacity-50', 'cursor-not-allowed');
+                } else {
+                    statusBanner.classList.add('hidden');
                 }
 
             } catch (error) {
-                console.error('Erreur récupération utilisateur:', error);
-                showAlert('Erreur de chargement du profil.', 'danger');
+                console.error('Erreur:', error);
+                showAlert('Erreur de chargement des données.', 'danger');
             }
         });
 
         // ============================================
-        // COMPTEUR DE CARACTÈRES
+        // DRAG & DROP
         // ============================================
-        const description = document.getElementById('description');
-        const charCount = document.getElementById('charCount');
+        const dropZone = document.getElementById('dropZone');
 
-        description.addEventListener('input', () => {
-            charCount.textContent = description.value.length;
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
         });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFiles(files);
+            }
+        });
+
+        // ============================================
+        // GESTION DES FICHIERS
+        // ============================================
+        document.getElementById('imagesInput').addEventListener('change', function(e) {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            const newFiles = Array.from(files);
+            
+            // Vérifier le nombre maximum
+            if (selectedFiles.length + newFiles.length > MAX_IMAGES) {
+                showAlert(`Vous ne pouvez ajouter que ${MAX_IMAGES} photos maximum.`, 'warning');
+                return;
+            }
+
+            // Vérifier la taille
+            const maxSize = 5 * 1024 * 1024; // 5 Mo
+            const oversized = newFiles.filter(f => f.size > maxSize);
+            if (oversized.length > 0) {
+                showAlert(`Certaines photos dépassent 5 Mo.`, 'danger');
+                return;
+            }
+
+            // Ajouter les fichiers
+            selectedFiles = [...selectedFiles, ...newFiles];
+            
+            // Prévisualiser
+            previewImages();
+        }
 
         // ============================================
         // PRÉVISUALISATION DES IMAGES
         // ============================================
-        const imagesInput = document.getElementById('images');
-        const imagePreview = document.getElementById('imagePreview');
-        const maxImages = 5;
-
-        imagesInput.addEventListener('change', function(e) {
-            const files = Array.from(this.files);
+        function previewImages() {
+            const container = document.getElementById('imagePreview');
             
-            if (files.length > maxImages) {
-                showAlert(`Vous ne pouvez ajouter que ${maxImages} photos maximum.`, 'danger');
-                this.value = '';
-                imagePreview.innerHTML = '';
+            if (selectedFiles.length === 0) {
+                container.innerHTML = '';
                 return;
             }
 
-            imagePreview.innerHTML = '';
-            
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const div = document.createElement('div');
-                    div.className = 'relative group';
-                    div.innerHTML = `
-                        <img src="${e.target.result}" class="w-full h-24 object-cover rounded-lg border-2 border-gray-200 group-hover:border-primary-500 transition">
-                        <button type="button" onclick="removeImage(${index})" 
-                                class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition opacity-0 group-hover:opacity-100">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    imagePreview.appendChild(div);
-                };
-                reader.readAsDataURL(file);
-            });
+            container.innerHTML = selectedFiles.map((file, index) => `
+                <div class="preview-image group">
+                    <img src="${URL.createObjectURL(file)}" 
+                         class="w-full h-24 object-cover rounded-lg border-2 border-gray-200 group-hover:border-primary-500 transition">
+                    <button type="button" onclick="removeImage(${index})" 
+                            class="remove-btn absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition shadow-md">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <span class="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                        ${(file.size / 1024).toFixed(0)} KB
+                    </span>
+                </div>
+            `).join('');
 
-            // Stocker les fichiers pour les supprimer
-            window._imageFiles = files;
-        });
+            // Mettre à jour le champ input (pour la validation)
+            updateFileInput();
+        }
 
-        // Supprimer une image de la prévisualisation
+        // ============================================
+        // SUPPRIMER UNE IMAGE
+        // ============================================
         window.removeImage = function(index) {
-            const files = Array.from(imagesInput.files);
-            files.splice(index, 1);
+            selectedFiles.splice(index, 1);
+            previewImages();
             
-            // Créer un nouveau FileList
-            const dataTransfer = new DataTransfer();
-            files.forEach(file => dataTransfer.items.add(file));
-            imagesInput.files = dataTransfer.files;
-            
-            // Re-générer la prévisualisation
-            imagesInput.dispatchEvent(new Event('change'));
+            // Réinitialiser l'input
+            document.getElementById('imagesInput').value = '';
+            updateFileInput();
         };
 
         // ============================================
-        // GESTION DU DRAG & DROP
+        // METTRE À JOUR LE FILE INPUT
         // ============================================
-        window.handleDrop = function(e) {
-            e.preventDefault();
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                imagesInput.files = files;
-                imagesInput.dispatchEvent(new Event('change'));
-            }
-        };
+        function updateFileInput() {
+            const input = document.getElementById('imagesInput');
+            const dataTransfer = new DataTransfer();
+            selectedFiles.forEach(file => dataTransfer.items.add(file));
+            input.files = dataTransfer.files;
+            
+            // Forcer l'événement change
+            input.dispatchEvent(new Event('change'));
+        }
 
         // ============================================
         // SOUMISSION DU FORMULAIRE
@@ -319,28 +466,26 @@
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            // Vérifier si l'upload est en cours
+            if (isUploading) return;
+
             // Vérifier si l'utilisateur est validé
             if (!userData || userData.status !== 'active') {
-                showAlert('Votre compte doit être validé pour publier des produits.', 'danger');
+                showAlert('Votre compte doit être validé pour publier des produits.', 'warning');
                 return;
             }
 
+            // Récupérer les valeurs
             const title = document.getElementById('title').value.trim();
             const category = document.getElementById('category').value;
             const subCategory = document.getElementById('subCategory').value.trim();
-            const price = document.getElementById('price').value;
+            const price = parseFloat(document.getElementById('price').value);
             const city = document.getElementById('city').value;
             const description = document.getElementById('description').value.trim();
-            const images = document.getElementById('images').files;
 
             // Validations
             if (!title || !category || !price || !city || !description) {
                 showAlert('Veuillez remplir tous les champs obligatoires.', 'danger');
-                return;
-            }
-
-            if (images.length === 0) {
-                showAlert('Veuillez ajouter au moins une photo.', 'danger');
                 return;
             }
 
@@ -349,29 +494,72 @@
                 return;
             }
 
+            if (selectedFiles.length === 0) {
+                showAlert('Veuillez ajouter au moins une photo.', 'danger');
+                return;
+            }
+
             // Désactiver le bouton
             const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Publication en cours...';
+            const progressContainer = document.getElementById('uploadProgressContainer');
+            const progressBar = document.getElementById('uploadProgress');
+            const progressText = document.getElementById('progressText');
+
+            isUploading = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Upload en cours...';
             submitBtn.disabled = true;
+            progressContainer.classList.remove('hidden');
+            progressBar.value = 0;
+            progressText.textContent = '0%';
 
             try {
-                // 1. Upload des images
-                const imageUrls = await uploadImages(images, currentUser.uid);
+                // ========== UPLOAD SUR CLOUDINARY ==========
+                const uploadResults = await uploadMultipleToCloudinary(
+                    selectedFiles,
+                    (percent) => {
+                        progressBar.value = percent;
+                        progressText.textContent = `${percent}%`;
+                    },
+                    {
+                        folder: `products/${currentUser.uid}`,
+                        resourceType: 'image',
+                        tags: ['benin-pi-market', 'product', category]
+                    }
+                );
 
-                // 2. Créer le produit dans Firestore
+                // Vérifier les résultats
+                const successful = uploadResults.filter(r => r.url);
+                const failed = uploadResults.filter(r => r.error);
+
+                if (failed.length > 0) {
+                    console.warn('Uploads échoués:', failed);
+                }
+
+                if (successful.length === 0) {
+                    throw new Error('Aucune image n\'a été uploadée avec succès.');
+                }
+
+                const imageUrls = successful.map(r => r.url);
+                const imagePublicIds = successful.map(r => r.publicId);
+
+                // Calcul du prix en Pi
+                const priceInPi = toPi(price);
+
+                // ========== SAUVEGARDE DANS FIRESTORE ==========
                 const productData = {
                     title,
                     category,
-                    subCategory,
-                    price: parseFloat(price),
+                    subCategory: subCategory || '',
+                    price,
+                    priceInPi: priceInPi.toFixed(2),
                     city,
                     description,
                     images: imageUrls,
+                    imagePublicIds: imagePublicIds,
                     sellerId: currentUser.uid,
                     sellerName: `${userData.prenom} ${userData.nom}`,
                     sellerWhatsapp: userData.whatsapp || userData.telephone,
-                    status: 'pending', // en attente de validation admin
+                    status: 'pending',
                     views: 0,
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString()
@@ -379,117 +567,35 @@
 
                 const docRef = await addDoc(collection(db, 'products'), productData);
 
-                // 3. Incrémenter le compteur de produits du vendeur
-                await updateDoc(doc(db, 'users', currentUser.uid), {
-                    productsCount: (userData.productsCount || 0) + 1
-                });
-
                 showAlert('✅ Produit publié avec succès ! En attente de validation.', 'success');
                 
                 // Réinitialiser le formulaire
                 document.getElementById('productForm').reset();
-                imagePreview.innerHTML = '';
-                charCount.textContent = '0';
+                selectedFiles = [];
+                previewImages();
+                document.getElementById('priceInPi').textContent = '0.00';
+                document.getElementById('titleCount').textContent = '0';
+                document.getElementById('descCount').textContent = '0';
 
-                // Rediriger après 3 secondes
+                // Rediriger après 2 secondes
                 setTimeout(() => {
                     window.location.href = 'my-products.html';
-                }, 3000);
+                }, 2500);
 
             } catch (error) {
-                console.error('Erreur publication:', error);
-                showAlert('❌ Erreur lors de la publication : ' + error.message, 'danger');
+                console.error('Erreur:', error);
+                showAlert('❌ Erreur: ' + error.message, 'danger');
             }
 
-            // Réactiver le bouton
-            submitBtn.innerHTML = originalText;
+            isUploading = false;
+            submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt mr-2"></i> Publier le produit';
             submitBtn.disabled = false;
+            progressContainer.classList.add('hidden');
+            progressBar.value = 0;
+            progressText.textContent = '0%';
         });
 
-        // ============================================
-        // UPLOAD DES IMAGES
-        // ============================================
-        async function uploadImages(images, userId) {
-            const urls = [];
-            const maxSize = 5 * 1024 * 1024; // 5 Mo
-
-            for (let i = 0; i < images.length; i++) {
-                const file = images[i];
-
-                // Vérifier la taille
-                if (file.size > maxSize) {
-                    showAlert(`L'image "${file.name}" dépasse 5 Mo.`, 'danger');
-                    continue;
-                }
-
-                try {
-                    // Compresser l'image avant upload
-                    const compressedFile = await compressImage(file);
-
-                    const filename = `${userId}/${Date.now()}_${i}.webp`;
-                    const storageRef = ref(storage, `products/${filename}`);
-                    
-                    await uploadBytes(storageRef, compressedFile);
-                    const url = await getDownloadURL(storageRef);
-                    urls.push(url);
-                } catch (error) {
-                    console.error(`Erreur upload image ${i}:`, error);
-                    showAlert(`Erreur lors de l'upload de "${file.name}"`, 'danger');
-                }
-            }
-
-            if (urls.length === 0) {
-                throw new Error('Aucune image n\'a pu être téléchargée.');
-            }
-
-            return urls;
-        }
-
-        // ============================================
-        // COMPRESSION D'IMAGE (via Canvas)
-        // ============================================
-        function compressImage(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.src = e.target.result;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let width = img.width;
-                        let height = img.height;
-                        const maxDimension = 1200;
-
-                        if (width > maxDimension || height > maxDimension) {
-                            const ratio = Math.min(maxDimension / width, maxDimension / height);
-                            width = Math.round(width * ratio);
-                            height = Math.round(height * ratio);
-                        }
-
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-
-                        canvas.toBlob((blob) => {
-                            const compressedFile = new File([blob], file.name.replace(/\.[^/.]+$/, '.webp'), {
-                                type: 'image/webp',
-                                lastModified: Date.now()
-                            });
-                            resolve(compressedFile);
-                        }, 'image/webp', 0.8);
-                    };
-                    img.onerror = reject;
-                };
-                reader.onerror = reject;
-            });
-        }
-
-        // ============================================
-        // IMPORT DE updateDoc
-        // ============================================
-        import { updateDoc } from '../js/firebase-config.js';
+        console.log('✅ Page Ajouter produit chargée avec succès !');
     </script>
 </body>
 </html>
