@@ -4,10 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bénin Pi Market - Annonces Bénin</title>
+    
+    <!-- ========== TAILWIND CSS ========== -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- ========== FONT AWESOME ========== -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- ========== GOOGLE FONTS ========== -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- ========== STYLES PERSONNALISÉS ========== -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- ========== CONFIGURATION TAILWIND ========== -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            500: '#1a73e8',
+                            600: '#1557b0',
+                            700: '#104080'
+                        },
+                        secondary: {
+                            500: '#ff6b00',
+                            600: '#cc5500'
+                        },
+                        pi: {
+                            50: '#fef9e7',
+                            100: '#fdebd0',
+                            500: '#f9a825',
+                            600: '#f57f17',
+                            700: '#e65100'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -48,22 +85,26 @@
             transform: scale(1.1);
             box-shadow: 0 6px 30px rgba(37, 211, 102, 0.6);
         }
-        .pi-badge {
-            background: #f9a825;
-            color: #fff;
-            padding: 2px 10px;
-            border-radius: 9999px;
-            font-size: 10px;
-            font-weight: 700;
+        .line-clamp-1 {
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        .status-badge {
-            padding: 2px 10px;
-            border-radius: 9999px;
-            font-size: 10px;
-            font-weight: 600;
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
-        .status-badge.active { background: #d4edda; color: #155724; }
-        .status-badge.pending { background: #fff3cd; color: #856404; }
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans antialiased">
@@ -73,8 +114,7 @@
 
         <!-- ========== TOP HEADER ========== -->
         <header class="px-5 pt-6 pb-3 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <!-- Logo / Avatar -->
+            <a href="index.html" class="flex items-center gap-3">
                 <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-primary-500 flex items-center justify-center bg-primary-500 text-white font-bold text-xl">
                     BP
                 </div>
@@ -84,24 +124,25 @@
                         <h1 class="text-base font-bold" id="userDisplayName">Bénin Pi Market</h1>
                     </div>
                 </div>
-            </div>
-            <!-- Actions -->
+            </a>
             <div class="flex items-center gap-2">
                 <!-- Pi Rate -->
-                <div class="hidden sm:flex items-center gap-1 bg-pi-50 px-3 py-1 rounded-full">
+                <div class="hidden sm:flex items-center gap-1 bg-pi-50 px-3 py-1 rounded-full border border-pi-100">
                     <span class="text-pi-500 font-bold text-xs">π</span>
                     <span class="text-xs text-gray-600" id="piRateDisplay">1 Pi = 1.000 FCFA</span>
                 </div>
-                <!-- Panier / Connexion -->
-                <button onclick="window.location.href='auth/login.html'" 
-                        class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center relative hover:bg-gray-200 transition" id="loginBtn">
-                    <i class="fas fa-user text-gray-600"></i>
-                </button>
-                <button onclick="window.location.href='auth/register.html'" 
-                        class="bg-primary-500 text-white text-xs px-3 py-2 rounded-xl font-semibold hover:bg-primary-600 transition" id="registerBtn">
-                    S'inscrire
-                </button>
-                <!-- Menu utilisateur connecté -->
+                
+                <!-- Non connecté -->
+                <div id="authButtons" class="flex items-center gap-2">
+                    <a href="auth/login.html" class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
+                        <i class="fas fa-user text-gray-600"></i>
+                    </a>
+                    <a href="auth/register.html" class="bg-primary-500 text-white text-xs px-3 py-2 rounded-xl font-semibold hover:bg-primary-600 transition">
+                        S'inscrire
+                    </a>
+                </div>
+
+                <!-- Connecté -->
                 <div id="userMenu" class="hidden relative group">
                     <button class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition">
                         <i class="fas fa-user-circle text-2xl text-primary-500"></i>
@@ -185,7 +226,7 @@
                     </a>
                 </div>
                 <div class="absolute right-0 bottom-0 h-full w-1/2 flex items-center justify-center">
-                    <div class="text-6xl opacity-20">🛒</div>
+                    <div class="text-7xl opacity-20">🛒</div>
                 </div>
             </div>
         </section>
@@ -201,7 +242,7 @@
             <div id="recentProducts" class="grid grid-cols-2 gap-3">
                 <div class="col-span-2 text-center py-8 text-gray-500">
                     <i class="fas fa-spinner fa-spin text-2xl"></i>
-                    <p class="mt-2 text-sm">Chargement...</p>
+                    <p class="mt-2 text-sm">Chargement des produits...</p>
                 </div>
             </div>
         </section>
@@ -245,14 +286,14 @@
         import { displayProducts } from './js/utils.js';
         import { getExchangeRate } from './js/pi-utils.js';
 
+        // Exposer logout globalement
         window.logout = logout;
 
         // ============================================
         // AUTHENTIFICATION
         // ============================================
         onAuthStateChanged(auth, (user) => {
-            const loginBtn = document.getElementById('loginBtn');
-            const registerBtn = document.getElementById('registerBtn');
+            const authButtons = document.getElementById('authButtons');
             const userMenu = document.getElementById('userMenu');
             const userDisplay = document.getElementById('userDisplayName');
             const greeting = document.getElementById('greetingText');
@@ -260,15 +301,14 @@
 
             if (user) {
                 // Connecté
-                loginBtn.style.display = 'none';
-                registerBtn.style.display = 'none';
-                userMenu.classList.remove('hidden');
+                if (authButtons) authButtons.style.display = 'none';
+                if (userMenu) userMenu.classList.remove('hidden');
                 
                 getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        userDisplay.textContent = `${userData.prenom} ${userData.nom}`;
-                        greeting.textContent = `👋 Bonjour ${userData.prenom}`;
+                        if (userDisplay) userDisplay.textContent = `${userData.prenom} ${userData.nom}`;
+                        if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
                     }
                 }).catch(() => {});
                 
@@ -276,11 +316,10 @@
                 
             } else {
                 // Non connecté
-                loginBtn.style.display = 'flex';
-                registerBtn.style.display = 'flex';
-                userMenu.classList.add('hidden');
-                userDisplay.textContent = 'Bénin Pi Market';
-                greeting.textContent = 'Bienvenue 👋';
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userMenu) userMenu.classList.add('hidden');
+                if (userDisplay) userDisplay.textContent = 'Bénin Pi Market';
+                if (greeting) greeting.textContent = 'Bienvenue 👋';
                 if (navProfile) navProfile.href = 'auth/login.html';
             }
         });
@@ -288,34 +327,72 @@
         // ============================================
         // TAUX PI
         // ============================================
-        const rate = getExchangeRate();
-        document.getElementById('piRateDisplay').textContent = `1 Pi = ${rate.toLocaleString()} FCFA`;
+        try {
+            const rate = getExchangeRate();
+            const piDisplay = document.getElementById('piRateDisplay');
+            if (piDisplay) {
+                piDisplay.textContent = `1 Pi = ${rate.toLocaleString()} FCFA`;
+            }
+        } catch (e) {
+            console.warn('Erreur chargement taux Pi:', e);
+        }
 
         // ============================================
         // CHARGER PRODUITS RÉCENTS
         // ============================================
         async function loadRecentProducts() {
+            const container = document.getElementById('recentProducts');
+            
             try {
+                // Vérifier que la collection existe
                 const q = query(
                     collection(db, 'products'),
                     where('status', '==', 'published'),
                     orderBy('createdAt', 'desc'),
                     limit(4)
                 );
+                
                 const querySnapshot = await getDocs(q);
                 const products = [];
+                
                 querySnapshot.forEach((doc) => {
                     products.push({ id: doc.id, ...doc.data() });
                 });
+
+                if (products.length === 0) {
+                    container.innerHTML = `
+                        <div class="col-span-2 text-center py-8 text-gray-500">
+                            <i class="fas fa-box-open text-3xl block mb-2"></i>
+                            <p class="text-sm">Aucun produit disponible</p>
+                            <p class="text-xs text-gray-400">Soyez le premier à publier !</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Afficher les produits
                 displayProducts(products, 'recentProducts');
+
             } catch (error) {
-                console.error('Erreur:', error);
-                document.getElementById('recentProducts').innerHTML = `
-                    <div class="col-span-2 text-center py-8 text-gray-500">
-                        <i class="fas fa-exclamation-circle text-2xl block mb-2"></i>
-                        <p class="text-sm">Erreur de chargement</p>
-                    </div>
-                `;
+                console.error('Erreur chargement produits:', error);
+                
+                // Si l'erreur est liée à l'index manquant
+                if (error.message && error.message.includes('index')) {
+                    container.innerHTML = `
+                        <div class="col-span-2 text-center py-8 text-yellow-600">
+                            <i class="fas fa-exclamation-triangle text-3xl block mb-2"></i>
+                            <p class="text-sm">Configuration en cours...</p>
+                            <p class="text-xs text-gray-400">Veuillez réessayer dans quelques minutes</p>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="col-span-2 text-center py-8 text-red-500">
+                            <i class="fas fa-exclamation-circle text-3xl block mb-2"></i>
+                            <p class="text-sm">Erreur de chargement</p>
+                        </div>
+                    `;
+                }
             }
         }
 
@@ -323,9 +400,12 @@
         // RECHERCHE
         // ============================================
         window.rechercher = function() {
-            const searchTerm = document.getElementById('searchInput')?.value;
-            if (searchTerm?.trim()) {
-                window.location.href = `products/list.html?search=${encodeURIComponent(searchTerm.trim())}`;
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                const searchTerm = searchInput.value?.trim();
+                if (searchTerm) {
+                    window.location.href = `products/list.html?search=${encodeURIComponent(searchTerm)}`;
+                }
             }
         };
 
