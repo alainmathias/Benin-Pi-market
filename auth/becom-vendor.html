@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devenir vendeur - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0' },
+                        secondary: { 500: '#ff6b00' },
+                        pi: { 500: '#f9a825', 600: '#f57f17' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg">BP</div>
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="../dashboard/vendor.html" class="text-gray-600 hover:text-primary-500 transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Dashboard
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="flex-1 max-w-3xl mx-auto px-4 py-8 w-full">
+        <div class="bg-white rounded-2xl shadow-card p-6 md:p-8">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-store text-2xl text-primary-500"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-dark">Devenir vendeur</h1>
+                    <p class="text-gray-500 text-sm">Activez votre boutique et commencez à vendre</p>
+                </div>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <!-- Rôles disponibles -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div class="border-2 border-gray-200 rounded-xl p-4 text-center hover:border-primary-500 transition cursor-pointer" onclick="selectRole('vendor')" id="role-vendor">
+                    <div class="text-4xl mb-2">🛒</div>
+                    <h3 class="font-bold text-dark">Vendeur</h3>
+                    <p class="text-xs text-gray-500">Vendez vos produits</p>
+                    <span class="text-xs text-primary-500 hidden" id="status-vendor">✅ Actif</span>
+                </div>
+                <div class="border-2 border-gray-200 rounded-xl p-4 text-center hover:border-primary-500 transition cursor-pointer" onclick="selectRole('delivery')" id="role-delivery">
+                    <div class="text-4xl mb-2">🚚</div>
+                    <h3 class="font-bold text-dark">Livreur</h3>
+                    <p class="text-xs text-gray-500">Livrez des colis</p>
+                    <span class="text-xs text-primary-500 hidden" id="status-delivery">✅ Actif</span>
+                </div>
+                <div class="border-2 border-gray-200 rounded-xl p-4 text-center hover:border-primary-500 transition cursor-pointer" onclick="selectRole('service_provider')" id="role-service">
+                    <div class="text-4xl mb-2">🛠️</div>
+                    <h3 class="font-bold text-dark">Prestataire</h3>
+                    <p class="text-xs text-gray-500">Proposez des services</p>
+                    <span class="text-xs text-primary-500 hidden" id="status-service">✅ Actif</span>
+                </div>
+            </div>
+
+            <!-- Résumé -->
+            <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                <h4 class="font-semibold text-dark mb-2">📋 Récapitulatif</h4>
+                <ul class="space-y-1 text-sm text-gray-600">
+                    <li>✅ <strong>Vous êtes déjà client</strong> - Vous pouvez acheter</li>
+                    <li id="roleSummary">⏳ Sélectionnez une activité professionnelle ci-dessus</li>
+                </ul>
+            </div>
+
+            <!-- Bouton de validation -->
+            <button onclick="submitRequest()" id="submitBtn" class="btn-primary w-full py-4 text-lg">
+                <i class="fas fa-paper-plane mr-2"></i> Envoyer la demande
+            </button>
+            <p class="text-xs text-center text-gray-400 mt-2">
+                La demande sera validée par l'administrateur
+            </p>
+        </div>
+    </div>
+
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market</p>
+        </div>
+    </footer>
+
+    <script type="module">
+        import { auth, onAuthStateChanged, doc, getDoc } from '../js/firebase-config.js';
+        import { showAlert, logout } from '../js/utils.js';
+        import { addRoleToUser, getUserRoles } from '../js/roles.js';
+
+        let currentUser = null;
+        let userData = null;
+        let selectedRole = null;
+        let existingRoles = [];
+
+        // Vérifier l'authentification
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            currentUser = user;
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                userData = userDoc.data();
+                await loadExistingRoles();
+            }
+        });
+
+        // Charger les rôles existants
+        async function loadExistingRoles() {
+            existingRoles = await getUserRoles(currentUser.uid);
+            
+            existingRoles.forEach(role => {
+                const el = document.getElementById(`status-${role.slug}`);
+                if (el) {
+                    el.classList.remove('hidden');
+                    el.textContent = `✅ ${role.status === 'active' ? 'Actif' : 'En attente'}`;
+                }
+                const card = document.getElementById(`role-${role.slug}`);
+                if (card) {
+                    card.classList.add('border-primary-500', 'bg-primary-50');
+                }
+            });
+
+            updateSummary();
+        }
+
+        // Sélectionner un rôle
+        window.selectRole = function(role) {
+            if (existingRoles.some(r => r.slug === role)) {
+                showAlert(`Vous avez déjà le rôle "${role}"`, 'warning');
+                return;
+            }
+            selectedRole = role;
+            updateSummary();
+            
+            // Mettre en surbrillance
+            document.querySelectorAll('[id^="role-"]').forEach(el => {
+                el.classList.remove('border-primary-500', 'bg-primary-50');
+            });
+            const card = document.getElementById(`role-${role}`);
+            if (card) {
+                card.classList.add('border-primary-500', 'bg-primary-50');
+            }
+        };
+
+        // Mettre à jour le résumé
+        function updateSummary() {
+            const summary = document.getElementById('roleSummary');
+            const roles = existingRoles.map(r => r.name).join(', ');
+            
+            if (selectedRole) {
+                const roleNames = {
+                    'vendor': 'Vendeur',
+                    'delivery': 'Livreur',
+                    'service_provider': 'Prestataire'
+                };
+                summary.textContent = `📌 Demande en cours pour : ${roleNames[selectedRole] || selectedRole}`;
+                summary.className = 'text-primary-600 font-medium';
+            } else if (roles) {
+                summary.textContent = `✅ Vous êtes déjà : ${roles}`;
+                summary.className = 'text-success-600';
+            } else {
+                summary.textContent = '⏳ Sélectionnez une activité professionnelle ci-dessus';
+                summary.className = 'text-gray-500';
+            }
+        }
+
+        // Soumettre la demande
+        window.submitRequest = async function() {
+            if (!selectedRole) {
+                showAlert('Veuillez sélectionner un rôle.', 'danger');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Envoi en cours...';
+            submitBtn.disabled = true;
+
+            const result = await addRoleToUser(currentUser.uid, selectedRole);
+
+            if (result.success) {
+                showAlert('✅ Demande envoyée ! En attente de validation.', 'success');
+                await loadExistingRoles();
+                selectedRole = null;
+                document.querySelectorAll('[id^="role-"]').forEach(el => {
+                    el.classList.remove('border-primary-500', 'bg-primary-50');
+                });
+            } else {
+                showAlert('❌ ' + result.message, 'danger');
+            }
+
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Envoyer la demande';
+            submitBtn.disabled = false;
+        };
+    </script>
+</body>
+</html>
