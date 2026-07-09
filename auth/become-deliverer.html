@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devenir livreur - Bénin Pi Market</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 500: '#1a73e8', 600: '#1557b0', 700: '#104080' },
+                        secondary: { 500: '#ff6b00', 600: '#cc5500' },
+                        delivery: { 500: '#06b6d4', 600: '#0891b2', 50: '#ecfeff', 100: '#cffafe' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .benefit-card {
+            transition: all 0.3s ease;
+        }
+        .benefit-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(6, 182, 212, 0.15);
+        }
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #06b6d4;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans min-h-screen flex flex-col">
+
+    <!-- ========== HEADER ========== -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center text-white font-bold text-lg transition group-hover:scale-105">BP</div>
+                <span class="text-2xl font-bold text-primary-500">Bénin Pi Market</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <a href="../dashboard/vendor.html" class="text-gray-600 hover:text-primary-500 transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Dashboard
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ========== CONTENU PRINCIPAL ========== -->
+    <div class="flex-1 max-w-4xl mx-auto px-4 py-8 w-full">
+
+        <!-- En-tête -->
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-16 h-16 bg-delivery-100 rounded-2xl flex items-center justify-center">
+                <i class="fas fa-truck text-3xl text-delivery-500"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-dark">Devenir livreur</h1>
+                <p class="text-gray-500 mt-1">Gagnez de l'argent en livrant des colis</p>
+            </div>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- ========== BANNIÈRE AVANTAGES ========== -->
+        <div class="bg-gradient-to-r from-delivery-500 to-delivery-600 rounded-2xl p-6 text-white mb-8">
+            <h2 class="text-xl font-bold mb-3">Pourquoi devenir livreur ?</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-3xl mb-1">💰</div>
+                    <p class="text-sm font-semibold">Gagnez de l'argent</p>
+                    <p class="text-xs text-delivery-100">Par livraison effectuée</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-1">🕐</div>
+                    <p class="text-sm font-semibold">Horaires flexibles</p>
+                    <p class="text-xs text-delivery-100">Travaillez quand vous voulez</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-1">📍</div>
+                    <p class="text-sm font-semibold">Proche de chez vous</p>
+                    <p class="text-xs text-delivery-100">Livraisons locales</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl mb-1">📈</div>
+                    <p class="text-sm font-semibold">Développement</p>
+                    <p class="text-xs text-delivery-100">Créez votre clientèle</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ÉTAPES ========== -->
+        <div class="bg-white rounded-2xl shadow-card p-6 mb-8">
+            <h3 class="text-lg font-bold text-dark mb-4">
+                <i class="fas fa-list-check text-delivery-500 mr-2"></i> Comment ça fonctionne ?
+            </h3>
+            <div class="space-y-4">
+                <div class="flex items-start gap-4">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h4 class="font-semibold text-dark">Inscrivez-vous comme livreur</h4>
+                        <p class="text-sm text-gray-500">Remplissez le formulaire ci-dessous</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h4 class="font-semibold text-dark">Validation par l'admin</h4>
+                        <p class="text-sm text-gray-500">Votre profil sera vérifié</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h4 class="font-semibold text-dark">Recevez des demandes</h4>
+                        <p class="text-sm text-gray-500">Les clients vous contactent via WhatsApp</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="step-number">4</div>
+                    <div>
+                        <h4 class="font-semibold text-dark">Effectuez les livraisons</h4>
+                        <p class="text-sm text-gray-500">Gérez vos livraisons et gagnez de l'argent</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== FORMULAIRE ========== -->
+        <div class="bg-white rounded-2xl shadow-card p-6 md:p-8">
+            <h3 class="text-lg font-bold text-dark mb-6">
+                <i class="fas fa-pen-to-square text-delivery-500 mr-2"></i> Vos informations
+            </h3>
+
+            <form id="delivererForm" class="space-y-5">
+                <!-- Type de livraison -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-box text-delivery-500 mr-1"></i> Type de livraison <span class="text-red-500">*</span>
+                    </label>
+                    <select id="deliveryType" class="input-field w-full" required>
+                        <option value="">Sélectionnez votre type de livraison</option>
+                        <option value="moto">🛵 Moto / Deux-roues</option>
+                        <option value="voiture">🚗 Voiture</option>
+                        <option value="camionnette">🚚 Camionnette / Fourgon</option>
+                        <option value="velo">🚲 Vélo</option>
+                        <option value="pied">🚶 À pied (petits colis)</option>
+                    </select>
+                </div>
+
+                <!-- Zone de livraison -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-map-pin text-delivery-500 mr-1"></i> Zone de livraison <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" id="deliveryZone" class="input-field w-full" 
+                           placeholder="Ex: Cotonou, Porto-Novo, Parakou" required>
+                </div>
+
+                <!-- Détails -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-align-left text-delivery-500 mr-1"></i> Informations complémentaires
+                    </label>
+                    <textarea id="deliveryDetails" rows="3" class="input-field w-full resize-none" 
+                              placeholder="Décrivez votre expérience, vos disponibilités, etc."></textarea>
+                    <p class="text-xs text-gray-400 mt-1"><span id="charCount">0</span> caractères</p>
+                </div>
+
+                <!-- Tarifs -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-coins text-delivery-500 mr-1"></i> Tarifs de livraison
+                    </label>
+                    <input type="text" id="deliveryPricing" class="input-field w-full" 
+                           placeholder="Ex: 1.500 FCFA par colis, ou forfait selon distance">
+                    <p class="text-xs text-gray-400 mt-1">Indiquez vos tarifs pour les clients</p>
+                </div>
+
+                <!-- Disponibilité -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-calendar text-delivery-500 mr-1"></i> Disponibilité
+                    </label>
+                    <select id="deliveryAvailability" class="input-field w-full">
+                        <option value="toujours">📅 Toujours disponible</option>
+                        <option value="semaine">📅 En semaine uniquement</option>
+                        <option value="weekend">📅 Le weekend uniquement</option>
+                        <option value="soir">🌙 En soirée uniquement</option>
+                    </select>
+                </div>
+
+                <!-- Pièce d'identité -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">
+                        <i class="fas fa-id-card text-delivery-500 mr-1"></i> Pièce d'identité (optionnel)
+                    </label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-delivery-500 transition cursor-pointer"
+                         onclick="document.getElementById('idDocument').click()">
+                        <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2 block"></i>
+                        <p class="text-gray-600 text-sm">CNI, Passeport ou Permis de conduire</p>
+                        <p class="text-xs text-gray-400">JPG, PNG, PDF (Max 5 Mo)</p>
+                        <input type="file" id="idDocument" class="hidden" accept="image/*,application/pdf">
+                    </div>
+                    <div id="filePreview" class="mt-2 text-sm text-gray-500"></div>
+                </div>
+
+                <!-- Bouton de soumission -->
+                <button type="submit" id="submitBtn" class="w-full bg-delivery-500 text-white py-4 rounded-xl font-semibold hover:bg-delivery-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg text-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-paper-plane"></i>
+                    Devenir livreur
+                </button>
+
+                <p class="text-xs text-center text-gray-400">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Votre demande sera validée par l'administrateur sous 24-48h
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="bg-dark text-white py-6 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market - Devenir livreur</p>
+        </div>
+    </footer>
+
+    <!-- ========== JAVASCRIPT ========== -->
+    <script type="module">
+        import { auth, db, doc, getDoc, updateDoc, onAuthStateChanged } from '../js/firebase-config.js';
+        import { showAlert, logout } from '../js/utils.js';
+        import { addRoleToUser, getUserRoles } from '../js/roles.js';
+
+        window.logout = logout;
+
+        let currentUser = null;
+        let userData = null;
+
+        // ============================================
+        // COMPTEUR CARACTÈRES
+        // ============================================
+        document.getElementById('deliveryDetails').addEventListener('input', function() {
+            document.getElementById('charCount').textContent = this.value.length;
+        });
+
+        // ============================================
+        // PRÉVISUALISATION FICHIER
+        // ============================================
+        document.getElementById('idDocument').addEventListener('change', function(e) {
+            const preview = document.getElementById('filePreview');
+            if (this.files.length > 0) {
+                preview.innerHTML = `
+                    <div class="flex items-center gap-2 text-green-600">
+                        <i class="fas fa-check-circle"></i>
+                        <span>${this.files[0].name}</span>
+                    </div>
+                `;
+            } else {
+                preview.innerHTML = '';
+            }
+        });
+
+        // ============================================
+        // VÉRIFICATION AUTH
+        // ============================================
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = '../auth/login.html';
+                return;
+            }
+
+            currentUser = user;
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+                userData = userDoc.data();
+                
+                const roles = await getUserRoles(user.uid);
+                if (roles.some(r => r.slug === 'delivery' && r.status === 'active')) {
+                    showAlert('✅ Vous êtes déjà livreur !', 'success');
+                    document.getElementById('submitBtn').disabled = true;
+                    document.getElementById('submitBtn').textContent = '✅ Déjà livreur';
+                }
+            }
+        });
+
+        // ============================================
+        // SOUMISSION
+        // ============================================
+        document.getElementById('delivererForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const deliveryType = document.getElementById('deliveryType').value;
+            const deliveryZone = document.getElementById('deliveryZone').value.trim();
+            const details = document.getElementById('deliveryDetails').value.trim();
+            const pricing = document.getElementById('deliveryPricing').value.trim();
+            const availability = document.getElementById('deliveryAvailability').value;
+
+            if (!deliveryType || !deliveryZone) {
+                showAlert('Veuillez remplir tous les champs obligatoires.', 'danger');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Envoi en cours...';
+            submitBtn.disabled = true;
+
+            try {
+                const result = await addRoleToUser(currentUser.uid, 'delivery');
+                
+                if (result.success) {
+                    await updateDoc(doc(db, 'users', currentUser.uid), {
+                        deliveryType: deliveryType,
+                        deliveryZone: deliveryZone,
+                        deliveryDetails: details || '',
+                        deliveryPricing: pricing || '',
+                        deliveryAvailability: availability || '',
+                        isDelivery: true,
+                        updatedAt: new Date().toISOString()
+                    });
+
+                    showAlert('✅ Demande envoyée ! En attente de validation.', 'success');
+                    setTimeout(() => {
+                        window.location.href = '../dashboard/vendor.html';
+                    }, 2500);
+                } else {
+                    showAlert('❌ ' + result.message, 'danger');
+                }
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                showAlert('❌ Erreur: ' + error.message, 'danger');
+            }
+
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i> Devenir livreur';
+            submitBtn.disabled = false;
+        });
+    </script>
+</body>
+</html>
