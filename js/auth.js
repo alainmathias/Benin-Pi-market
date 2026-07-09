@@ -3,7 +3,6 @@
 //import { db, collection, addDoc, getDocs, query } from './firebase-config.js';
 
 import { addDoc,
-collection,
     auth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword,
