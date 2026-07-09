@@ -173,48 +173,14 @@
             <div class="relative flex-1">
                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
                     <i class="fas fa-search text-sm"></i>
+Le marché local des pionniers Beninois 
                 </span>
-                <input id="searchInput" 
-                       class="w-full bg-white border border-gray-200 rounded-2xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary-200 focus:border-primary-500 outline-none transition" 
-                       placeholder="Que recherchez-vous ?" 
-                       type="text"
-                       onkeypress="if(event.key==='Enter') window.rechercher()">
-            </div>
-            <button onclick="seachBtn" 
-                    class="w-12 h-12 bg-primary-500 border border-gray-1 rounded-2xl flex items-center justify-center text-white shadow-sm hover:bg-primary-600 transition">
-                <i class="fas fa-arrow-right"></i>
-            </button>
+                </div>
+            
         </section>
 
-        <!-- ========== CATEGORIES CHIPS ========== -->
-        <section class="flex gap-2 overflow-x-auto px-5 py-3 no-scrollbar">
-            <button onclick="window.location.href='products/list.html'" 
-                    class="flex items-center gap-2 bg-primary-500 text-white px-4 py-2 rounded-xl whitespace-nowrap active-chip-shadow text-sm font-medium">
-                <i class="fas fa-th-large text-sm"></i>
-                Tous
-            </button>
-            <button onclick="window.location.href='products/list.html?category=Artisanat'" 
-                    class="flex items-center gap-2 bg-white text-gray-600 px-4 py-2 rounded-xl border border-gray-200 whitespace-nowrap hover:border-primary-300 transition text-sm font-medium">
-                🪵 Artisanat
-            </button>
-            <button onclick="window.location.href='products/list.html?category=Agriculture'" 
-                    class="flex items-center gap-2 bg-white text-gray-600 px-4 py-2 rounded-xl border border-gray-200 whitespace-nowrap hover:border-primary-300 transition text-sm font-medium">
-                🌾 Agriculture
-            </button>
-            <button onclick="window.location.href='products/list.html?category=Mode'" 
-                    class="flex items-center gap-2 bg-white text-gray-600 px-4 py-2 rounded-xl border border-gray-200 whitespace-nowrap hover:border-primary-300 transition text-sm font-medium">
-                👗 Mode
-            </button>
-            <button onclick="window.location.href='products/list.html?category=Immobilier'" 
-                    class="flex items-center gap-2 bg-white text-gray-600 px-4 py-2 rounded-xl border border-gray-200 whitespace-nowrap hover:border-primary-300 transition text-sm font-medium">
-                🏠 Immobilier
-            </button>
-            <button onclick="window.location.href='products/list.html?category=Services'" 
-                    class="flex items-center gap-2 bg-white text-gray-600 px-4 py-2 rounded-xl border border-gray-200 whitespace-nowrap hover:border-primary-300 transition text-sm font-medium">
-                🛠️ Services
-            </button>
-        </section>
-
+    
+    
         <!-- ========== PROMO BANNER ========== -->
         <section class="px-5 py-2">
             <div class="bg-gradient-to-r from-primary-500 to-primary-700 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between h-44">
@@ -298,17 +264,7 @@ import { afficherProduits } from './js/utils.js';
     window.logout = logout;
 
     // ============================================
-    // EXPOSER RECHERCHE GLOBALEMENT
-    // ============================================
-    window.rechercher = function() {
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            const searchTerm = searchInput.value?.trim();
-            if (searchTerm) {
-                window.location.href = `products/list.html?search=${encodeURIComponent(searchTerm)}`;
-            }
-        }
-    };
+    
 
     // ============================================
     // AUTHENTIFICATION
