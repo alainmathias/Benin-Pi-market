@@ -68,6 +68,8 @@ export async function register(email, password, userData) {
             lastLogin: new Date().toISOString()
         });
 
+
+await initRolesIfNeeded();
         return {
             success: true,
             message: '✅ Inscription réussie !',
@@ -217,3 +219,34 @@ export async function resetPassword(email) {
         };
     }
 }
+
+// js/auth.js - Ajouter cette fonction
+
+import { db, collection, addDoc, getDocs, query } from './firebase-config.js';
+
+const ROLES = [
+    { name: 'Vendeur', slug: 'vendor', icon: 'fas fa-store', description: 'Peut vendre des produits' },
+    { name: 'Prestataire', slug: 'service_provider', icon: 'fas fa-tools', description: 'Peut proposer des services' },
+    { name: 'Livreur', slug: 'delivery', icon: 'fas fa-truck', description: 'Peut livrer des colis' },
+    { name: 'Administrateur', slug: 'admin', icon: 'fas fa-user-shield', description: 'Gère la plateforme' }
+];
+
+export async function initRolesIfNeeded() {
+    try {
+        const snapshot = await getDocs(collection(db, 'roles'));
+        if (!snapshot.empty) return;
+        
+        for (const role of ROLES) {
+            await addDoc(collection(db, 'roles'), {
+                ...role,
+                createdAt: new Date().toISOString()
+            });
+            console.log(`✅ Rôle "${role.name}" créé`);
+        }
+    } catch (error) {
+        console.error('Erreur initialisation rôles:', error);
+    }
+}
+
+// Appeler cette fonction dans register() après la création de l'utilisateur
+// await initRolesIfNeeded();
