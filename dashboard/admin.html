@@ -73,7 +73,10 @@
         </div>
 
         <div id="alert-container"></div>
-
+<!-- Dans dashboard/admin.html, onglet Paramètres -->
+<button onclick="initRoles()" class="btn-primary text-sm px-4 py-2">
+    <i class="fas fa-sync-alt mr-2"></i> Initialiser les rôles
+</button>
         <!-- ========== STATISTIQUES ========== -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div class="stat-card bg-white rounded-xl shadow-card p-4 relative overflow-hidden">
@@ -1241,6 +1244,40 @@
         });
 
         console.log('✅ Dashboard Admin chargé avec succès !');
+
+
+
+
+
+// Dans le JavaScript du Dashboard Admin
+window.initRoles = async function() {
+    if (!confirm('Créer les rôles par défaut ?')) return;
+    
+    const ROLES = [
+        { name: 'Vendeur', slug: 'vendor', icon: 'fas fa-store', description: 'Peut vendre des produits' },
+        { name: 'Prestataire', slug: 'service_provider', icon: 'fas fa-tools', description: 'Peut proposer des services' },
+        { name: 'Livreur', slug: 'delivery', icon: 'fas fa-truck', description: 'Peut livrer des colis' },
+        { name: 'Administrateur', slug: 'admin', icon: 'fas fa-user-shield', description: 'Gère la plateforme' }
+    ];
+    
+    try {
+        const snapshot = await getDocs(collection(db, 'roles'));
+        if (!snapshot.empty) {
+            showAlert('Les rôles existent déjà !', 'warning');
+            return;
+        }
+        
+        for (const role of ROLES) {
+            await addDoc(collection(db, 'roles'), {
+                ...role,
+                createdAt: new Date().toISOString()
+            });
+        }
+        showAlert('✅ Tous les rôles ont été créés !', 'success');
+    } catch (error) {
+        showAlert('❌ Erreur: ' + error.message, 'danger');
+    }
+};
     </script>
 </body>
 </html>
