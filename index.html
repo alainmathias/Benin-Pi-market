@@ -121,7 +121,7 @@
                 <div>
                     <p class="text-xs text-gray-400" id="greetingText">Bienvenue 👋</p>
                     <div class="flex items-center gap-1">
-                        <h1 class="text-base font-bold" id="userDisplayName">Bénin Pi Market</h1>
+                        <h1 class="text-base font-bold" id="">Bénin Pi Market</h1>
                     </div>
                 </div>
             </a>
@@ -172,7 +172,7 @@
         <section class="px-5 py-2 flex gap-3 items-center">
             <div class="relative flex-1">
                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
-                    <i class="fas fa-search text-sm"></i>
+                   
 Le marché local des pionniers Beninois 
                 </span>
                 </div>
@@ -272,7 +272,7 @@ import { afficherProduits } from './js/utils.js';
     onAuthStateChanged(auth, (user) => {
         const authButtons = document.getElementById('authButtons');
         const userMenu = document.getElementById('userMenu');
-        const userDisplay = document.getElementById('userDisplayName');
+        //const userDisplay = document.getElementById('userDisplayName');
         const greeting = document.getElementById('greetingText');
         const navProfile = document.getElementById('navProfile');
 
@@ -283,8 +283,8 @@ import { afficherProduits } from './js/utils.js';
             getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
                 if (docSnap.exists()) {
                     const userData = docSnap.data();
-                    if (userDisplay) userDisplay.textContent = `${userData.prenom} ${userData.nom}`;
-                    if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
+                //    if (userDisplay) userDisplay.textContent = `${userData.prenom} ${userData.nom}`;
+                //    if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
                 }
             }).catch(() => {});
             
@@ -292,7 +292,7 @@ import { afficherProduits } from './js/utils.js';
         } else {
             if (authButtons) authButtons.style.display = 'flex';
             if (userMenu) userMenu.classList.add('hidden');
-            if (userDisplay) userDisplay.textContent = 'Bénin Pi Market';
+          if (userDisplay) userDisplay.textContent = 'Bénin Pi Market';
             if (greeting) greeting.textContent = 'Bienvenue 👋';
             if (navProfile) navProfile.href = 'auth/login.html';
         }
