@@ -1,7 +1,9 @@
 // js/auth.js - Version avec gestion des rôles
 // ============================================
+//import { db, collection, addDoc, getDocs, query } from './firebase-config.js';
 
-import { 
+import { addDoc,
+collection,
     auth, 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword,
@@ -222,7 +224,7 @@ export async function resetPassword(email) {
 
 // js/auth.js - Ajouter cette fonction
 
-import { db, collection, addDoc, getDocs, query } from './firebase-config.js';
+//import { db, collection, addDoc, getDocs, query } from './firebase-config.js';
 
 const ROLES = [
     { name: 'Vendeur', slug: 'vendor', icon: 'fas fa-store', description: 'Peut vendre des produits' },
