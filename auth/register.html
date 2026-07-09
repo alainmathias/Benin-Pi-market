@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Bénin Pi Market</title>
+    <title>Inscription - Bénin Pi Market</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
@@ -22,6 +22,7 @@
 </head>
 <body class="bg-gray-50 font-sans min-h-screen flex flex-col">
 
+    <!-- ========== HEADER ========== -->
     <header class="bg-white shadow-md sticky top-0 z-50">
         <nav class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <a href="../index.html" class="flex items-center gap-3">
@@ -33,56 +34,67 @@
                     <i class="fas fa-home"></i> Accueil
                 </a>
                 <a href="login.html" class="border-2 border-primary-500 text-primary-500 px-4 py-2 rounded-xl font-semibold hover:bg-primary-500 hover:text-white transition">
-                    Login
+                    Connexion
                 </a>
             </div>
         </nav>
     </header>
 
+    <!-- ========== CONTENU PRINCIPAL ========== -->
     <div class="flex-1 flex items-center justify-center py-12 px-4">
         <div class="bg-white rounded-2xl shadow-card max-w-2xl w-full p-8 animate-fade-in">
+
+            <!-- En-tête -->
             <div class="text-center mb-8">
                 <div class="w-20 h-20 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-user-plus text-3xl text-primary-500"></i>
                 </div>
-                <h2 class="text-3xl font-bold text-dark">Create Account</h2>
+                <h2 class="text-3xl font-bold text-dark">Créer un compte</h2>
                 <p class="text-gray-500 mt-2">Inscrivez-vous pour commencer</p>
             </div>
 
+            <!-- Alertes -->
             <div id="alert-container"></div>
 
+            <!-- ========== FORMULAIRE ========== -->
             <form id="registerForm" class="space-y-4">
+
+                <!-- Nom et Prénom -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="nom" class="block text-sm font-semibold text-gray-700 mb-2">Last Name *</label>
-                        <input type="text" id="nom" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
+                        <label for="nom" class="block text-sm font-semibold text-gray-700 mb-2">Nom *</label>
+                        <input type="text" id="nom" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="Votre nom" required>
                     </div>
                     <div>
-                        <label for="prenom" class="block text-sm font-semibold text-gray-700 mb-2">First Name *</label>
-                        <input type="text" id="prenom" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
+                        <label for="prenom" class="block text-sm font-semibold text-gray-700 mb-2">Prénom *</label>
+                        <input type="text" id="prenom" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="Votre prénom" required>
                     </div>
                 </div>
 
+                <!-- Email -->
                 <div>
-                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email (optional)</label>
-                    <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="your@email.com">
+                    <label for="email" class="block text-sm font-semibold text-gray-700 mb-2">Email (facultatif)</label>
+                    <input type="email" id="email" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="exemple@email.com">
+                    <p class="text-xs text-gray-400 mt-1">Laissez vide pour utiliser votre numéro de téléphone</p>
                 </div>
 
+                <!-- Mot de passe -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Password *</label>
-                        <input type="password" id="password" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required minlength="6">
-                        <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+                        <label for="password" class="block text-sm font-semibold text-gray-700 mb-2">Mot de passe *</label>
+                        <input type="password" id="password" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="••••••••" required minlength="6">
+                        <p class="text-xs text-gray-500 mt-1">Minimum 6 caractères</p>
                     </div>
                     <div>
-                        <label for="passwordConfirm" class="block text-sm font-semibold text-gray-700 mb-2">Confirm *</label>
-                        <input type="password" id="passwordConfirm" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
+                        <label for="passwordConfirm" class="block text-sm font-semibold text-gray-700 mb-2">Confirmer *</label>
+                        <input type="password" id="passwordConfirm" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="••••••••" required>
                     </div>
                 </div>
 
+                <!-- Téléphone et WhatsApp -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="telephone" class="block text-sm font-semibold text-gray-700 mb-2">Phone *</label>
+                        <label for="telephone" class="block text-sm font-semibold text-gray-700 mb-2">Téléphone *</label>
                         <input type="tel" id="telephone" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="+229 XX XX XX XX" required>
                     </div>
                     <div>
@@ -91,16 +103,18 @@
                     </div>
                 </div>
 
+                <!-- Adresse -->
                 <div>
-                    <label for="adresse" class="block text-sm font-semibold text-gray-700 mb-2">Address *</label>
-                    <input type="text" id="adresse" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
+                    <label for="adresse" class="block text-sm font-semibold text-gray-700 mb-2">Adresse *</label>
+                    <input type="text" id="adresse" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="Votre adresse complète" required>
                 </div>
 
+                <!-- Ville et Profession -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="ville" class="block text-sm font-semibold text-gray-700 mb-2">City *</label>
+                        <label for="ville" class="block text-sm font-semibold text-gray-700 mb-2">Ville *</label>
                         <select id="ville" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
-                            <option value="">Select your city</option>
+                            <option value="">Sélectionnez votre ville</option>
                             <option value="Cotonou">Cotonou</option>
                             <option value="Porto-Novo">Porto-Novo</option>
                             <option value="Parakou">Parakou</option>
@@ -111,56 +125,43 @@
                             <option value="Ouidah">Ouidah</option>
                             <option value="Lokossa">Lokossa</option>
                             <option value="Djougou">Djougou</option>
-                            <option value="Other">Other</option>
+                            <option value="Autre">Autre</option>
                         </select>
                     </div>
                     <div>
                         <label for="profession" class="block text-sm font-semibold text-gray-700 mb-2">Profession *</label>
-                        <input type="text" id="profession" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="Carpenter, Merchant..." required>
+                        <input type="text" id="profession" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" placeholder="Menuisier, Commerçant..." required>
                     </div>
                 </div>
 
-                <div>
-                    <label for="categorieActivite" class="block text-sm font-semibold text-gray-700 mb-2">Activity Category *</label>
-                    <select id="categorieActivite" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-200 transition" required>
-                        <option value="">Select category</option>
-                        <option value="Agriculture">🌾 Agriculture</option>
-                        <option value="Artisanat">🪵 Artisanat</option>
-                        <option value="Construction">🏗️ Construction</option>
-                        <option value="Automobile">🚗 Automobile</option>
-                        <option value="Électronique">📱 Électronique</option>
-                        <option value="Mode">👗 Mode</option>
-                        <option value="Immobilier">🏠 Immobilier</option>
-                        <option value="Services">🛠️ Services</option>
-                        <option value="Restauration">🍽️ Restauration</option>
-                        <option value="Transport">🚚 Transport</option>
-                        <option value="Hôtels">🏨 Hôtels</option>
-                        <option value="Tourisme">✈️ Tourisme</option>
-                        <option value="Événementiel">🎉 Événementiel</option>
-                        <option value="Santé">🏥 Santé</option>
-                        <option value="Éducation">📚 Éducation</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="w-full bg-primary-500 text-white py-4 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg text-lg">
-                    <i class="fas fa-user-plus mr-2"></i> Create Account
+                <!-- Bouton d'inscription -->
+                <button type="submit" class="w-full bg-primary-500 text-white py-4 rounded-xl font-semibold hover:bg-primary-600 transform hover:-translate-y-1 transition shadow-md hover:shadow-lg text-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-user-plus mr-2"></i> Créer mon compte
                 </button>
+
+                <p class="text-xs text-center text-gray-400 mt-2">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Vous pourrez ensuite activer des rôles professionnels (Vendeur, Prestataire, Livreur)
+                </p>
             </form>
 
+            <!-- Lien vers connexion -->
             <div class="mt-6 text-center">
-                <p class="text-gray-600">Already have an account ? 
-                    <a href="login.html" class="text-primary-500 font-semibold hover:underline">Login</a>
+                <p class="text-gray-600">Vous avez déjà un compte ? 
+                    <a href="login.html" class="text-primary-500 font-semibold hover:underline">Se connecter</a>
                 </p>
             </div>
         </div>
     </div>
 
+    <!-- ========== FOOTER ========== -->
     <footer class="bg-dark text-white py-6 mt-auto">
         <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market</p>
+            <p class="text-sm text-gray-400">&copy; 2026 Bénin Pi Market - Inscription</p>
         </div>
     </footer>
 
+    <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
         import { register } from '../js/auth.js';
         import { showAlert } from '../js/utils.js';
@@ -168,6 +169,7 @@
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            // Récupérer les valeurs
             const formData = {
                 nom: document.getElementById('nom').value.trim(),
                 prenom: document.getElementById('prenom').value.trim(),
@@ -178,28 +180,30 @@
                 whatsapp: document.getElementById('whatsapp').value.trim(),
                 adresse: document.getElementById('adresse').value.trim(),
                 ville: document.getElementById('ville').value,
-                profession: document.getElementById('profession').value.trim(),
-                categorieActivite: document.getElementById('categorieActivite').value
+                profession: document.getElementById('profession').value.trim()
             };
 
+            // Validation
             if (formData.password !== formData.passwordConfirm) {
-                showAlert('Passwords do not match.', 'danger');
+                showAlert('Les mots de passe ne correspondent pas.', 'danger');
                 return;
             }
 
             if (formData.password.length < 6) {
-                showAlert('Password must be at least 6 characters.', 'danger');
+                showAlert('Le mot de passe doit contenir au moins 6 caractères.', 'danger');
                 return;
             }
 
-            const required = ['nom', 'prenom', 'telephone', 'whatsapp', 'adresse', 'ville', 'profession', 'categorieActivite'];
+            // Vérifier les champs obligatoires (sans categorieActivite)
+            const required = ['nom', 'prenom', 'telephone', 'whatsapp', 'adresse', 'ville', 'profession'];
             for (const field of required) {
                 if (!formData[field]) {
-                    showAlert(`Please fill in "${field}"`, 'danger');
+                    showAlert(`Veuillez remplir le champ "${field}"`, 'danger');
                     return;
                 }
             }
 
+            // Préparer les données utilisateur (sans categorieActivite)
             const userData = {
                 nom: formData.nom,
                 prenom: formData.prenom,
@@ -207,19 +211,23 @@
                 whatsapp: formData.whatsapp,
                 adresse: formData.adresse,
                 ville: formData.ville,
-                profession: formData.profession,
-                categorieActivite: formData.categorieActivite
+                profession: formData.profession
+                // categorieActivite supprimé
             };
 
+            // Utiliser le téléphone comme email si email vide
             const userEmail = formData.email || `${formData.telephone.replace(/\s/g, '')}@beninpimarket.com`;
 
+            // Désactiver le bouton
             const submitBtn = e.target.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Creating account...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Création du compte...';
             submitBtn.disabled = true;
 
+            // Appeler la fonction d'inscription
             const result = await register(userEmail, formData.password, userData);
 
+            // Réactiver le bouton
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
 
