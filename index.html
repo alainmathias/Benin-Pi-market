@@ -160,7 +160,7 @@
                     <div class="flex items-center gap-1">
                         <h1 class="text-base font-bold">Bénin Pi Market</h1>
                     </div>
-                    <p class="text-xs text-gray-400" id="greetingText">Rccm:.....</p>
+                    <p class="text-xs text-gray-400" id="">Rccm:.....</p>
                 </div>
             </a>
             <div class="flex items-center gap-2">
@@ -215,7 +215,7 @@
             </div>
         </section>
 
-        <!-- ========== RECHERCHE ========== -->
+        <!-- ========== RECHERCHE ========== 
         <section class="px-5 py-2 flex gap-3 items-center">
             <div class="relative flex-1">
                 <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
@@ -231,7 +231,7 @@
                     class="w-12 h-12 bg-primary-500 border border-gray-100 rounded-2xl flex items-center justify-center text-white shadow-sm hover:bg-primary-600 transition">
                 <i class="fas fa-arrow-right"></i>
             </button>
-        </section>
+        </section>-->
 
         <!-- ========== ONGLETS : TOUS / PRODUITS / PRESTATAIRES / LIVREURS ========== -->
         <section class="px-5 py-3">
@@ -340,7 +340,7 @@
         onAuthStateChanged(auth, (user) => {
             const authButtons = document.getElementById('authButtons');
             const userMenu = document.getElementById('userMenu');
-            const greeting = document.getElementById('greetingText');
+     //       const greeting = document.getElementById('greetingText');
             const navProfile = document.getElementById('navProfile');
 
             if (user) {
@@ -350,7 +350,7 @@
                 getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
                     if (docSnap.exists()) {
                         const userData = docSnap.data();
-                        if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
+                 //       if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
                     }
                 }).catch(() => {});
                 
@@ -706,7 +706,7 @@
 
         // ============================================
         // RECHERCHE
-        // ============================================
+        /* ============================================
         window.rechercher = function() {
             const searchInput = document.getElementById('searchInput');
             if (searchInput) {
@@ -716,7 +716,7 @@
                 }
             }
         };
-
+*/
         // ============================================
         // INITIALISATION
         // ============================================
