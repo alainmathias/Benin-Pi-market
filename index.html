@@ -38,6 +38,14 @@
                             500: '#f9a825',
                             600: '#f57f17',
                             700: '#e65100'
+                        },
+                        service: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed'
+                        },
+                        delivery: {
+                            500: '#06b6d4',
+                            600: '#0891b2'
                         }
                     }
                 }
@@ -97,13 +105,45 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        /* Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in {
             animation: fadeIn 0.4s ease-out;
+        }
+        /* Onglets */
+        .tab-btn {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tab-btn.active {
+            background: #1a73e8;
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(26, 115, 232, 0.39);
+        }
+        .tab-btn:not(.active) {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        .tab-btn:not(.active):hover {
+            background: #e5e7eb;
+        }
+        /* Provider/Deliverer cards */
+        .provider-card {
+            transition: all 0.3s ease;
+        }
+        .provider-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+        .badge-provider {
+            background: #ede9fe;
+            color: #7c3aed;
+        }
+        .badge-deliverer {
+            background: #cffafe;
+            color: #0891b2;
         }
     </style>
 </head>
@@ -115,15 +155,12 @@
         <!-- ========== TOP HEADER ========== -->
         <header class="px-5 pt-6 pb-3 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3">
-                <img src="images/beninpimarket.png"class="w-12 h-12 rounded-full overflow-hidden border-1 border-primary-50 flex items-center justify-center bg-primary-500 text-white font-bold text-xl">
-                    
-                
+                <img src="images/beninpimarket.png" class="w-12 h-12 rounded-full overflow-hidden border-1 border-primary-50 flex items-center justify-center bg-primary-500 text-white font-bold text-xl">
                 <div>
-                 
                     <div class="flex items-center gap-1">
-                        <h1 class="text-base font-bold" id="">Bénin Pi Market</h1>
+                        <h1 class="text-base font-bold">Bénin Pi Market</h1>
                     </div>
-   <p class="text-xs text-gray-400" id="greetingText">Rccm:..... </p>
+                    <p class="text-xs text-gray-400" id="greetingText">Rccm:.....</p>
                 </div>
             </a>
             <div class="flex items-center gap-2">
@@ -169,19 +206,51 @@
             </div>
         </header>
 
-        <!-- ==========  ========== -->
-        <section class="px-5 py-2 flex gap-3 items-center">
-            <div class="relative flex-1">
-                <span class="absolute inset-y-0 left-8 flex items-center text-gray-400">
-                   
-Le marché local des pionniers Beninois 
+        <!-- ========== SLOGAN ========== -->
+        <section class="px-5 py-2">
+            <div class="relative flex-1 text-center">
+                <span class="text-sm text-gray-500 font-medium">
+                    Le marché local des pionniers Béninois 🚀
                 </span>
-                </div>
-            
+            </div>
         </section>
 
-    
-    
+        <!-- ========== RECHERCHE ========== -->
+        <section class="px-5 py-2 flex gap-3 items-center">
+            <div class="relative flex-1">
+                <span class="absolute inset-y-0 left-4 flex items-center text-gray-400">
+                    <i class="fas fa-search text-sm"></i>
+                </span>
+                <input id="searchInput" 
+                       class="w-full bg-white border border-gray-200 rounded-2xl py-3 pl-12 pr-4 text-sm focus:ring-2 focus:ring-primary-200 focus:border-primary-500 outline-none transition" 
+                       placeholder="Que recherchez-vous ?" 
+                       type="text"
+                       onkeypress="if(event.key==='Enter') window.rechercher()">
+            </div>
+            <button onclick="window.rechercher()" 
+                    class="w-12 h-12 bg-primary-500 border border-gray-100 rounded-2xl flex items-center justify-center text-white shadow-sm hover:bg-primary-600 transition">
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </section>
+
+        <!-- ========== ONGLETS : TOUS / PRODUITS / PRESTATAIRES / LIVREURS ========== -->
+        <section class="px-5 py-3">
+            <div class="flex gap-2 overflow-x-auto no-scrollbar">
+                <button onclick="switchHomeTab('all')" class="tab-btn active px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap" data-tab="all">
+                    <i class="fas fa-th-large mr-2"></i> Tous
+                </button>
+                <button onclick="switchHomeTab('products')" class="tab-btn px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap" data-tab="products">
+                    <i class="fas fa-box mr-2"></i> Produits
+                </button>
+                <button onclick="switchHomeTab('providers')" class="tab-btn px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap" data-tab="providers">
+                    <i class="fas fa-tools mr-2"></i> Prestataires
+                </button>
+                <button onclick="switchHomeTab('deliverers')" class="tab-btn px-5 py-2.5 rounded-xl font-medium text-sm whitespace-nowrap" data-tab="deliverers">
+                    <i class="fas fa-truck mr-2"></i> Livreurs
+                </button>
+            </div>
+        </section>
+
         <!-- ========== PROMO BANNER ========== -->
         <section class="px-5 py-2">
             <div class="bg-gradient-to-r from-primary-500 to-primary-700 rounded-3xl p-5 relative overflow-hidden flex flex-col justify-between h-44">
@@ -198,18 +267,18 @@ Le marché local des pionniers Beninois
             </div>
         </section>
 
-        <!-- ========== PRODUITS RÉCENTS ========== -->
+        <!-- ========== CONTENU DYNAMIQUE ========== -->
         <section class="px-5 py-4 pb-24">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold">Produits récents</h3>
-                <a href="products/list.html" class="text-primary-500 text-sm font-medium hover:underline">
+                <h3 class="text-lg font-bold" id="sectionTitle">Derniers ajouts</h3>
+                <a href="#" id="viewAllLink" class="text-primary-500 text-sm font-medium hover:underline">
                     Voir tout <i class="fas fa-arrow-right ml-1"></i>
                 </a>
             </div>
-            <div id="recentProducts" class="grid grid-cols-2 gap-3">
+            <div id="contentContainer" class="grid grid-cols-2 gap-3">
                 <div class="col-span-2 text-center py-8 text-gray-500">
                     <i class="fas fa-spinner fa-spin text-2xl"></i>
-                    <p class="mt-2 text-sm">Chargement des produits...</p>
+                    <p class="mt-2 text-sm">Chargement...</p>
                 </div>
             </div>
         </section>
@@ -231,6 +300,10 @@ Le marché local des pionniers Beninois
                 <i class="fas fa-th-large text-xl"></i>
                 <span class="text-[10px] font-medium">Produits</span>
             </a>
+            <a href="services/list.html" class="flex flex-col items-center gap-0.5 text-gray-400 hover:text-gray-600 transition">
+                <i class="fas fa-handshake text-xl"></i>
+                <span class="text-[10px] font-medium">Services</span>
+            </a>
             <a href="categories/all.html" class="flex flex-col items-center gap-0.5 text-gray-400 hover:text-gray-600 transition">
                 <i class="fas fa-tags text-xl"></i>
                 <span class="text-[10px] font-medium">Catégories</span>
@@ -246,135 +319,410 @@ Le marché local des pionniers Beninois
 
     </div>
 
+    <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
-    import { auth, onAuthStateChanged, db, collection, getDocs, query, where, orderBy, limit, doc, getDoc } from './js/firebase-config.js';
-    import { logout } from './js/auth.js';
-    import { displayProducts } from './js/utils.js';
-    import { getExchangeRate } from './js/pi-utils.js';
+        import { auth, onAuthStateChanged, db, collection, getDocs, query, where, orderBy, limit, doc, getDoc } from './js/firebase-config.js';
+        import { logout } from './js/auth.js';
+        import { displayProducts } from './js/utils.js';
+        import { getExchangeRate, toPi } from './js/pi-utils.js';
 
+        // Exposer logout globalement
+        window.logout = logout;
 
-// Dans index.html, assurez-vous que l'import est correct :
-//import { displayProducts } from './js/utils.js';
-// OU
-import { afficherProduits } from './js/utils.js';
+        let currentTab = 'all';
+        let allProducts = [];
+        let allProviders = [];
+        let allDeliverers = [];
 
+        // ============================================
+        // AUTHENTIFICATION
+        // ============================================
+        onAuthStateChanged(auth, (user) => {
+            const authButtons = document.getElementById('authButtons');
+            const userMenu = document.getElementById('userMenu');
+            const greeting = document.getElementById('greetingText');
+            const navProfile = document.getElementById('navProfile');
 
-    // ============================================
-    // EXPOSER LOGOUT GLOBALEMENT
-    // ============================================
-    window.logout = logout;
+            if (user) {
+                if (authButtons) authButtons.style.display = 'none';
+                if (userMenu) userMenu.classList.remove('hidden');
+                
+                getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
+                    if (docSnap.exists()) {
+                        const userData = docSnap.data();
+                        if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
+                    }
+                }).catch(() => {});
+                
+                if (navProfile) navProfile.href = 'dashboard/vendor.html';
+            } else {
+                if (authButtons) authButtons.style.display = 'flex';
+                if (userMenu) userMenu.classList.add('hidden');
+                if (greeting) greeting.textContent = 'Rccm:.....';
+                if (navProfile) navProfile.href = 'auth/login.html';
+            }
+        });
 
-    // ============================================
-    
-
-    // ============================================
-    // AUTHENTIFICATION
-    // ============================================
-    onAuthStateChanged(auth, (user) => {
-        const authButtons = document.getElementById('authButtons');
-        const userMenu = document.getElementById('userMenu');
-        //const userDisplay = document.getElementById('userDisplayName');
-        const greeting = document.getElementById('greetingText');
-        const navProfile = document.getElementById('navProfile');
-
-        if (user) {
-            if (authButtons) authButtons.style.display = 'none';
-            if (userMenu) userMenu.classList.remove('hidden');
-            
-            getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
-                if (docSnap.exists()) {
-                    const userData = docSnap.data();
-                //    if (userDisplay) userDisplay.textContent = `${userData.prenom} ${userData.nom}`;
-                //    if (greeting) greeting.textContent = `👋 Bonjour ${userData.prenom}`;
-                }
-            }).catch(() => {});
-            
-            if (navProfile) navProfile.href = 'dashboard/vendor.html';
-        } else {
-            if (authButtons) authButtons.style.display = 'flex';
-            if (userMenu) userMenu.classList.add('hidden');
-          if (userDisplay) userDisplay.textContent = 'Bénin Pi Market';
-            if (greeting) greeting.textContent = 'Bienvenue 👋';
-            if (navProfile) navProfile.href = 'auth/login.html';
-        }
-    });
-
-    // ============================================
-    // TAUX PI
-    // ============================================
-    try {
-        const rate = getExchangeRate();
-        const piDisplay = document.getElementById('piRateDisplay');
-        if (piDisplay) {
-            piDisplay.textContent = `1 Pi = ${rate.toLocaleString()} FCFA`;
-        }
-    } catch (e) {
-        console.warn('Erreur chargement taux Pi:', e);
-    }
-
-    // ============================================
-    // CHARGER PRODUITS RÉCENTS
-    // ============================================
-    async function loadRecentProducts() {
-        const container = document.getElementById('recentProducts');
-        
+        // ============================================
+        // TAUX PI
+        // ============================================
         try {
-            const q = query(
-                collection(db, 'products'),
-                where('status', '==', 'published'),
-                orderBy('createdAt', 'desc'),
-                limit(4)
-            );
-            
-            const querySnapshot = await getDocs(q);
-            const products = [];
-            
-            querySnapshot.forEach((doc) => {
-                products.push({ id: doc.id, ...doc.data() });
-            });
+            const rate = getExchangeRate();
+            const piDisplay = document.getElementById('piRateDisplay');
+            if (piDisplay) {
+                piDisplay.textContent = `1 Pi = ${rate.toLocaleString()} FCFA`;
+            }
+        } catch (e) {
+            console.warn('Erreur chargement taux Pi:', e);
+        }
 
+        // ============================================
+        // FORMAT PRIX
+        // ============================================
+        function formatPrice(price) {
+            if (!price && price !== 0) return '0 FCFA';
+            try {
+                return new Intl.NumberFormat('fr-BJ', {
+                    style: 'currency',
+                    currency: 'XOF',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }).format(price);
+            } catch {
+                return `${price} FCFA`;
+            }
+        }
+
+        // ============================================
+        // CHARGER TOUTES LES DONNÉES
+        // ============================================
+        async function loadAllData() {
+            try {
+                // Charger produits
+                const qProducts = query(
+                    collection(db, 'products'),
+                    where('status', '==', 'published'),
+                    orderBy('createdAt', 'desc'),
+                    limit(20)
+                );
+                const productsSnap = await getDocs(qProducts);
+                allProducts = [];
+                productsSnap.forEach((doc) => {
+                    allProducts.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Charger prestataires (utilisateurs avec isServiceProvider = true)
+                const qProviders = query(
+                    collection(db, 'users'),
+                    where('isServiceProvider', '==', true)
+                );
+                const providersSnap = await getDocs(qProviders);
+                allProviders = [];
+                providersSnap.forEach((doc) => {
+                    allProviders.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Charger livreurs (utilisateurs avec isDelivery = true)
+                const qDeliverers = query(
+                    collection(db, 'users'),
+                    where('isDelivery', '==', true)
+                );
+                const deliverersSnap = await getDocs(qDeliverers);
+                allDeliverers = [];
+                deliverersSnap.forEach((doc) => {
+                    allDeliverers.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Afficher l'onglet actif
+                loadTabContent(currentTab);
+
+            } catch (error) {
+                console.error('Erreur chargement données:', error);
+                document.getElementById('contentContainer').innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-red-500">
+                        <i class="fas fa-exclamation-circle text-2xl block mb-2"></i>
+                        <p class="text-sm">Erreur de chargement</p>
+                    </div>
+                `;
+            }
+        }
+
+        // ============================================
+        // SWITCH D'ONGLETS
+        // ============================================
+        window.switchHomeTab = function(tab) {
+            currentTab = tab;
+            
+            // Mettre à jour les boutons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = document.querySelector(`.tab-btn[data-tab="${tab}"]`);
+            if (activeBtn) {
+                activeBtn.classList.add('active');
+            }
+
+            // Mettre à jour le titre
+            const titles = {
+                'all': 'Derniers ajouts',
+                'products': 'Produits récents',
+                'providers': 'Prestataires disponibles',
+                'deliverers': 'Livreurs disponibles'
+            };
+            const links = {
+                'all': 'products/list.html',
+                'products': 'products/list.html',
+                'providers': 'services/list.html?tab=providers',
+                'deliverers': 'services/list.html?tab=deliverers'
+            };
+            
+            document.getElementById('sectionTitle').textContent = titles[tab] || 'Derniers ajouts';
+            document.getElementById('viewAllLink').href = links[tab] || '#';
+
+            loadTabContent(tab);
+        };
+
+        // ============================================
+        // CHARGER LE CONTENU DE L'ONGLET
+        // ============================================
+        function loadTabContent(tab) {
+            const container = document.getElementById('contentContainer');
+            
+            if (tab === 'all') {
+                renderAll(container);
+            } else if (tab === 'products') {
+                renderProducts(container);
+            } else if (tab === 'providers') {
+                renderProviders(container);
+            } else if (tab === 'deliverers') {
+                renderDeliverers(container);
+            }
+        }
+
+        // ============================================
+        // RENDER ALL
+        // ============================================
+        function renderAll(container) {
+            let html = '';
+
+            // Produits (4 derniers)
+            const products = allProducts.slice(0, 4);
+            if (products.length > 0) {
+                html += products.map((product, index) => `
+                    <div class="bg-white border border-gray-100 rounded-2xl p-3 product-card-shadow cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in" 
+                         style="animation-delay: ${index * 0.05}s"
+                         onclick="window.location.href='products/detail.html?id=${product.id}'">
+                        <div class="relative aspect-[4/5] rounded-2xl overflow-hidden mb-3 bg-gray-100">
+                            ${product.images && product.images.length > 0 
+                                ? `<img src="${product.images[0]}" alt="${product.title}" class="w-full h-full object-cover" loading="lazy">`
+                                : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-image text-3xl"></i></div>`
+                            }
+                            <div class="absolute bottom-2 left-2 bg-primary-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">
+                                ${formatPrice(product.price)}
+                            </div>
+                            <div class="absolute top-2 right-2 bg-pi-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                                ${toPi(product.price).toFixed(1)} Pi
+                            </div>
+                        </div>
+                        <h4 class="text-xs font-bold leading-snug line-clamp-2">${product.title || 'Sans titre'}</h4>
+                        <div class="flex items-center justify-between mt-1">
+                            <span class="text-[10px] text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${product.city || '-'}</span>
+                            <span class="text-[10px] text-gray-400"><i class="far fa-eye mr-1"></i>${product.views || 0}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Prestataires (2 derniers)
+            const providers = allProviders.slice(0, 2);
+            if (providers.length > 0) {
+                html += providers.map(provider => `
+                    <div class="bg-white border border-gray-100 rounded-2xl p-3 provider-card cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in" 
+                         onclick="window.location.href='user/public-profile.html?id=${provider.uid}'">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+                                ${provider.photoURL ? `<img src="${provider.photoURL}" class="w-full h-full object-cover rounded-full">` : '👤'}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold line-clamp-1">${provider.prenom} ${provider.nom}</h4>
+                                <p class="text-[10px] text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${provider.ville || 'Non spécifié'}</p>
+                                <span class="text-[10px] badge-provider px-2 py-0.5 rounded-full">🛠️ Prestataire</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Livreurs (2 derniers)
+            const deliverers = allDeliverers.slice(0, 2);
+            if (deliverers.length > 0) {
+                html += deliverers.map(deliverer => `
+                    <div class="bg-white border border-gray-100 rounded-2xl p-3 provider-card cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in" 
+                         onclick="window.location.href='user/public-profile.html?id=${deliverer.uid}'">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center text-xl flex-shrink-0">
+                                ${deliverer.photoURL ? `<img src="${deliverer.photoURL}" class="w-full h-full object-cover rounded-full">` : '👤'}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold line-clamp-1">${deliverer.prenom} ${deliverer.nom}</h4>
+                                <p class="text-[10px] text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${deliverer.ville || 'Non spécifié'}</p>
+                                <span class="text-[10px] badge-deliverer px-2 py-0.5 rounded-full">🚚 Livreur</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            if (!html) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                        <i class="fas fa-box-open text-3xl block mb-2"></i>
+                        <p class="text-sm">Aucun contenu disponible</p>
+                    </div>
+                `;
+            } else {
+                container.className = 'grid grid-cols-2 gap-3';
+                container.innerHTML = html;
+            }
+        }
+
+        // ============================================
+        // RENDER PRODUITS
+        // ============================================
+        function renderProducts(container) {
+            const products = allProducts.slice(0, 6);
+            
             if (products.length === 0) {
                 container.innerHTML = `
                     <div class="col-span-2 text-center py-8 text-gray-500">
                         <i class="fas fa-box-open text-3xl block mb-2"></i>
                         <p class="text-sm">Aucun produit disponible</p>
-                        <p class="text-xs text-gray-400">Soyez le premier à publier !</p>
                     </div>
                 `;
                 return;
             }
 
-            displayProducts(products, 'recentProducts');
-
-        } catch (error) {
-            console.error('Erreur chargement produits:', error);
-            
-            if (error.message && error.message.includes('index')) {
-                container.innerHTML = `
-                    <div class="col-span-2 text-center py-8 text-yellow-600">
-                        <i class="fas fa-exclamation-triangle text-3xl block mb-2"></i>
-                        <p class="text-sm">Configuration en cours...</p>
-                        <p class="text-xs text-gray-400">Veuillez réessayer dans quelques minutes</p>
+            container.className = 'grid grid-cols-2 gap-3';
+            container.innerHTML = products.map((product, index) => `
+                <div class="bg-white border border-gray-100 rounded-2xl p-3 product-card-shadow cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in" 
+                     style="animation-delay: ${index * 0.05}s"
+                     onclick="window.location.href='products/detail.html?id=${product.id}'">
+                    <div class="relative aspect-[4/5] rounded-2xl overflow-hidden mb-3 bg-gray-100">
+                        ${product.images && product.images.length > 0 
+                            ? `<img src="${product.images[0]}" alt="${product.title}" class="w-full h-full object-cover" loading="lazy">`
+                            : `<div class="w-full h-full flex items-center justify-center text-gray-300"><i class="fas fa-image text-3xl"></i></div>`
+                        }
+                        <div class="absolute bottom-2 left-2 bg-primary-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">
+                            ${formatPrice(product.price)}
+                        </div>
+                        <div class="absolute top-2 right-2 bg-pi-500 text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                            ${toPi(product.price).toFixed(1)} Pi
+                        </div>
                     </div>
-                `;
-            } else {
-                container.innerHTML = `
-                    <div class="col-span-2 text-center py-8 text-red-500">
-                        <i class="fas fa-exclamation-circle text-3xl block mb-2"></i>
-                        <p class="text-sm">Erreur de chargement</p>
-                        <p class="text-xs text-gray-400">${error.message}</p>
+                    <h4 class="text-xs font-bold leading-snug line-clamp-2">${product.title || 'Sans titre'}</h4>
+                    <div class="flex items-center justify-between mt-1">
+                        <span class="text-[10px] text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${product.city || '-'}</span>
+                        <span class="text-[10px] text-gray-400"><i class="far fa-eye mr-1"></i>${product.views || 0}</span>
                     </div>
-                `;
-            }
+                </div>
+            `).join('');
         }
-    }
 
-    // ============================================
-    // INITIALISATION
-    // ============================================
-    loadRecentProducts();
+        // ============================================
+        // RENDER PRESTATAIRES
+        // ============================================
+        function renderProviders(container) {
+            const providers = allProviders.slice(0, 6);
+            
+            if (providers.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                        <i class="fas fa-tools text-3xl block mb-2"></i>
+                        <p class="text-sm">Aucun prestataire disponible</p>
+                    </div>
+                `;
+                return;
+            }
 
-    console.log('✅ Bénin Pi Market - Accueil moderne chargé !');
-</script>
+            container.className = 'grid grid-cols-1 gap-3';
+            container.innerHTML = providers.map(provider => `
+                <div class="bg-white border border-gray-100 rounded-2xl p-4 provider-card cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in" 
+                     onclick="window.location.href='user/public-profile.html?id=${provider.uid}'">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center text-2xl flex-shrink-0">
+                            ${provider.photoURL ? `<img src="${provider.photoURL}" class="w-full h-full object-cover rounded-full">` : '👤'}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-dark">${provider.prenom} ${provider.nom}</h4>
+                            <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${provider.ville || 'Non spécifié'}</p>
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                <span class="text-xs badge-provider px-2 py-0.5 rounded-full">🛠️ Prestataire</span>
+                                ${provider.services ? `<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">${provider.services}</span>` : ''}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // RENDER LIVREURS
+        // ============================================
+        function renderDeliverers(container) {
+            const deliverers = allDeliverers.slice(0, 6);
+            
+            if (deliverers.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-8 text-gray-500">
+                        <i class="fas fa-truck text-3xl block mb-2"></i>
+                        <p class="text-sm">Aucun livreur disponible</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.className = 'grid grid-cols-1 gap-3';
+            container.innerHTML = deliverers.map(deliverer => `
+                <div class="bg-white border border-gray-100 rounded-2xl p-4 provider-card cursor-pointer hover:shadow-md transition-all duration-300 animate-fade-in" 
+                     onclick="window.location.href='user/public-profile.html?id=${deliverer.uid}'">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center text-2xl flex-shrink-0">
+                            ${deliverer.photoURL ? `<img src="${deliverer.photoURL}" class="w-full h-full object-cover rounded-full">` : '👤'}
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-dark">${deliverer.prenom} ${deliverer.nom}</h4>
+                            <p class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${deliverer.ville || 'Non spécifié'}</p>
+                            <div class="flex flex-wrap gap-1 mt-1">
+                                <span class="text-xs badge-deliverer px-2 py-0.5 rounded-full">🚚 Livreur</span>
+                                ${deliverer.deliveryInfo ? `<span class="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">${deliverer.deliveryInfo}</span>` : ''}
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============================================
+        // RECHERCHE
+        // ============================================
+        window.rechercher = function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                const searchTerm = searchInput.value?.trim();
+                if (searchTerm) {
+                    window.location.href = `products/list.html?search=${encodeURIComponent(searchTerm)}`;
+                }
+            }
+        };
+
+        // ============================================
+        // INITIALISATION
+        // ============================================
+        loadAllData();
+
+        console.log('✅ Bénin Pi Market - Accueil moderne avec onglets chargé !');
+    </script>
 </body>
 </html>
