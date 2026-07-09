@@ -1,6 +1,4 @@
-// js/auth.js
-// ============================================
-// AUTHENTICATION - EN ANGLES
+// js/auth.js - Version avec gestion des rôles
 // ============================================
 
 import { 
@@ -20,81 +18,71 @@ import {
     where,
     getDocs
 } from './firebase-config.js';
+import { initRoles } from './roles.js';
 
-// Cache
 let currentUserCache = null;
 let currentUserDataCache = null;
 
 // ============================================
-// REGISTER
+// INSCRIPTION
 // ============================================
 export async function register(email, password, userData) {
     try {
-        // Check if phone already exists
+        // Initialiser les rôles si nécessaire
+        await initRoles();
+
+        // Vérifier si le téléphone existe déjà
         const phoneQuery = await getDocs(
             query(collection(db, 'users'), where('telephone', '==', userData.telephone))
         );
         if (!phoneQuery.empty) {
             return {
                 success: false,
-                message: 'This phone number is already used.'
+                message: 'Ce numéro de téléphone est déjà utilisé.'
             };
         }
 
-        // Check if email exists
-        if (email) {
-            const emailQuery = await getDocs(
-                query(collection(db, 'users'), where('email', '==', email))
-            );
-            if (!emailQuery.empty) {
-                return {
-                    success: false,
-                    message: 'This email is already used.'
-                };
-            }
-        }
-
-        // Create user in Firebase Auth
+        // Créer l'utilisateur dans Firebase Auth
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Add data to Firestore
+        // Ajouter les données dans Firestore
         await setDoc(doc(db, 'users', user.uid), {
             uid: user.uid,
-            ...userData,
+            nom: userData.nom,
+            prenom: userData.prenom,
+            telephone: userData.telephone,
+            whatsapp: userData.whatsapp || userData.telephone,
             email: email || '',
-            status: 'pending',          // pending, active, suspended
-            role: 'vendor',             // vendor, admin
-            createdAt: new Date().toISOString(),
             photoURL: '',
-            lastLogin: new Date().toISOString(),
-            productsCount: 0,
-            isActive: true
+            adresse: userData.adresse || '',
+            ville: userData.ville || '',
+            status: 'active',
+            // Champs d'activité professionnelle (par défaut false)
+            isVendor: false,
+            isDelivery: false,
+            isServiceProvider: false,
+            isAdmin: false,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
         });
-
-        currentUserDataCache = {
-            uid: user.uid,
-            ...userData,
-            email: email || '',
-            status: 'pending',
-            role: 'vendor'
-        };
 
         return {
             success: true,
-            message: 'Registration successful! Waiting for admin validation.',
-            user: user,
-            data: currentUserDataCache
+            message: '✅ Inscription réussie !',
+            user: user
         };
+
     } catch (error) {
-        console.error('Register error:', error);
+        console.error('Erreur inscription:', error);
         let message = error.message;
         if (error.code === 'auth/email-already-in-use') {
-            message = 'This email is already used.';
+            message = 'Cet email est déjà utilisé.';
         } else if (error.code === 'auth/weak-password') {
-            message = 'Password must be at least 6 characters.';
+            message = 'Le mot de passe doit contenir au moins 6 caractères.';
         } else if (error.code === 'auth/invalid-email') {
-            message = 'Invalid email format.';
+            message = 'Format d\'email invalide.';
         }
         return {
             success: false,
@@ -104,7 +92,7 @@ export async function register(email, password, userData) {
 }
 
 // ============================================
-// LOGIN
+// CONNEXION
 // ============================================
 export async function login(email, password) {
     try {
@@ -115,37 +103,20 @@ export async function login(email, password) {
         if (!userDoc.exists()) {
             return {
                 success: false,
-                message: 'Account not found in database.'
+                message: 'Compte non trouvé.'
             };
         }
 
         const userData = userDoc.data();
-        
-        // Check status
+
         if (userData.status === 'suspended') {
-            await signOut(auth);
             return {
                 success: false,
-                message: 'Your account has been suspended. Contact administrator.'
+                message: '🚫 Votre compte a été suspendu.'
             };
         }
 
-        if (!userData.isActive) {
-            await signOut(auth);
-            return {
-                success: false,
-                message: 'Your account is deactivated. Contact administrator.'
-            };
-        }
-
-        if (userData.status === 'pending') {
-            return {
-                success: false,
-                message: 'Your account is pending validation by administrator.'
-            };
-        }
-
-        // Update last login
+        // Mettre à jour la dernière connexion
         await updateDoc(doc(db, 'users', user.uid), {
             lastLogin: new Date().toISOString()
         });
@@ -153,30 +124,22 @@ export async function login(email, password) {
         currentUserCache = user;
         currentUserDataCache = userData;
 
-        const welcomeMessage = userData.role === 'admin' 
-            ? '👋 Welcome Admin!' 
-            : `👋 Welcome ${userData.prenom} ${userData.nom}!`;
-
         return {
             success: true,
-            message: welcomeMessage,
+            message: `👋 Bonjour ${userData.prenom} ${userData.nom} !`,
             user: user,
             data: userData
         };
 
     } catch (error) {
-        console.error('Login error:', error);
-        let message = '❌ Invalid email or password.';
+        console.error('Erreur connexion:', error);
+        let message = 'Email ou mot de passe incorrect.';
         if (error.code === 'auth/user-not-found') {
-            message = 'No account found with this email.';
+            message = 'Aucun compte trouvé.';
         } else if (error.code === 'auth/wrong-password') {
-            message = 'Incorrect password.';
+            message = 'Mot de passe incorrect.';
         } else if (error.code === 'auth/too-many-requests') {
-            message = 'Too many attempts. Please try again later.';
-        } else if (error.code === 'auth/invalid-email') {
-            message = 'Invalid email format.';
-        } else if (error.code === 'auth/user-disabled') {
-            message = 'This account has been disabled.';
+            message = 'Trop de tentatives. Réessayez plus tard.';
         }
         return {
             success: false,
@@ -186,7 +149,7 @@ export async function login(email, password) {
 }
 
 // ============================================
-// LOGOUT
+// DÉCONNEXION
 // ============================================
 export async function logout() {
     try {
@@ -195,44 +158,17 @@ export async function logout() {
         currentUserDataCache = null;
         window.location.href = 'index.html';
     } catch (error) {
-        console.error('Logout error:', error);
-        alert('Error logging out.');
+        console.error('Erreur déconnexion:', error);
     }
 }
 
 // ============================================
-// FORGOT PASSWORD
-// ============================================
-export async function forgotPassword(email) {
-    try {
-        await sendPasswordResetEmail(auth, email);
-        return {
-            success: true,
-            message: 'Password reset email has been sent.'
-        };
-    } catch (error) {
-        console.error('Forgot password error:', error);
-        let message = 'Error sending email.';
-        if (error.code === 'auth/user-not-found') {
-            message = 'No account found with this email.';
-        }
-        return {
-            success: false,
-            message: message
-        };
-    }
-}
-
-// ============================================
-// GET CURRENT USER
+// RÉCUPÉRER L'UTILISATEUR ACTUEL
 // ============================================
 export function getCurrentUser() {
     return auth.currentUser || currentUserCache;
 }
 
-// ============================================
-// GET CURRENT USER DATA (with cache)
-// ============================================
 export async function getCurrentUserData() {
     if (currentUserDataCache) {
         return currentUserDataCache;
@@ -244,27 +180,18 @@ export async function getCurrentUserData() {
     try {
         const userDoc = await getDoc(doc(db, 'users', user.uid));
         if (!userDoc.exists()) return null;
-        
         currentUserDataCache = userDoc.data();
         return currentUserDataCache;
     } catch (error) {
-        console.error('Error getting user data:', error);
+        console.error('Erreur:', error);
         return null;
     }
 }
 
-// ============================================
-// CHECK AUTH STATE
-// ============================================
 export function onAuthChange(callback) {
     return onAuthStateChanged(auth, (user) => {
         if (user) {
             currentUserCache = user;
-            getDoc(doc(db, 'users', user.uid)).then((docSnap) => {
-                if (docSnap.exists()) {
-                    currentUserDataCache = docSnap.data();
-                }
-            }).catch(() => {});
         } else {
             currentUserCache = null;
             currentUserDataCache = null;
@@ -274,30 +201,19 @@ export function onAuthChange(callback) {
 }
 
 // ============================================
-// VALIDATE USER (Admin)
+// RÉINITIALISATION MOT DE PASSE
 // ============================================
-export async function validateUser(uid) {
+export async function resetPassword(email) {
     try {
-        await updateDoc(doc(db, 'users', uid), {
-            status: 'active',
-            validatedAt: new Date().toISOString()
-        });
-        return { success: true, message: 'User validated successfully.' };
+        await sendPasswordResetEmail(auth, email);
+        return {
+            success: true,
+            message: 'Un email de réinitialisation a été envoyé.'
+        };
     } catch (error) {
-        return { success: false, message: error.message };
-    }
-}
-
-// ============================================
-// SUSPEND USER (Admin)
-// ============================================
-export async function suspendUser(uid) {
-    try {
-        await updateDoc(doc(db, 'users', uid), {
-            status: 'suspended'
-        });
-        return { success: true, message: 'User suspended.' };
-    } catch (error) {
-        return { success: false, message: error.message };
+        return {
+            success: false,
+            message: error.message
+        };
     }
 }
